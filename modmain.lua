@@ -1,6 +1,6 @@
 PrefabFiles = {
-	"gramninten",
-	"gramninten_none",
+	"willar",
+	"willar_none",
 }
 
 Assets = {
