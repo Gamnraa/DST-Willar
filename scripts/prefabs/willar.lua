@@ -24,8 +24,8 @@ end
 
 local function CanTransform(inst, into_nightmare)
 	return into_nightmare ~= inst.willar_nightmaremode and 
-	(inst.willar_nightmaremode and not inst.components.timer:TimerExists("forcenightmare") and (TheWorld.state.isday and not TheWorld:HasTag("cave") or (not TheWorld.state.isnightmarewild and TheTheWorld:HasTag("cave")))) or 
-	(not inst.willar_nightmaremode and (TheWorld.state.isnight and TheWorld.state.isnewmoon and not TheWorld:HasTag("cave")) or (TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))
+	(inst.willar_nightmaremode and not inst.components.timer:TimerExists("forcenightmare") and (not TheWorld.state.isnight and not TheWorld:HasTag("cave") or (not TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))) or 
+	(not inst.willar_nightmaremode and inst.components.timer:TimerExists("forcenightmare") or (TheWorld.state.isnight and TheWorld.state.isnewmoon and not TheWorld:HasTag("cave")) or (TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))
 end
 
 local function DoTransform(inst)
@@ -48,8 +48,14 @@ local function DoTransform(inst)
 end
 
 local function OnWorldStateChange(inst)
-	print(inst.willar_nightmaremode, TheWorld.state.isnight, TheWorld.state.isnewmoon, TheWorld:HasTag("cave"), not inst.willar_nightmaremode and (TheWorld.state.isnight and TheWorld.state.isnewmoon and not TheWorld:HasTag("cave")))
 	if CanTransform(inst, not inst.willar_nightmaremode) then DoTransform(inst) end
+end
+
+local function OnTimerDone(inst, data)
+	print("timerdone")
+	if data and data.name == "forcenightmare" then
+		OnWorldStateChange(inst)
+	end
 end
 
 local function OnEat(inst, food)
@@ -59,7 +65,7 @@ local function OnEat(inst, food)
     local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
     timer:StopTimer("forcenightmare")
     timer:StartTimer("forcenightmare", 60 + time)
-    CanTransform(inst, true)
+    OnWorldStateChange(inst)
 end
 
 -- When the character is revived from human
@@ -128,6 +134,7 @@ local master_postinit = function(inst)
 	inst:WatchWorldState("isnewmoon", OnWorldStateChange)
 	inst:WatchWorldState("nightmaretime", OnWorldStateChange)
 	inst:ListenForEvent("ForceTransformCheck", OnWorldStateChange)
+	inst:ListenForEvent("timerdone", OnTimerDone)
 	
 	table.insert(inst.components.eater.preferseating, "NIGHTMAREFUEL")
 	table.insert(inst.components.eater.caneat, "NIGHTMAREFUEL")
