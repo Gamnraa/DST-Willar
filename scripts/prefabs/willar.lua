@@ -52,6 +52,16 @@ local function OnWorldStateChange(inst)
 	if CanTransform(inst, not inst.willar_nightmaremode) then DoTransform(inst) end
 end
 
+local function OnEat(inst, food)
+	if food.components.edible.foodtype ~= "NIGHTMAREFUEL" then return end
+
+    local timer = inst.components.timer
+    local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
+    timer:StopTimer("forcenightmare")
+    timer:StartTimer("forcenightmare", 60 + time)
+    CanTransform(inst, true)
+end
+
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
@@ -92,6 +102,7 @@ local common_postinit = function(inst)
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "gramninten.tex" )
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
+	inst:AddTag("willar")
 end
 
 -- This initializes for the server only. Components are added here.
@@ -100,7 +111,7 @@ local master_postinit = function(inst)
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
 	
 	-- choose which sounds this character will play
-	inst.soundsname = "gramninten"
+	inst.soundsname = "willow"
 	
 	-- Uncomment if "wathgrithr"(Wigfrid) or "webber" voice is used
     --inst.talker_path_override = "dontstarve_DLC001/characters/"
@@ -116,7 +127,13 @@ local master_postinit = function(inst)
 	inst:WatchWorldState("isday", OnWorldStateChange)
 	inst:WatchWorldState("isnewmoon", OnWorldStateChange)
 	inst:WatchWorldState("nightmaretime", OnWorldStateChange)
+	inst:ListenForEvent("ForceTransformCheck", OnWorldStateChange)
 	
+	table.insert(inst.components.eater.preferseating, "NIGHTMAREFUEL")
+	table.insert(inst.components.eater.caneat, "NIGHTMAREFUEL")
+	inst:AddTag("NIGHTMAREFUEL_eater")
+	inst.components.eater:SetOnEatFn(OnEat)
+
 	-- Damage multiplier (optional)
     inst.components.combat.damagemultiplier = 1
 	

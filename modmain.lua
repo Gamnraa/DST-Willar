@@ -37,9 +37,6 @@ Assets = {
 	
 	Asset( "IMAGE", "images/names_gold_gramninten.tex" ),
     Asset( "ATLAS", "images/names_gold_gramninten.xml" ),
-	
-	Asset("SOUNDPACKAGE", "sound/gramninten.fev"),
-	Asset("SOUND", "sound/gramninten.fsb"),
 }
 
 AddMinimapAtlas("images/map_icons/gramninten.xml")
@@ -50,20 +47,7 @@ local TUNING = GLOBAL.TUNING
 local RECIPETABS = GLOBAL.RECIPETABS
 local Ingredient = GLOBAL.Ingredient
 local TECH = GLOBAL.TECH
-
-
---if TUNING.GRAMNINTEN_VOICE == "gramninten" then
-	RemapSoundEvent( "dontstarve/characters/gramninten/death_voice", "gramninten/characters/gramninten/death_voice" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/hurt", "gramninten/characters/gramninten/hurt" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/emote", "gramninten/characters/gramninten/emote" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/yawn", "gramninten/characters/gramninten/yawn" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/pose", "gramninten/characters/gramninten/pose" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/ghost_LP", "gramninten/characters/gramninten/ghost_LP" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/talk_LP", "gramninten/characters/gramninten/talk_LP" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/carol", "gramninten/characters/gramninten/carol" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/eye_rub_vo", "gramninten/characters/gramninten/eye_rub_vo" )
-	RemapSoundEvent( "dontstarve/characters/gramninten/sinking", "gramninten/characters//gramninten/sinking" )
---end
+--local TheWorld = GLOBAL.TheWorld
 
 -- The character select screen lines
 STRINGS.CHARACTER_TITLES.gramninten = "The Original"
@@ -98,3 +82,18 @@ AddModCharacter("gramninten", "MALE", skin_modes)
 
 
 --RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/nintens_coat.xml"), "nintens_coat.tex")
+
+GLOBAL.FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
+
+local function SetNightmareFuelEdible(inst)
+    if not GLOBAL.TheWorld.ismastersim then return end
+
+    inst:AddComponent("edible")
+    inst.components.edible.foodtype = "NIGHTMAREFUEL"
+    inst.components.edible.healthvalue = 0
+    inst.components.edible.hungervalue = 0
+    inst.components.edible.sanityvalue = 0
+end
+
+AddPrefabPostInit("nightmarefuel", SetNightmareFuelEdible)
+AddPrefabPostInit("horrorfuel", SetNightmareFuelEdible)
