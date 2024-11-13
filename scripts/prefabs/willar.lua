@@ -35,14 +35,14 @@ local function DoTransform(inst)
 		inst.components.combat.damagemultiplier = 1
 		inst.components.health:SetMaxHealth(150) --VARIABLE GOES HERE
 		inst.components.health.current = health
-		inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willarspeed")
+		inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod")
 	else
 		inst.components.talker:Say("TRANSFORM")
 		inst.components.combat.damagemultiplier = 1.25
 		inst.components.health:SetMaxHealth(175)
 		inst.components.health.current = health
 		inst.components.health:DoDelta(25)
-		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willarspeed", 1.25)
+		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod", 1.25)
 	end
 	inst.willar_nightmaremode = not inst.willar_nightmaremode
 end
@@ -60,32 +60,40 @@ end
 
 local function OnEat(inst, food)
 	if food.components.edible.foodtype ~= "NIGHTMAREFUEL" then return end
+	local amt = food.prefab == "horrorfuel" and 4 or 1
 
-    local timer = inst.components.timer
-    local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
-    timer:StopTimer("forcenightmare")
-    timer:StartTimer("forcenightmare", 60 + time)
-    OnWorldStateChange(inst)
+	inst.willar_nightmaremeter:set(inst.willar_nightmaremeter:value() + amt)
+
+	if inst.willar_nightmaremeter:value() >= 4 then
+		local timer = inst.components.timer
+		local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
+		timer:StopTimer("forcenightmare")
+		timer:StartTimer("forcenightmare", 60 + time)
+		OnWorldStateChange(inst)
+		inst.willar_nightmaremeter:set(0)
+	end
 end
 
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
-	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "gramninten_speed_mod", 1)
+	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_speed_mod", 1)
 end
 
 local function onbecameghost(inst)
 	-- Remove speed modifier when becoming a ghost
-    inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "gramninten_speed_mod")
+    inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_speed_mod")
 end
 
 
 local function onsave(inst, data)
 	data.willar_nightmaremode = inst.willar_nightmaremode
+	data.willar_nightmaremeter = inst.willar_nightmaremeter
 end
 
 local function onpreload(inst, data)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
+	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
 end
 
 -- When loading or spawning the character
@@ -109,6 +117,8 @@ local common_postinit = function(inst)
 	inst.MiniMapEntity:SetIcon( "gramninten.tex" )
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
 	inst:AddTag("willar")
+
+	inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.nightmaremeter", "nightmaremeterdirty")
 end
 
 -- This initializes for the server only. Components are added here.
