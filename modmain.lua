@@ -47,6 +47,7 @@ local TUNING = GLOBAL.TUNING
 local RECIPETABS = GLOBAL.RECIPETABS
 local Ingredient = GLOBAL.Ingredient
 local TECH = GLOBAL.TECH
+local EQUIPSLOTS = GLOBAL.EQUIPSLOTS
 --local TheWorld = GLOBAL.TheWorld
 
 -- The character select screen lines
@@ -97,3 +98,58 @@ end
 
 AddPrefabPostInit("nightmarefuel", SetNightmareFuelEdible)
 AddPrefabPostInit("horrorfuel", SetNightmareFuelEdible)
+
+local function ShouldMonkeyAccept(inst, item, giver)
+    if inst.components.health and inst.components.health:IsDead() then
+        return false, "DEAD"
+    end
+
+    return 
+        (giver:HasTag("willar") and inst.components.eater:CanEat(item)) or
+        (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
+end
+
+local function OnMonkeyGetItem(inst, giver, item)
+    if inst.components.eater:CanEater(item) then
+        inst.components.eater:Eat(item)
+
+        if item:HasTag("monkeyqueenbribe") then
+            local playedfriendsfx = false
+            if inst.components.combat.target == giver then
+                inst.components.combat:SetTarget(nil)
+            elseif giver.components.leader and inst.components.follower then
+                giver:PushEvent("makefriend")
+                giver.components.leader:AddFollower(inst)
+                playedfriendsfx = true
+            end
+        end
+    elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
+        local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+        if current ~= nil then
+            inst.components.inventory:DropItem(current)
+        end
+        inst.components.inventory:Equip(item)
+        inst.AnimState:Show("hat")
+    end
+end
+
+local function OnMonkeyRefuseItem(inst, item)
+    inst.sg:GoToState("taunt")
+    if inst.components.sleeper:IsAsleep() then
+        inst.components.sleeper:WakeUp()
+    end
+end
+
+local function MakeMonkeysTamable(inst, duration)
+    inst:AddCompoent("follower")
+    inst.components.follower.maxfollowtime = duration
+
+    inst:AddComponent("trader")
+    inst.components.trader:SetAcceptTest(ShouldMonkeyAccept)
+    inst.components.trader:SetAbleToAcceptTest(ShouldMonkeyAccept)
+    inst.components.trader.onaccept = OnMonkeyGetItem
+    inst.components.trader.onrefuse = OnMonkeyRefuseItem
+    inst.components.trader.deleteitemonaccept = false
+end
+
+AddPrefabPostInit("monkey", MakeMonkeysTamable)
