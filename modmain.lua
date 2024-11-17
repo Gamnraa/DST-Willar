@@ -110,18 +110,17 @@ local function ShouldMonkeyAccept(inst, item, giver)
 end
 
 local function OnMonkeyGetItem(inst, giver, item)
-    if inst.components.eater:CanEater(item) then
+    if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
 
         if item:HasTag("monkeyqueenbribe") then
-            local playedfriendsfx = false
             if inst.components.combat.target == giver then
                 inst.components.combat:SetTarget(nil)
-            elseif giver.components.leader and inst.components.follower then
-                giver:PushEvent("makefriend")
-                giver.components.leader:AddFollower(inst)
-                playedfriendsfx = true
             end
+
+            giver:PushEvent("makefriend")
+            giver.components.leader:AddFollower(inst)
+            inst.components.follower:AddLoyaltyTime(480)
         end
     elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
         local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
@@ -141,7 +140,8 @@ local function OnMonkeyRefuseItem(inst, item)
 end
 
 local function MakeMonkeysTamable(inst, duration)
-    inst:AddCompoent("follower")
+    if not GLOBAL.TheWorld.ismastersim then return end
+    inst:AddComponent("follower")
     inst.components.follower.maxfollowtime = duration
 
     inst:AddComponent("trader")
