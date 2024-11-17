@@ -24,8 +24,8 @@ end
 
 local function CanTransform(inst, into_nightmare)
 	return into_nightmare ~= inst.willar_nightmaremode and 
-	(inst.willar_nightmaremode and not inst.components.timer:TimerExists("forcenightmare") and (not TheWorld.state.isnight and not TheWorld:HasTag("cave") or (not TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))) or 
-	(not inst.willar_nightmaremode and inst.components.timer:TimerExists("forcenightmare") or (TheWorld.state.isnight and TheWorld.state.isnewmoon and not TheWorld:HasTag("cave")) or (TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))
+	((inst.willar_nightmaremode and (not inst.components.timer:TimerExists("forcenightmare") and (not TheWorld.state.isnight and not TheWorld:HasTag("cave") or (not TheWorld.state.isnightmarewild and TheWorld:HasTag("cave"))))) or 
+	(not inst.willar_nightmaremode and (inst.components.timer:TimerExists("forcenightmare") or (TheWorld.state.isnight and TheWorld.state.isnewmoon and not TheWorld:HasTag("cave")) or (TheWorld.state.isnightmarewild and TheWorld:HasTag("cave")))))
 end
 
 local function DoTransform(inst)
