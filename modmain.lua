@@ -109,6 +109,8 @@ local function ShouldMonkeyAccept(inst, item, giver)
         (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
 end
 
+local willarmonkeybrain = require "brains/willarmonkeybrain"
+
 local function OnMonkeyGetItem(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
@@ -121,6 +123,7 @@ local function OnMonkeyGetItem(inst, giver, item)
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
             inst.components.follower:AddLoyaltyTime(480)
+            inst:SetBrain(willarmonkeybrain)
         end
     elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
         local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
@@ -139,6 +142,55 @@ local function OnMonkeyRefuseItem(inst, item)
     end
 end
 
+--Straight from Spider logic
+local function HasFriendlyLeader(inst, target)
+    local leader = inst.components.follower.leader
+    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    
+    if leader ~= nil and target_leader ~= nil then
+
+        if target_leader.components.inventoryitem then
+            target_leader = target_leader.components.inventoryitem:GetGrandOwner()
+            -- Don't attack followers if their follow object has no owner
+            if target_leader == nil then
+                return true
+            end
+        end
+
+        local PVP_enabled = TheNet:GetPVPEnabled()
+        return leader == target or (target_leader ~= nil 
+                and (target_leader == leader or (target_leader:HasTag("player") 
+                and not PVP_enabled))) or
+                (target.components.domesticatable and target.components.domesticatable:IsDomesticated() 
+                and not PVP_enabled) or
+                (target.components.saltlicker and target.components.saltlicker.salted
+                and not PVP_enabled)
+    
+    elseif target_leader ~= nil and target_leader.components.inventoryitem then
+        -- Don't attack webber's chester
+        target_leader = target_leader.components.inventoryitem:GetGrandOwner()
+        return target_leader ~= nil and target_leader:HasTag("spiderwhisperer")
+    end
+
+    return false
+end
+
+local function NewMonkeyRetarget(inst, oldfn)
+    if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
+        return FindEntity(
+            inst, 20, function(guy)
+                return inst.components.combat:CanTarget(guy)
+                and not (inst.components.follower and inst.components.follower.leader == guy)
+                and not HasFriendlyLeader(inst, guy)
+                and not (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") 
+                        and guy:HasTag("player") and not TheNet:GetPVPEnabled())
+            end,
+            {"_combat", "character"}, --Must tags
+            {"willar"} --Cant tags
+        )
+    else return oldfn end
+end
+
 local function MakeMonkeysTamable(inst, duration)
     if not GLOBAL.TheWorld.ismastersim then return end
     inst:AddComponent("follower")
@@ -150,6 +202,15 @@ local function MakeMonkeysTamable(inst, duration)
     inst.components.trader.onaccept = OnMonkeyGetItem
     inst.components.trader.onrefuse = OnMonkeyRefuseItem
     inst.components.trader.deleteitemonaccept = false
+
+    inst.components.sleeper.sleeptestfn = function(inst)
+        return GLOBAL.NocturnalSleepTest(inst) and inst.components.follower == nil or inst.components.follower.leader == nil
+    end
 end
 
-AddPrefabPostInit("monkey", MakeMonkeysTamable)
+AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
+
+AddPrefabPostInit("spider", function(inst)
+    if not GLOBAL.TheWorld.ismastersim then return end
+    inst:WatchWorldState("nightmarephase", function(dst) return end)
+end)
