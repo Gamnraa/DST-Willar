@@ -169,7 +169,7 @@ local function HasFriendlyLeader(inst, target)
     elseif target_leader ~= nil and target_leader.components.inventoryitem then
         -- Don't attack webber's chester
         target_leader = target_leader.components.inventoryitem:GetGrandOwner()
-        return target_leader ~= nil and target_leader:HasTag("spiderwhisperer")
+        return target_leader ~= nil and target_leader:HasTag("willar")
     end
 
     return false
@@ -203,8 +203,10 @@ local function MakeMonkeysTamable(inst, duration)
     inst.components.trader.onrefuse = OnMonkeyRefuseItem
     inst.components.trader.deleteitemonaccept = false
 
-    inst.components.sleeper.sleeptestfn = function(inst)
-        return GLOBAL.NocturnalSleepTest(inst) and inst.components.follower == nil or inst.components.follower.leader == nil
+    if inst.components.sleeper then 
+        inst.components.sleeper.sleeptestfn = function(inst)
+            return GLOBAL.NocturnalSleepTest(inst) and inst.components.follower == nil or inst.components.follower.leader == nil
+        end
     end
 end
 
