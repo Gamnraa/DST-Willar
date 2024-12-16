@@ -109,6 +109,8 @@ local function ShouldMonkeyAccept(inst, item, giver)
         (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
 end
 
+local monkeybrain = require "brains/monkeybrain"
+local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
 
 local function OnMonkeyGetItem(inst, giver, item)
@@ -122,8 +124,14 @@ local function OnMonkeyGetItem(inst, giver, item)
 
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
-            inst.components.follower:AddLoyaltyTime(480)
+            inst.components.follower:AddLoyaltyTime(20)
             inst:SetBrain(willarmonkeybrain)
+
+            inst:ListenForEvent("loseloyalty", function() 
+                if inst.prefab == "monkey" then
+                    inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
+                end
+            end)
         end
     elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
         local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
