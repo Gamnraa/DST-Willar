@@ -183,20 +183,18 @@ local function HasFriendlyLeader(inst, target)
     return false
 end
 
-local function NewMonkeyRetarget(inst, oldfn)
-    if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
-        return FindEntity(
-            inst, 20, function(guy)
-                return inst.components.combat:CanTarget(guy)
-                and not (inst.components.follower and inst.components.follower.leader == guy)
-                and not HasFriendlyLeader(inst, guy)
-                and not (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") 
-                        and guy:HasTag("player") and not TheNet:GetPVPEnabled())
-            end,
-            {"_combat", "character"}, --Must tags
-            {"willar"} --Cant tags
-        )
-    else return oldfn end
+local function NewMonkeyRetarget(inst)
+    return GLOBAL.FindEntity(
+        inst, 20, function(guy)
+            return inst.components.combat:CanTarget(guy)
+            and not (inst.components.follower and inst.components.follower.leader == guy)
+            and not HasFriendlyLeader(inst, guy)
+            and not (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") 
+                and guy:HasTag("player") and not TheNet:GetPVPEnabled())
+        end,
+        {"_combat", "character"}, --Must tags
+        {"willar"} --Cant tags
+    )
 end
 
 local function MakeMonkeysTamable(inst, duration)
@@ -213,8 +211,15 @@ local function MakeMonkeysTamable(inst, duration)
 
     if inst.components.sleeper then 
         inst.components.sleeper.sleeptestfn = function(inst)
-            return GLOBAL.NocturnalSleepTest(inst) and inst.components.follower == nil or inst.components.follower.leader == nil
+            return GLOBAL.NocturnalSleepTest(inst) and (inst.components.follower == nil or inst.components.follower.leader) == nil
         end
+    end
+
+    local oldretargetfn = inst.components.combat.targetfn
+    inst.components.combat.targetfn = function()
+        if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
+            return NewMonkeyRetarget(inst)
+        else return oldretargetfn(inst) end
     end
 end
 
