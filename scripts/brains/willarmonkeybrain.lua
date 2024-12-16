@@ -37,6 +37,7 @@ local WillarMonkeyBrain = Class(Brain, function(self, inst)
 end)
 
 local function ShouldRunFn(inst, hunter)
+    print(hunter)
     return (inst.components.combat.target ~= nil)
         and hunter.isplayer
 end
@@ -303,7 +304,7 @@ function WillarMonkeyBrain:OnStart()
         BrainCommon.PanicWhenScared(self.inst, .3),
 		BrainCommon.PanicTrigger(self.inst),
         --In combat (with the player)... Should only ever use poop throwing.
-        RunAway(self.inst, "character", RUN_AWAY_DIST, STOP_RUN_AWAY_DIST,
+        --[[RunAway(self.inst, "character", RUN_AWAY_DIST, STOP_RUN_AWAY_DIST,
                 function(hunter) return ShouldRunFn(self.inst, hunter) end
             ),
         WhileNode(function() return self.inst.components.combat.target and
@@ -313,7 +314,7 @@ function WillarMonkeyBrain:OnStart()
             SequenceNode({
                 ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.thrower) end, "Equip Thrower"),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
-            })),
+            })),]]
 
 
         --In combat with everything else
@@ -328,7 +329,7 @@ function WillarMonkeyBrain:OnStart()
 
         --Following
   
-        Follow(self.inst, function() return self.inst.components.follower.leader end, 2, 2, 4, nil, true),
+        Follow(self.inst, function() return self.inst.components.follower.leader end, 2, 2, 4),
         IfNode(function() return self.inst.components.follower.leader ~= nil end, "HasLeader",
             FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn)),
 
