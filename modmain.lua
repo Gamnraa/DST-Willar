@@ -127,18 +127,6 @@ local function OnMonkeyGetItem(inst, giver, item)
             inst.components.follower:AddLoyaltyTime(240)
             inst:SetBrain(willarmonkeybrain)
 
-            if inst.prefab == "monkey" then
-                inst:WatchWorldState("nighmarephase", function()
-                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
-                end)
-                inst:ListenForEvent("ms_forcenightmarestate", function()
-                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
-                end)
-                inst:ListenForEvent("ms_forcenightmarestate", function()
-                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
-                end)
-            end
-
             inst:ListenForEvent("loseloyalty", function() 
                 if inst.prefab == "monkey" then
                     inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
@@ -232,6 +220,14 @@ local function MakeMonkeysTamable(inst, duration)
         if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
             return NewMonkeyRetarget(inst)
         else return oldretargetfn(inst) end
+    end
+
+    if inst.prefab == "monkey" then
+        inst:DoPeriodicTask(0, function()
+            if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") and inst.brain ~= willarmonkeybrain then
+                inst:SetBrain(willarmonkeybrain)
+            end
+        end)
     end
 end
 
