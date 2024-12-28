@@ -124,8 +124,20 @@ local function OnMonkeyGetItem(inst, giver, item)
 
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
-            inst.components.follower:AddLoyaltyTime(20)
+            inst.components.follower:AddLoyaltyTime(240)
             inst:SetBrain(willarmonkeybrain)
+
+            if inst.prefab == "monkey" then
+                inst:WatchWorldState("nighmarephase", function()
+                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
+                end)
+                inst:ListenForEvent("ms_forcenightmarestate", function()
+                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
+                end)
+                inst:ListenForEvent("ms_forcenightmarestate", function()
+                    inst:DoTaskInTime(0, function() inst:SetBrain(willarmonkeybrain) end)
+                end)
+            end
 
             inst:ListenForEvent("loseloyalty", function() 
                 if inst.prefab == "monkey" then
