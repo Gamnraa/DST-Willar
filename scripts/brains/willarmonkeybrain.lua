@@ -318,8 +318,7 @@ function WillarMonkeyBrain:OnStart()
 
 
         --In combat with everything else
-        WhileNode(function() return self.inst.components.combat.target ~= nil and
-                                not self.inst.components.combat.target.isplayer
+        WhileNode(function() return self.inst.components.combat.target ~= nil
                             end, "Attack NPC", --For everything else
             SequenceNode({
                 ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.hitter) end, "Equip hitter"),
