@@ -77,11 +77,13 @@ end
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
+	inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
 	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_speed_mod", 1)
 end
 
 local function onbecameghost(inst)
 	-- Remove speed modifier when becoming a ghost
+	inst.components.disasterpredictor:Stop()
     inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_speed_mod")
 end
 
@@ -145,6 +147,9 @@ local master_postinit = function(inst)
 	inst:WatchWorldState("nightmaretime", OnWorldStateChange)
 	inst:ListenForEvent("ForceTransformCheck", OnWorldStateChange)
 	inst:ListenForEvent("timerdone", OnTimerDone)
+
+	inst:AddComponent("disasterpredictor")
+	inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
 	
 	table.insert(inst.components.eater.preferseating, "NIGHTMAREFUEL")
 	table.insert(inst.components.eater.caneat, "NIGHTMAREFUEL")
@@ -160,5 +165,6 @@ local master_postinit = function(inst)
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload 
 end
+
 
 return MakePlayerCharacter("gramninten", prefabs, assets, common_postinit, master_postinit, start_inv)
