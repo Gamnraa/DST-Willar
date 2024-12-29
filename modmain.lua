@@ -224,8 +224,9 @@ local function MakeMonkeysTamable(inst, duration)
 
     if inst.prefab == "monkey" then
         inst:DoPeriodicTask(0, function()
-            if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") and inst.brain ~= willarmonkeybrain then
-                inst:SetBrain(willarmonkeybrain)
+            if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
+                if inst.brain ~= willarmonkeybrain then inst:SetBrain(willarmonkeybrain) end
+                if inst.components.combat.target == inst.components.follower.leader then inst.components.combat:SetTarget(nil) end
             end
         end)
     end
