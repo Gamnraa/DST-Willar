@@ -115,7 +115,8 @@ function WillarMonkeyBrain:OnStart()
         WhileNode(function() return self.inst.components.combat.target ~= nil
                             end, "Attack NPC", --For everything else
             SequenceNode({
-                ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.hitter) end, "Equip hitter"),
+                IfNode(function() return self.inst.weaponitems end, "WeaponItems",
+                    ActionNode(function() EquipWeapon(self.inst, self.inst.weaponitems.hitter) end, "Equip hitter")),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
             })),
 
