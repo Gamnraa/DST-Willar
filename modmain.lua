@@ -165,7 +165,7 @@ local function HasFriendlyLeader(inst, target)
             end
         end
 
-        local PVP_enabled = TheNet:GetPVPEnabled()
+        local PVP_enabled = GLOBAL.TheNet:GetPVPEnabled()
         return leader == target or (target_leader ~= nil 
                 and (target_leader == leader or (target_leader:HasTag("player") 
                 and not PVP_enabled))) or
@@ -190,7 +190,7 @@ local function NewMonkeyRetarget(inst)
             and not (inst.components.follower and inst.components.follower.leader == guy)
             and not HasFriendlyLeader(inst, guy)
             and not (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player") 
-                and guy:HasTag("player") and not TheNet:GetPVPEnabled())
+                and guy:HasTag("player") and not GLOBAL.TheNet:GetPVPEnabled())
         end,
         {"_combat", "character"}, --Must tags
         {"willar"} --Cant tags
@@ -233,7 +233,7 @@ local function MakeMonkeysTamable(inst, duration)
 end
 
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
-AddPrefabPostInit("powdermonkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("primemate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
 
