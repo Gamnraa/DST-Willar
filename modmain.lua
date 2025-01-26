@@ -233,6 +233,9 @@ local function MakeMonkeysTamable(inst, duration)
 end
 
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("powdermonkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("primemate", function(inst) MakeMonkeysTamable(inst, 2400) end)
+
 
 AddPrefabPostInit("spider", function(inst)
     if not GLOBAL.TheWorld.ismastersim then return end
