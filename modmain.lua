@@ -41,6 +41,10 @@ Assets = {
 
 AddMinimapAtlas("images/map_icons/gramninten.xml")
 
+
+GLOBAL.IsWillarLeader = function(inst) print("IsWillarLeader") return inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") end
+local IsWillarLeader = GLOBAL.IsWillarLeader
+
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
 local TUNING = GLOBAL.TUNING
@@ -80,7 +84,6 @@ local skin_modes = {
 
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
 AddModCharacter("gramninten", "MALE", skin_modes)
-
 
 --RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/nintens_coat.xml"), "nintens_coat.tex")
 
@@ -217,14 +220,16 @@ local function MakeMonkeysTamable(inst, duration)
 
     local oldretargetfn = inst.components.combat.targetfn
     inst.components.combat.targetfn = function()
-        if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
+        if IsWillarLeader(inst) then
             return NewMonkeyRetarget(inst)
         else return oldretargetfn(inst) end
     end
 
+    inst:DoTaskInTime(1, function() if IsWillarLeader(inst) then print("ChangeBrain") inst:SetBrain(willarmonkeybrain) end end)
+
     if inst.prefab == "monkey" then
         inst:DoPeriodicTask(0, function()
-            if inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") then
+            if IsWillarLeader(inst) then
                 if inst.brain ~= willarmonkeybrain then inst:SetBrain(willarmonkeybrain) end
                 if inst.components.combat.target == inst.components.follower.leader then inst.components.combat:SetTarget(nil) end
             end
