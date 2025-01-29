@@ -119,6 +119,7 @@ local common_postinit = function(inst)
 	inst.MiniMapEntity:SetIcon( "gramninten.tex" )
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
 	inst:AddTag("willar")
+	inst:AddTag("monkey")
 
 	inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.nightmaremeter", "nightmaremeterdirty")
 end
