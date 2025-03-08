@@ -143,8 +143,6 @@ local function OnMonkeyGetItem(inst, giver, item)
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 50)
             end
             
-
-
             inst:SetBrain(willarmonkeybrain)
 
             inst:ListenForEvent("loseloyalty", function() 
@@ -243,7 +241,7 @@ local function MakeMonkeysTamable(inst, duration)
     local oldretargetfn = inst.components.combat.targetfn
     inst.components.combat.targetfn = function()
         if IsWillarLeader(inst) then
-            return NewMonkeyRetarget(inst)
+            return nil --Don't attack anything if our leader doesn't
         else return oldretargetfn(inst) end
     end
 
