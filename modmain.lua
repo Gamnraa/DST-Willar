@@ -112,6 +112,12 @@ local function ShouldMonkeyAccept(inst, item, giver)
         (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
 end
 
+local function UpdateMaxHealth(inst, newmax)
+    local healthfactor = inst.components.health:GetPercent()
+    inst.components.health:SetMaxHealth(newmax)
+    inst.components.health.currenthealth = inst.components.health.currenthealth * healthfactor
+end
+
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
@@ -128,11 +134,27 @@ local function OnMonkeyGetItem(inst, giver, item)
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
             inst.components.follower:AddLoyaltyTime(240)
+
+            if inst.prefab == "monkey" then
+                UpdateMaxHealth(inst, inst.components.health.maxhealth + 75)
+            elseif inst.prefab == "powder_monkey" then
+                UpdateMaxHealth(inst, inst.components.health.maxhealth + 100)
+            elseif inst.prefab == "primemate" then
+                UpdateMaxHealth(inst, inst.components.health.maxhealth + 50)
+            end
+            
+
+
             inst:SetBrain(willarmonkeybrain)
 
             inst:ListenForEvent("loseloyalty", function() 
                 if inst.prefab == "monkey" then
                     inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
+                    UpdateMaxHealth(inst, 125)
+                elseif inst.prefab == "powder_monkey" then
+                    UpdateMaxHealth(inst, 200)
+                elseif inst.prefab == "primemate" then
+                    UpdateMaxHealth(inst, 350)
                 end
             end)
         end
