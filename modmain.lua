@@ -139,7 +139,7 @@ local function OnMonkeyGetItem(inst, giver, item)
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 75)
             elseif inst.prefab == "powder_monkey" then
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 100)
-            elseif inst.prefab == "primemate" then
+            elseif inst.prefab == "prime_mate" then
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 50)
             end
             
@@ -153,7 +153,7 @@ local function OnMonkeyGetItem(inst, giver, item)
                     UpdateMaxHealth(inst, 125)
                 elseif inst.prefab == "powder_monkey" then
                     UpdateMaxHealth(inst, 200)
-                elseif inst.prefab == "primemate" then
+                elseif inst.prefab == "prime_mate" then
                     UpdateMaxHealth(inst, 350)
                 end
             end)
@@ -261,7 +261,7 @@ end
 
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
-AddPrefabPostInit("primemate", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
 
 AddPrefabPostInit("spider", function(inst)
