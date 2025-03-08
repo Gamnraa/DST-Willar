@@ -120,6 +120,7 @@ local common_postinit = function(inst)
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
 	inst:AddTag("willar")
 	inst:AddTag("monkey")
+	inst:AddTag("wonkey")
 
 	inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.nightmaremeter", "nightmaremeterdirty")
 end
