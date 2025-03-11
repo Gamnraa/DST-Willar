@@ -1,6 +1,7 @@
 PrefabFiles = {
 	"willar",
 	"willar_none",
+    "willarcrown",
 }
 
 Assets = {
@@ -42,7 +43,7 @@ Assets = {
 AddMinimapAtlas("images/map_icons/gramninten.xml")
 
 
-GLOBAL.IsWillarLeader = function(inst) print("IsWillarLeader") return inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") end
+GLOBAL.IsWillarLeader = function(inst) return inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") end
 local IsWillarLeader = GLOBAL.IsWillarLeader
 
 local require = GLOBAL.require
