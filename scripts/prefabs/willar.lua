@@ -58,32 +58,44 @@ local function OnTimerDone(inst, data)
 	end
 end
 
+
+local banana_food = {
+	["cave_banana"] = true,
+	["cave_banana_cooked"] = true,
+	["bananapop"] = true,
+	["forzenbananadaiquiri"] = true,
+	["bananajuice"] = true
+}
+
 local function OnEat(inst, food)
-	if food.components.edible.foodtype ~= "NIGHTMAREFUEL" then return end
-	local amt = food.prefab == "horrorfuel" and 4 or 1
+	if food.components.edible.foodtype == "NIGHTMAREFUEL" then
+		local amt = food.prefab == "horrorfuel" and 4 or 1
 
-	inst.willar_nightmaremeter:set(inst.willar_nightmaremeter:value() + amt)
+		inst.willar_nightmaremeter:set(inst.willar_nightmaremeter:value() + amt)
 
-	if inst.willar_nightmaremeter:value() >= 4 then
-		local timer = inst.components.timer
-		local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
-		timer:StopTimer("forcenightmare")
-		timer:StartTimer("forcenightmare", 60 + time)
-		OnWorldStateChange(inst)
-		inst.willar_nightmaremeter:set(0)
+		if inst.willar_nightmaremeter:value() >= 4 then
+			local timer = inst.components.timer
+			local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
+			timer:StopTimer("forcenightmare")
+			timer:StartTimer("forcenightmare", 60 + time)
+			OnWorldStateChange(inst)
+			inst.willar_nightmaremeter:set(0)
+		end
+	elseif banana_food[food.prefab] then 
+		inst.components.sanity:DoDelta(10)
 	end
 end
 
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
-	inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
+	--inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
 	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_speed_mod", 1)
 end
 
 local function onbecameghost(inst)
 	-- Remove speed modifier when becoming a ghost
-	inst.components.disasterpredictor:Stop()
+	--inst.components.disasterpredictor:Stop()
     inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_speed_mod")
 end
 
@@ -150,8 +162,8 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("ForceTransformCheck", OnWorldStateChange)
 	inst:ListenForEvent("timerdone", OnTimerDone)
 
-	inst:AddComponent("disasterpredictor")
-	inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
+	--inst:AddComponent("disasterpredictor")
+	--inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
 	
 	table.insert(inst.components.eater.preferseating, "NIGHTMAREFUEL")
 	table.insert(inst.components.eater.caneat, "NIGHTMAREFUEL")
