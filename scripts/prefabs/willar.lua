@@ -21,6 +21,16 @@ for k, v in pairs(TUNING.GAMEMODE_STARTING_ITEMS) do
     start_inv[string.lower(k)] = v.GRAMNINTEN
 end
 
+--Used to keep monkey followers in nightmare form when wearing the crown
+local function nightmaremonkeyloop(inst)
+	print("nightmaremonkeyloop")
+    local timer = inst.components.timer
+	local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
+	timer:StopTimer("forcenightmare")
+	timer:StartTimer("forcenightmare", 60 + time)
+end
+
+
 
 local function CanTransform(inst, into_nightmare)
 	return into_nightmare ~= inst.willar_nightmaremode and 
@@ -36,6 +46,18 @@ local function DoTransform(inst)
 		inst.components.health:SetMaxHealth(150) --VARIABLE GOES HERE
 		inst.components.health.current = health
 		inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod")
+
+		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
+			print("Help")
+			for follower, _ in pairs(inst.components.leader.followers) do
+				--We're switching so we need to switch the logic
+				if follower.prefab == "monkey" and not inst.willar_nightmaremode and follower.keepnightmareform then 
+					follower.components.timer:StopTimer("forcenightmare")
+					follower.keepnightmareform:Cancel()
+					follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
+				end
+			end
+		end
 	else
 		inst.components.talker:Say("TRANSFORM")
 		inst.components.combat.damagemultiplier = 1.25
@@ -43,6 +65,17 @@ local function DoTransform(inst)
 		inst.components.health.current = health
 		inst.components.health:DoDelta(25)
 		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod", 1.25)
+
+		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
+			print("Help")
+			for follower, _ in pairs(inst.components.leader.followers) do
+				if follower.prefab == "monkey" and not inst.willar_nightmaremode then 
+					follower.keepnightmareform = follower:DoPeriodicTask(55, function() nightmaremonkeyloop(follower) end)
+					nightmaremonkeyloop(follower)
+					follower:DoTaskInTime(1, function() follower:PushEvent("changearea", follower.components.areaaware.current_area_data) end)
+				end
+			end
+		end
 	end
 	inst.willar_nightmaremode = not inst.willar_nightmaremode
 end
@@ -178,6 +211,8 @@ local master_postinit = function(inst)
 	
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload 
+
+	inst.nightmaremonkeyloop = nightmaremonkeyloop
 end
 
 
