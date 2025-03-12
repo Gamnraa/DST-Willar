@@ -16,15 +16,17 @@ local function onequip(inst, owner)
 	owner.AnimState:Hide("HEAD_HAT_NOHELM")
 	owner.AnimState:Hide("HEAD_HAT_HELM")
 
-    for follower, _ in pairs(owner.components.leader.followers) do
-        if follower:HasTag("monkey") then
-            follower.components.combat.externaldamagemultipliers:SetModifier(follower, inst.prefab == "willarcrown" and 1.25 or 1.50, "willarcrownbuff")
-            if follower.prefab == "monkey" then
-                follower.keepnightmareform = follower:DoPeriodicTask(55, function() owner.nightmaremonkeyloop(follower) end)
-				follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
+    owner:DoTaskInTime(.15, function() 
+        for follower, _ in pairs(owner.components.leader.followers) do
+            if follower:HasTag("monkey") then
+                follower.components.combat.externaldamagemultipliers:SetModifier(follower, inst.prefab == "willarcrown" and 1.25 or 1.50, "willarcrownbuff")
+                if follower.prefab == "monkey" and inst.willar_nightmaremode then
+                    follower.keepnightmareform = follower:DoPeriodicTask(55, function() owner.nightmaremonkeyloop(follower) end)
+                    follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
+                end
             end
         end
-    end
+    end)
 end
 
 local function onunequip(inst, owner)
@@ -53,7 +55,7 @@ local function onunequip(inst, owner)
             follower.components.combat.externaldamagemultipliers:SetModifier(follower, 1.00, "willarcrownbuff")
             if follower.prefab == "monkey" then
                 follower.components.timer:StopTimer("forcenightmare")
-				follower.keepnightmareform:Cancel()
+				if follower.keepnightmareform then follower.keepnightmareform:Cancel() end
 				follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
             end
         end

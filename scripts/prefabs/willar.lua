@@ -71,8 +71,8 @@ local function DoTransform(inst)
 			for follower, _ in pairs(inst.components.leader.followers) do
 				if follower.prefab == "monkey" and not inst.willar_nightmaremode then 
 					follower.keepnightmareform = follower:DoPeriodicTask(55, function() nightmaremonkeyloop(follower) end)
-					nightmaremonkeyloop(follower)
-					follower:DoTaskInTime(1, function() follower:PushEvent("changearea", follower.components.areaaware.current_area_data) end)
+					print("force nightmare state")
+					follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
 				end
 			end
 		end
