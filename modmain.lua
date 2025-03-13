@@ -115,9 +115,12 @@ end
 
 local function UpdateMaxHealth(inst, newmax)
     local healthfactor = inst.components.health:GetPercent()
+    print("healthfactor", healthfactor)
     inst.components.health:SetMaxHealth(newmax)
     inst.components.health.currenthealth = inst.components.health.currenthealth * healthfactor
 end
+
+GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"

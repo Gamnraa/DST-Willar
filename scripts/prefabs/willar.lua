@@ -152,6 +152,18 @@ local function onload(inst, data)
     inst:ListenForEvent("ms_respawnedfromghost", onbecamehuman)
     inst:ListenForEvent("ms_becameghost", onbecameghost)
 
+	inst:DoTaskInTime(0, function()
+		for follower, _ in pairs(inst.components.leader.followers) do
+			if follower.prefab == "monkey" then
+                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 75)
+            elseif follower.prefab == "powder_monkey" then
+                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 100)
+            elseif inst.prefab == "prime_mate" then
+                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 50)
+            end
+		end
+	end)
+
     if inst:HasTag("playerghost") then
         onbecameghost(inst)
     else
