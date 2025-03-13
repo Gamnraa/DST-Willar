@@ -23,7 +23,6 @@ end
 
 --Used to keep monkey followers in nightmare form when wearing the crown
 local function nightmaremonkeyloop(inst)
-	print("nightmaremonkeyloop")
     local timer = inst.components.timer
 	local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
 	timer:StopTimer("forcenightmare")
@@ -48,7 +47,7 @@ local function DoTransform(inst)
 		inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod")
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
-			print("Help")
+			inst.components.talker:Say("Help")
 			for follower, _ in pairs(inst.components.leader.followers) do
 				--We're switching so we need to switch the logic
 				if follower.prefab == "monkey" and not inst.willar_nightmaremode and follower.keepnightmareform then 
@@ -67,7 +66,7 @@ local function DoTransform(inst)
 		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod", 1.25)
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
-			print("Help")
+			inst.components.talker:Say("Help 2")
 			for follower, _ in pairs(inst.components.leader.followers) do
 				if follower.prefab == "monkey" and not inst.willar_nightmaremode then 
 					follower.keepnightmareform = follower:DoPeriodicTask(55, function() nightmaremonkeyloop(follower) end)
@@ -103,16 +102,18 @@ local banana_food = {
 local function OnEat(inst, food)
 	if food.components.edible.foodtype == "NIGHTMAREFUEL" then
 		local amt = food.prefab == "horrorfuel" and 4 or 1
+		
+		inst.willar_nightmaremeter = inst.willar_nightmaremeter or 0
 
-		inst.willar_nightmaremeter:set(inst.willar_nightmaremeter:value() + amt)
+		inst.willar_nightmaremeter = inst.willar_nightmaremeter + amt
 
-		if inst.willar_nightmaremeter:value() >= 4 then
+		if inst.willar_nightmaremeter >= 4 then
 			local timer = inst.components.timer
 			local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
 			timer:StopTimer("forcenightmare")
 			timer:StartTimer("forcenightmare", 60 + time)
 			OnWorldStateChange(inst)
-			inst.willar_nightmaremeter:set(0)
+			inst.willar_nightmaremeter = 0
 		end
 	elseif banana_food[food.prefab] then 
 		inst.components.sanity:DoDelta(10)
@@ -139,6 +140,7 @@ local function onsave(inst, data)
 end
 
 local function onpreload(inst, data)
+	print("LOAD", data, data.willar_nightmaremode)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
 end
@@ -167,7 +169,7 @@ local common_postinit = function(inst)
 	inst:AddTag("monkey")
 	inst:AddTag("wonkey")
 
-	inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.nightmaremeter", "nightmaremeterdirty")
+	--inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.willar_nightmaremeter", "nightmaremeterdirty")
 end
 
 -- This initializes for the server only. Components are added here.
@@ -210,7 +212,9 @@ local master_postinit = function(inst)
 	inst.components.hunger.hungerrate = 1.15 * TUNING.WILSON_HUNGER_RATE
 	
 	inst.OnLoad = onload
-    inst.OnNewSpawn = onload 
+    inst.OnNewSpawn = onload
+	inst.OnSave = onsave
+	inst.OnPreLoad = onpreload
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
 end
