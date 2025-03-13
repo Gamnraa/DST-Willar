@@ -47,7 +47,6 @@ local function DoTransform(inst)
 		inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod")
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
-			inst.components.talker:Say("Help")
 			for follower, _ in pairs(inst.components.leader.followers) do
 				--We're switching so we need to switch the logic
 				if follower.prefab == "monkey" and not inst.willar_nightmaremode and follower.keepnightmareform then 
@@ -66,11 +65,9 @@ local function DoTransform(inst)
 		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod", 1.25)
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
-			inst.components.talker:Say("Help 2")
 			for follower, _ in pairs(inst.components.leader.followers) do
 				if follower.prefab == "monkey" and not inst.willar_nightmaremode then 
 					follower.keepnightmareform = follower:DoPeriodicTask(55, function() nightmaremonkeyloop(follower) end)
-					print("force nightmare state")
 					follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
 				end
 			end
@@ -84,7 +81,6 @@ local function OnWorldStateChange(inst)
 end
 
 local function OnTimerDone(inst, data)
-	print("timerdone")
 	if data and data.name == "forcenightmare" then
 		OnWorldStateChange(inst)
 	end
