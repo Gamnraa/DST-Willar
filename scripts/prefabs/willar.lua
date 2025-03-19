@@ -116,6 +116,25 @@ local function OnEat(inst, food)
 	end
 end
 
+local pirate_weapons = {
+	["cutless"] = true,
+	["oar_monkey"] = true,
+	["willarsword"] = true,
+}
+
+local function OnEquip(inst, data)
+	if pirate_weapons[data.item.prefab] then
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
+	end
+end
+
+local function OnUnequip(inst, data)
+	local inv = inst.components.inventory
+	if not (pirate_weapons[(EQUIPSLOTS.HANDS)]) then 
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
+	end
+end
+
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
@@ -204,6 +223,8 @@ local master_postinit = function(inst)
 	inst:WatchWorldState("nightmaretime", OnWorldStateChange)
 	inst:ListenForEvent("ForceTransformCheck", OnWorldStateChange)
 	inst:ListenForEvent("timerdone", OnTimerDone)
+	inst:ListenForEvent("equip", OnEquip)
+	inst:ListenForEvent("unequip", OnUnequip)
 
 	--inst:AddComponent("disasterpredictor")
 	--inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
