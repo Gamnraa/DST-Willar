@@ -117,7 +117,7 @@ local function UpdateMaxHealth(inst, newmax)
     local healthfactor = inst.components.health:GetPercent()
     print("healthfactor", healthfactor)
     inst.components.health:SetMaxHealth(newmax)
-    inst.components.health.currenthealth = inst.components.health.currenthealth * healthfactor
+    inst:DoTaskInTime(0, function() inst.components.health.currenthealth = inst.components.health.currenthealth * healthfactor end)
 end
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
@@ -139,7 +139,7 @@ local function OnMonkeyGetItem(inst, giver, item)
             giver.components.leader:AddFollower(inst)
             inst.components.follower:AddLoyaltyTime(240)
 
-            if inst.prefab == "monkey" then
+            if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 75)
             elseif inst.prefab == "powder_monkey" then
                 UpdateMaxHealth(inst, inst.components.health.maxhealth + 100)
@@ -158,7 +158,10 @@ local function OnMonkeyGetItem(inst, giver, item)
                 elseif inst.prefab == "prime_mate" then
                     UpdateMaxHealth(inst, 350)
                 end
+                inst:RemoveTag("willarfollower")
             end)
+
+            inst:AddTag("willarfollower")
         end
     elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
         local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
