@@ -36,7 +36,7 @@ local function NightmareTask(inst)
 		and (guy.prefab == "powder_monkey" or guy.prefab == "prime_mate")
 		and not IsWillarLeader(guy)
 	end,
-	{"_combat", "nightmarewillar"}
+	{"_combat"}
 )
 end 
 
