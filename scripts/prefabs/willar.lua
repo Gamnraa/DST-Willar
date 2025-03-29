@@ -30,6 +30,15 @@ local function nightmaremonkeyloop(inst)
 end
 
 
+local function NightmareTask(inst)
+	return FindEntity(inst, 20, function(guy)
+		return guy.components.combat:CanTarget(inst)
+		and (guy.prefab == "powder_monkey" or guy.prefab == "prime_mate")
+		and not IsWillarLeader(guy)
+	end,
+	{"_combat", "nightmarewillar"}
+)
+end 
 
 local function CanTransform(inst, into_nightmare)
 	return into_nightmare ~= inst.willar_nightmaremode and 
@@ -40,6 +49,8 @@ end
 local function DoTransform(inst)
 	local health = inst.components.health.current
 	if inst.willar_nightmaremode then
+		inst:RemoveTag("nightmarewillar")
+
 		inst.components.talker:Say("UNTRANSFORM")
 		inst.components.combat.damagemultiplier = 1
 		inst.components.health:SetMaxHealth(150) --VARIABLE GOES HERE
@@ -56,7 +67,10 @@ local function DoTransform(inst)
 				end
 			end
 		end
+
+		if inst.nightmaretask then inst.nightmaretask:Cancel() end
 	else
+		inst:AddTag("nightmarewillar")
 		inst.components.talker:Say("TRANSFORM")
 		inst.components.combat.damagemultiplier = 1.25
 		inst.components.health:SetMaxHealth(175)
@@ -72,6 +86,12 @@ local function DoTransform(inst)
 				end
 			end
 		end
+
+		inst.nightmaretask = inst:DoPeriodicTask(0, function()
+			local guy = NightmareTask(inst)
+			print(guy)
+			if guy then guy.components.combat:SuggestTarget(inst) end
+		end)
 	end
 	inst.willar_nightmaremode = not inst.willar_nightmaremode
 end
@@ -145,6 +165,7 @@ end
 local function onbecameghost(inst)
 	-- Remove speed modifier when becoming a ghost
 	--inst.components.disasterpredictor:Stop()
+	inst:RemoveTag("nightmarewillar")
     inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_speed_mod")
 end
 
