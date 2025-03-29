@@ -31,13 +31,15 @@ end
 
 
 local function NightmareTask(inst)
-	return FindEntity(inst, 20, function(guy)
+	local ent =  FindEntity(inst, 20, function(guy)
 		return guy.components.combat:CanTarget(inst)
 		and (guy.prefab == "powder_monkey" or guy.prefab == "prime_mate")
 		and not IsWillarLeader(guy)
 	end,
-	{"_combat"}
+	{"_combat", "monkey"}
 )
+
+	if ent then ent.components.combat:SuggestTarget(inst) end
 end 
 
 local function CanTransform(inst, into_nightmare)
@@ -87,11 +89,7 @@ local function DoTransform(inst)
 			end
 		end
 
-		inst.nightmaretask = inst:DoPeriodicTask(0, function()
-			local guy = NightmareTask(inst)
-			print(guy)
-			if guy then guy.components.combat:SuggestTarget(inst) end
-		end)
+		inst.nightmaretask = inst:DoPeriodicTask(0, NightmareTask)
 	end
 	inst.willar_nightmaremode = not inst.willar_nightmaremode
 end
@@ -187,6 +185,8 @@ local function onload(inst, data)
 	inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
     inst:ListenForEvent("ms_respawnedfromghost", onbecamehuman)
     inst:ListenForEvent("ms_becameghost", onbecameghost)
+
+	if inst.willar_nightmaremode then inst.nightmaretask = inst:DoPeriodicTask(0, NightmareTask) end
 
 	inst:DoTaskInTime(0, function()
 		for follower, _ in pairs(inst.components.leader.followers) do
