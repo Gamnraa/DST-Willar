@@ -43,6 +43,10 @@ local function onequip(inst, owner)
 	owner.AnimState:Hide("HEAD_HAT_HELM")
 
     owner:DoTaskInTime(.15, dobuff, owner)
+
+    if inst.components.fueled ~= nil then
+        inst.components.fueled:StartConsuming()
+    end
 end
 
 local function onunequip(inst, owner)
@@ -65,6 +69,10 @@ local function onunequip(inst, owner)
     if inst.components.fueled ~= nil then
         inst.components.fueled:StopConsuming()
     end
+
+    if inst.components.fueled ~= nil then
+		inst.components.fueled:StopConsuming()
+    end
     
     removebuff(inst, owner)
 end
@@ -76,6 +84,12 @@ local function ondepleted(inst)
     end
 
     if inst == "willarcrown" then inst:Remove() end
+end
+
+local function ontakefuel(inst)
+    if inst.components.equippable:IsEquipped() and not inst.components.fueled:IsEmpty() then
+        dobuff(inst, inst.components.inventoryitem:GetGrandOwner())
+    end
 end
 
 local function makecrown(name)
@@ -105,8 +119,11 @@ local function makecrown(name)
         inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED
 
         inst:AddComponent("fueled")
-        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled.fueltype = FUELTYPE.NIGHTMARE
         inst.components.fueled:InitializeFuelLevel(30 * 16 * 3) --3 days
+        inst.components.fueled:SetDepletedFn(ondepleted)
+        inst.components.fueled:SetTakeFuelFn(ontakefuel)
+        inst.components.fueled.accepting = true
 
         inst:AddComponent("inventoryitem")
         inst.inventory = inst.components.inventoryitem
