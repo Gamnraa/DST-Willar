@@ -4,6 +4,32 @@ local assets =
     Asset("ANIM", "anim/hat_ruins.zip"),
 }
 
+local function dobuff(inst, owner)
+    for follower, _ in pairs(owner.components.leader.followers) do
+        if follower:HasTag("monkey") then
+            follower.components.combat.externaldamagemultipliers:SetModifier(follower, inst.prefab == "willarcrown" and 1.15 or 1.35, "willarcrownbuff")
+            print(owner.willar_nightmaremode)
+            if follower.prefab == "monkey" and owner.willar_nightmaremode then
+                follower.keepnightmareform = follower:DoPeriodicTask(55, function() owner.nightmaremonkeyloop(follower) end)
+                follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
+            end
+        end
+    end
+end
+
+local function removebuff(inst, owner)
+    for follower, _ in pairs(owner.components.leader.followers) do
+        if follower:HasTag("monkey") then
+            follower.components.combat.externaldamagemultipliers:SetModifier(follower, 1.00, "willarcrownbuff")
+            if follower.prefab == "monkey" then
+                follower.components.timer:StopTimer("forcenightmare")
+				if follower.keepnightmareform then follower.keepnightmareform:Cancel() end
+				follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
+            end
+        end
+    end
+end
+
 local function onequip(inst, owner)
     owner.AnimState:OverrideSymbol("swap_hat", "hat_ruins", "hat_ruins")
     owner.AnimState:Show("HAT")
@@ -16,18 +42,7 @@ local function onequip(inst, owner)
 	owner.AnimState:Hide("HEAD_HAT_NOHELM")
 	owner.AnimState:Hide("HEAD_HAT_HELM")
 
-    owner:DoTaskInTime(.15, function() 
-        for follower, _ in pairs(owner.components.leader.followers) do
-            if follower:HasTag("monkey") then
-                follower.components.combat.externaldamagemultipliers:SetModifier(follower, inst.prefab == "willarcrown" and 1.25 or 1.50, "willarcrownbuff")
-                print(owner.willar_nightmaremode)
-                if follower.prefab == "monkey" and owner.willar_nightmaremode then
-                    follower.keepnightmareform = follower:DoPeriodicTask(55, function() owner.nightmaremonkeyloop(follower) end)
-                    follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
-                end
-            end
-        end
-    end)
+    owner:DoTaskInTime(.15, dobuff, owner)
 end
 
 local function onunequip(inst, owner)
@@ -50,17 +65,17 @@ local function onunequip(inst, owner)
     if inst.components.fueled ~= nil then
         inst.components.fueled:StopConsuming()
     end
+    
+    removebuff(inst, owner)
+end
 
-    for follower, _ in pairs(owner.components.leader.followers) do
-        if follower:HasTag("monkey") then
-            follower.components.combat.externaldamagemultipliers:SetModifier(follower, 1.00, "willarcrownbuff")
-            if follower.prefab == "monkey" then
-                follower.components.timer:StopTimer("forcenightmare")
-				if follower.keepnightmareform then follower.keepnightmareform:Cancel() end
-				follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
-            end
-        end
+local function ondepleted(inst)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+    if owner then
+        removebuff(inst, owner)
     end
+
+    if inst == "willarcrown" then inst:Remove() end
 end
 
 local function makecrown(name)
@@ -86,6 +101,12 @@ local function makecrown(name)
         if not TheWorld.ismastersim then
             return inst
         end
+
+        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(30 * 16 * 3) --3 days
 
         inst:AddComponent("inventoryitem")
         inst.inventory = inst.components.inventoryitem
