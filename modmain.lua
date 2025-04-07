@@ -2,6 +2,8 @@ PrefabFiles = {
 	"willar",
 	"willar_none",
     "willarcrown",
+    "willarsword",
+    "monkeyball",
 }
 
 Assets = {
