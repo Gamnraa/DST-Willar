@@ -53,6 +53,7 @@ end
 
 local function onhit_normal(inst, owner, target)
     target:AddDebuff("monkeyball_slowbuff", "monkeyball_slowbuff")
+    inst:DoTaskInTime(0, inst.Remove)
 end
 
 local function makeball(name, build, damage, onhitfn)
