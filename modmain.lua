@@ -181,7 +181,7 @@ local function OnMonkeyRefuseItem(inst, item)
 end
 
 --Straight from Spider logic
-local function HasFriendlyLeader(inst, target)
+GLOBAL.WillarFriendlyLeader = function(inst, target)
     local leader = inst.components.follower.leader
     local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
     
