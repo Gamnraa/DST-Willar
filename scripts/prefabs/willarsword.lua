@@ -56,7 +56,6 @@ local function fn()
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(42)
-	inst.components.weapon:SetOnAttack(onattack)
 
     -------
 
