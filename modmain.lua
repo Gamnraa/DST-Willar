@@ -5,6 +5,7 @@ PrefabFiles = {
     "willarsword",
     "monkeyball",
     "monkeydisguise",
+    "farmermonkey",
 }
 
 Assets = {

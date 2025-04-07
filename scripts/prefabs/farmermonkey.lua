@@ -285,9 +285,6 @@ local function fn()
 
     inst:AddComponent("timer")
 
-
-    inst.ClearTinkerTarget = ClearTinkerTarget
-
     inst:ListenForEvent("onremove", onremove)
 
     inst:SetBrain(brain)
@@ -296,7 +293,7 @@ local function fn()
     inst:AddComponent("knownlocations")
 
     inst:ListenForEvent("onpickupitem", OnPickup)
-	inst:ListenForEvent("dropitem", OnDropItem)
+	--inst:ListenForEvent("dropitem", OnDropItem)
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDeath)
     --inst:ListenForEvent("itemget", OnGotItem)

@@ -35,7 +35,7 @@ function FarmerMonkeyBrain:OnStart()
     {
 		BrainCommon.PanicTrigger(self.inst),
         FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true, GetFollowPos),
-        Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+        --Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         Wander(self.inst, GetFollowPos, MAX_WANDER_DIST),
     }, .25)
