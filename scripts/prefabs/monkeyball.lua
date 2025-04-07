@@ -52,7 +52,7 @@ local function onattachedslow(inst, target)
 end
 
 local function onhit_normal(inst, owner, target)
-    target:AddDebuff("monkeyball_slowbuff")
+    target:AddDebuff("monkeyball_slowbuff", "monkeyball_slowbuff")
 end
 
 local function makeball(name, build, damage, onhitfn)
