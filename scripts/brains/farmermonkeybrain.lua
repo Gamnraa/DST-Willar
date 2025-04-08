@@ -33,7 +33,7 @@ end
 
 local function GetStorageSpace(inst, musttags)
     local target = FindEntity(inst, MAX_WANDER_DIST, nil, musttags)
-    return (not target.components.container:IsFull()) and target or nil
+    return target and (not target.components.container:IsFull()) and target or nil
 end
 
 local function WantsToStore(inst, tags)
@@ -51,7 +51,7 @@ local function StoreInContainer(inst)
 end
 
 local function PickupCrop(inst)
-    local target = inst.components.inventory FindEntity(inst, MAX_WANDER_DIST, nil, {"deployedfarmplant", "weighable_OVERSIZED_VEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"deployedfarmplant", "weighable_OVERSIZED_VEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
