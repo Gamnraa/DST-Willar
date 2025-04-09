@@ -37,8 +37,13 @@ local function GetStorageSpace(inst, musttags)
 end
 
 local function WantsToStore(inst, tags)
-    inst.storing = GetStorageSpace(inst, tags)
-    return inst.storing and inst.components.inventory:IsFull()
+    if inst.storing and inst.storing.components.container:IsFull() then
+        inst.storing = GetStorageSpace(inst, tags)
+        return inst.storing and inst.components.inventory:IsFull()
+    elseif not inst.storing then
+        inst.storing = GetStorageSpace(inst, tags)
+        return inst.storing and inst.components.inventory:IsFull()
+    end
 end
 
 local function StoreInContainer(inst)
@@ -59,20 +64,30 @@ local FarmerMonkeyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
+local fridge_tags = {"fridge", "structure"}
+local chest_tags = {"chest", "structure"}
+
 function FarmerMonkeyBrain:OnStart()
     local root =
     PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
         --If our inventory is full put stuff away first!
-        IfNode(function() return WantsToStore(self.inst, {"fridge", "structure"}) end, "Store Food in Fridge",
-            WhileNode(function() return self.inst.storing and HasFoodToStore(self.inst) end, "Storing Food",
+        IfNode(function() return WantsToStore(self.inst, fridge_tags) end, "Store Food in Fridge",
+            WhileNode(function() return HasFoodToStore(self.inst) and self.inst.storing end, "Storing Food",
+                PriorityNode({
+                    DoAction(self.inst, StoreInContainer, "Store Food")
+                })
+        )),
+        --Prioritize Icebox over Chest
+        IfNode(function() return WantsToStore(self.inst, chest_tags) end, "Store Food in Chest",
+        WhileNode(function() return HasFoodToStore(self.inst) and self.inst.storing end, "Storing Food",
                 PriorityNode({
                     DoAction(self.inst, StoreInContainer, "Store Food")
                 })
         )),
         DoAction(self.inst, PickupCrop, "Pick Up Crop"),
-        FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true, GetFollowPos),
+        FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true),
         DoAction(self.inst, StoreInContainer, "Store Food No Work"),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST), 
     }, .25)
