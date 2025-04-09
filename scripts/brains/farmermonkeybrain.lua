@@ -37,13 +37,14 @@ local function GetStorageSpace(inst, musttags)
 end
 
 local function WantsToStore(inst, tags)
-    if inst.storing and inst.storing.components.container:IsFull() then
+    --If our current storage choice is a chest but we want a fridge, or our current storage choice is full:
+    if inst.storing and (inst.storing:HasTag("chest") and tags[1] == "fridge" or inst.storing.components.container:IsFull()) then
         inst.storing = GetStorageSpace(inst, tags)
-        return inst.storing and inst.components.inventory:IsFull()
+    --We have no current storage option
     elseif not inst.storing then
         inst.storing = GetStorageSpace(inst, tags)
-        return inst.storing and inst.components.inventory:IsFull()
     end
+    return inst.storing and inst.components.inventory:IsFull()
 end
 
 local function StoreInContainer(inst)
