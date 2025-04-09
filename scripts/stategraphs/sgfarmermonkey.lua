@@ -20,6 +20,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.ATTACK, "attack"),
     ActionHandler(ACTIONS.BOAT_CANNON_SHOOT, "action"),
     ActionHandler(ACTIONS.HARVEST, "action"),
+    ActionHandler(ACTIONS.STORE, "action"),
     ActionHandler(ACTIONS.EAT, "eat"),
     ActionHandler(ACTIONS.ROW, "row"),
     ActionHandler(ACTIONS.EMPTY_CONTAINER, "empty"),
@@ -557,4 +558,4 @@ CommonStates.AddCombatStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
-return StateGraph("powdermonkey", states, events, "idle", actionhandlers)
+return StateGraph("farmermonkey", states, events, "idle", actionhandlers)

@@ -72,8 +72,7 @@ function FarmerMonkeyBrain:OnStart()
         )),
         DoAction(self.inst, PickupCrop, "Pick Up Crop"),
         FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true, GetFollowPos),
-        --Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
-        --FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
+        DoAction(self.inst, StoreInContainer, "Store Food No Work"),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST), 
     }, .25)
     self.bt = BT(self.inst, root)
