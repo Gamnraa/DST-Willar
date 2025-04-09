@@ -24,6 +24,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.EAT, "eat"),
     ActionHandler(ACTIONS.ROW, "row"),
     ActionHandler(ACTIONS.EMPTY_CONTAINER, "empty"),
+    ActionHandler(ACTIONS.INTERACT_WITH, "action"),
 
     ActionHandler(ACTIONS.LOWER_ANCHOR, "action"),
     ActionHandler(ACTIONS.RAISE_SAIL, "action"),
