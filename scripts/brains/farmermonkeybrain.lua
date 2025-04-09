@@ -51,7 +51,7 @@ local function StoreInContainer(inst)
 end
 
 local function PickupCrop(inst)
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"deployedfarmplant", "weighable_OVERSIZED_VEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
@@ -64,6 +64,7 @@ function FarmerMonkeyBrain:OnStart()
     PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        --If our inventory is full put stuff away first!
         IfNode(function() return WantsToStore(self.inst, {"fridge", "structure"}) end, "Store Food in Fridge",
             WhileNode(function() return self.inst.storing and HasFoodToStore(self.inst) end, "Storing Food",
                 PriorityNode({
