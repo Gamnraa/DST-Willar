@@ -288,7 +288,7 @@ local function fn()
     inst:ListenForEvent("onremove", onremove)
 
     inst:SetBrain(brain)
-    inst:SetStateGraph("SGpowdermonkey")
+    inst:SetStateGraph("SGfarmermonkey")
 
     inst:AddComponent("knownlocations")
 
