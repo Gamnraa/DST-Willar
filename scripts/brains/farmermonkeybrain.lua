@@ -12,6 +12,8 @@ local TARGET_FOLLOW_DIST = 5
 local MAX_WANDER_DIST = 20
 
 
+local MUSTNOTTAGS = {"INLIMBO"}
+
 local function GetFaceTargetFn(inst)
     return inst.components.follower.leader
 end
@@ -32,7 +34,7 @@ local function HasFoodToStore(inst)
 end
 
 local function GetStorageSpace(inst, musttags)
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, musttags)
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, musttags, MUSTNOTTAGS)
     return target and (not target.components.container:IsFull()) and target or nil
 end
 
@@ -65,7 +67,7 @@ local function PickupCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, MUSTNOTTAGS, nil, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
@@ -74,7 +76,7 @@ local function HarvestCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"bush", "bananabush", "readyforharvest"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"bush", "bananabush", "readyforharvest"})
     if target and target.components.pickable then
         return target and target.components.pickable:CanBePicked() and BufferedAction(inst, target, ACTIONS.PICK) or nil
     end
@@ -83,8 +85,8 @@ end
 
 local function WantsToFertilze(inst)
     --there is a plant that needs fertilizing, there is fertlizer, we have room in inventory to pick up fertlizer
-    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, nil, {"bush", "bananabush", "plant"})
-    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"})
+    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, MUSTNOTTAGS, {"bush", "bananabush", "plant"})
+    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"}, MUSTNOTTAGS)
     return plant and (inst.components.inventory:HasItemWithTag("fertilizer") or (not inst.components.inventory:IsFull() and fertilzer))
 end
 
@@ -93,7 +95,7 @@ local function PickupFertilzer(inst)
         return nil
     end
 
-    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"})
+    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"}, MUSTNOTTAGS)
     return fertilzer and BufferedAction(inst, fertilzer, ACTIONS.PICKUP) or nil
 end
 
@@ -102,7 +104,7 @@ local function FertilzeBush(inst)
         return nil
     end
 
-    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, nil, {"bush", "bananabush", "plant"})
+    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, MUSTNOTTAGS, {"bush", "bananabush", "plant"})
     local item = inst.components.inventory:FindItem(function(item) return item:HasTag("fertilizer") end)
     if item and plant then
         return BufferedAction(inst, target, ACTIONS.FERTILIZE, item)
