@@ -87,7 +87,7 @@ local function WantsToFertilze(inst)
     --there is a plant that needs fertilizing, there is fertlizer, we have room in inventory to pick up fertlizer
     local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, MUSTNOTTAGS, {"bush", "bananabush", "plant"})
     local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"}, MUSTNOTTAGS)
-    return plant and (inst.components.inventory:HasItemWithTag("fertilizer") or (not inst.components.inventory:IsFull() and fertilzer))
+    return plant and (inst.components.inventory:HasItemWithTag("fertilizer", -2) or (not inst.components.inventory:IsFull() and fertilzer))
 end
 
 local function PickupFertilzer(inst)
