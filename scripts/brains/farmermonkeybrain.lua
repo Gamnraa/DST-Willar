@@ -48,6 +48,10 @@ local function WantsToStore(inst, tags)
 end
 
 local function StoreInContainer(inst)
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
     local item = inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") end)
 
     if item then
@@ -57,8 +61,66 @@ local function StoreInContainer(inst)
 end
 
 local function PickupCrop(inst)
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
     local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
+end
+
+local function HarvestCrop(inst)
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, nil, {"bush", "bananabush", "readyforharvest"})
+    if target and target.components.pickable then
+        return target and target.components.pickable:CanBePicked() and BufferedAction(inst, target, ACTIONS.PICK) or nil
+    end
+    return target and BufferedAction(inst, target, ACTIONS.HARVEST) or nil
+end
+
+local function WantsToFertilze(inst)
+    --there is a plant that needs fertilizing, there is fertlizer, we have room in inventory to pick up fertlizer
+    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, nil, {"bush", "bananabush", "plant"})
+    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"})
+    return plant and (inst.components.inventory:HasItemWithTag("fertilizer") or (not inst.components.inventory:IsFull() and fertilzer))
+end
+
+local function PickupFertilzer(inst)
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
+    local fertilzer = FindEntity(inst, MAX_WANDER_DIST, nil, {"fertilizer"})
+    return fertilzer and BufferedAction(inst, fertilzer, ACTIONS.PICKUP) or nil
+end
+
+local function FertilzeBush(inst)
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
+    local plant = FindEntity(inst, MAX_WANDER_DIST, nil, {"barren"}, nil, {"bush", "bananabush", "plant"})
+    local item = inst.components.inventory:FindItem(function(item) return item:HasTag("fertilizer") end)
+    if item and plant then
+        return BufferedAction(inst, target, ACTIONS.FERTILIZE, item)
+    end
+end
+
+local INTERACT_COOLDOWN_NAME = "picked_something_up_recently"
+local function TryDroppingFertilizer(inst)
+    -- Test for the interact state cooldown so that we don't end up dropping multiple items
+    if inst.sg:HasStateTag("busy") then
+        return nil
+    end
+
+    local item = inst.components.inventory:FindItem(function(item) return item:HasTag("fertilizer") end)
+    if not item then return nil end
+
+    local buffered_action = BufferedAction(inst, nil, ACTIONS.DROP, item, inst:GetPosition())
+    return buffered_action
 end
 
 local FarmerMonkeyBrain = Class(Brain, function(self, inst)
@@ -82,12 +144,20 @@ function FarmerMonkeyBrain:OnStart()
         )),
         --Prioritize Icebox over Chest
         IfNode(function() return WantsToStore(self.inst, chest_tags) end, "Store Food in Chest",
-        WhileNode(function() return HasFoodToStore(self.inst) and self.inst.storing end, "Storing Food",
+            WhileNode(function() return HasFoodToStore(self.inst) and self.inst.storing end, "Storing Food",
                 PriorityNode({
                     DoAction(self.inst, StoreInContainer, "Store Food")
                 })
         )),
         DoAction(self.inst, PickupCrop, "Pick Up Crop"),
+        DoAction(self.inst, HarvestCrop, "Haverst Crop"),
+        WhileNode(function() return WantsToFertilze(self.inst) end, "Fertilizing Bushes",
+            PriorityNode({
+                DoAction(self.inst, PickupFertilzer, "Pick Up Fertlizer"),
+                DoAction(self.inst, FertilzeBush, "FertilzeBush"),
+            })
+        ),
+        DoAction(self.inst, TryDroppingFertilizer, "Drop Fertilizer"),
         FindFarmPlant(self.inst, ACTIONS.INTERACT_WITH, true),
         DoAction(self.inst, StoreInContainer, "Store Food No Work"),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST), 
