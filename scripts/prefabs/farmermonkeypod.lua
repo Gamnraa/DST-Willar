@@ -34,8 +34,6 @@ local function onhit(inst, worker)
     end
     inst.AnimState:PlayAnimation("hit")
     inst.AnimState:PushAnimation("idle", false)
-
-    enqueueShake(inst)
 end
 
 local function OnStartDay(inst)
@@ -146,7 +144,7 @@ local function fn()
     inst:AddComponent("spawner")
     WorldSettings_Spawner_SpawnDelay(inst, spawntime, true) --4 Days
     inst.components.spawner:Configure("farmer_monkey", spawntime)
-    inst.components.spawner.onoccupied = onoccupied
+    --inst.components.spawner.onoccupied = onoccupied
     inst.components.spawner.onvacate = onvacate
     inst.components.spawner:SetWaterSpawning(false, true)
     inst.components.spawner:CancelSpawning()
@@ -157,13 +155,6 @@ local function fn()
     workable:SetWorkLeft(4)
     workable:SetOnFinishCallback(onhammered)
     workable:SetOnWorkCallback(onhit)
-
-    local function ondanger()
-        if inst.components.childspawner ~= nil then
-            inst.components.childspawner:StopSpawning()
-            ReturnChildren(inst)
-        end
-    end
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
@@ -177,6 +168,8 @@ local function fn()
     inst.OnPreLoad = OnPreLoad
     inst.OnSave = onsave
     inst.OnLoad = onload
+
+    inst.inittask = inst:DoTaskInTime(0, oninit)
 
     return inst
 end
