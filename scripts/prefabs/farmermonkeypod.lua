@@ -13,35 +13,15 @@ local prefabs =
     "collapse_small",
 }
 
-SetSharedLootTable('monkey_barrel',
-{
-    {'poop',        1.0},
-    {'poop',        1.0},
-    {'cave_banana', 1.0},
-    {'cave_banana', 1.0},
-    {'trinket_4',   .01},
-    {'trinket_13',   .01},
-})
+local spawntime = 8 * 60 * 4 -- four days
 
-local function shake(inst)
-    inst.AnimState:PlayAnimation(math.random() > .5 and "move1" or "move2")
-    inst.AnimState:PushAnimation("idle")
-    inst.SoundEmitter:PlaySound("dontstarve/creatures/monkey/barrel_rattle")
-end
 
-local function enqueueShake(inst)
-    if inst.shake ~= nil then
-        inst.shake:Cancel()
-    end
-    inst.shake = inst:DoPeriodicTask(GetRandomWithVariance(10, 3), shake)
+local function getstatus(inst)
+    return (inst:HasTag("burnt") and "BURNT")
+        or "GENERIC"
 end
 
 local function onhammered(inst)
-    if inst.shake ~= nil then
-        inst.shake:Cancel()
-        inst.shake = nil
-    end
-    inst.components.lootdropper:DropLoot()
     local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetMaterial("wood")
@@ -58,34 +38,35 @@ local function onhit(inst, worker)
     enqueueShake(inst)
 end
 
-local function pushsafetospawn(inst)
-    inst.task = nil
-    inst:PushEvent("safetospawn")
+local function OnStartDay(inst)
+    if not inst:HasTag("burnt")
+    and inst.components.spawner:IsOccupied() then
+        inst.components.spawner:ReleaseChild()
+    end
 end
 
-local function ReturnChildren(inst)
-    for _, child in pairs(inst.components.childspawner.childrenoutside) do
-        if child.components.homeseeker ~= nil then
-            child.components.homeseeker:GoHome()
-        end
-        child:PushEvent("gohome")
-    end
+local function onvacate(inst, child)
+    if not inst:HasTag("burnt") then
+        if child then
+            local child_platform = TheWorld.Map:GetPlatformAtPoint(child.Transform:GetWorldPosition())
+            if (child_platform == nil and not child:IsOnValidGround()) then
+                local fx = SpawnPrefab("splash_sink")
+                fx.Transform:SetPosition(child.Transform:GetWorldPosition())
 
-    if not inst.task then
-        inst.task = inst:DoTaskInTime(math.random(60, 120), pushsafetospawn)
+                child:Remove()
+            else
+                if child.components.health then
+                    child.components.health:SetPercent(1)
+                end
+			    child:PushEvent("onvacatehome")
+            end
+        end
     end
 end
 
 local function OnIgniteFn(inst)
-    inst.AnimState:PlayAnimation("shake", true)
-
-    if inst.shake ~= nil then
-        inst.shake:Cancel()
-        inst.shake = nil
-    end
-
-    if inst.components.childspawner ~= nil then
-        inst.components.childspawner:ReleaseAllChildren()
+    if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+        inst.components.spawner:ReleaseChild()
     end
 end
 
@@ -95,57 +76,47 @@ local function ongohome(inst, child)
     end
 end
 
-local function onsafetospawn(inst)
-    if TheWorld.state.isacidraining then
-        -- Acid rain isn't safe, but we don't have a nice way to track if it's ongoing.
-        -- So just check when we try to go safe, and restart the waiting task if we have to.
-        if inst.task then
-            inst.task:Cancel()
-            inst.task = nil
+
+local function onsave(inst, data)
+    if inst:HasTag("burnt") or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+        data.burnt = true
+    end
+end
+
+local function onload(inst, data)
+    if data ~= nil and data.burnt then
+        inst.components.burnable.onburnt(inst)
+    end
+end
+
+local function spawncheckday(inst)
+    inst.inittask = nil
+    inst:WatchWorldState("startcaveday", OnStartDay)
+    if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+        if TheWorld.state.iscaveday or
+            (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+            inst.components.spawner:ReleaseChild()
         end
-
-        inst.task = inst:DoTaskInTime(math.random(60, 120), pushsafetospawn)
-    elseif inst.components.childspawner ~= nil then
-        inst.components.childspawner:StartSpawning()
     end
 end
 
-local function onacidrainresponse(inst)
-    -- recheck if it's acid raining, in case it decided to stop in the meantime.
-    if TheWorld.state.isacidraining then
-        inst:PushEvent("monkeydanger")
+local function oninit(inst)
+    inst.inittask = inst:DoTaskInTime(math.random(), spawncheckday)
+    if inst.components.spawner ~= nil and
+        inst.components.spawner.child == nil and
+        inst.components.spawner.childname ~= nil and
+        not inst.components.spawner:IsSpawnPending() then
+        local child = SpawnPrefab(inst.components.spawner.childname)
+        if child ~= nil then
+            inst.components.spawner:TakeOwnership(child)
+            inst.components.spawner:GoHome(child)
+        end
     end
 end
 
-local TARGET_MUST_TAGS = { "_combat" }
-local TARGET_CANT_TAGS = { "playerghost", "INLIMBO" }
-local TARGET_ONEOF_TAGS = { "character", "monster" }
-local function OnHaunt(inst)
-    if inst.components.childspawner == nil or
-        not inst.components.childspawner:CanSpawn() or
-        math.random() > TUNING.HAUNT_CHANCE_HALF then
-        return false
-    end
-
-    local target =
-        FindEntity(inst,
-            25,
-            nil,
-            TARGET_MUST_TAGS,
-            TARGET_CANT_TAGS,
-            TARGET_ONEOF_TAGS
-        )
-
-    if target ~= nil then
-        onhit(inst, target)
-        return true
-    end
-
-    return false
-end
 
 local function OnPreLoad(inst, data)
-    WorldSettings_ChildSpawner_PreLoad(inst, data, TUNING.MONKEYBARREL_SPAWN_PERIOD, TUNING.MONKEYBARREL_REGEN_PERIOD)
+    WorldSettings_Spawner_PreLoad(inst, data, spawntime)
 end
 
 local function fn()
@@ -165,37 +136,22 @@ local function fn()
     inst.AnimState:SetBuild("monkey_barrel")
     inst.AnimState:PlayAnimation("idle", true)
 
-    inst:AddTag("cavedweller")
+    inst:AddTag("structure")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
 
-    local childspawner = inst:AddComponent("childspawner")
-    childspawner:SetRegenPeriod(TUNING.MONKEYBARREL_REGEN_PERIOD)
-    childspawner:SetSpawnPeriod(TUNING.MONKEYBARREL_SPAWN_PERIOD)
-    if TUNING.MONKEYBARREL_CHILDREN.max == 0 then
-        childspawner:SetMaxChildren(0)
-    else
-        childspawner:SetMaxChildren(math.random(TUNING.MONKEYBARREL_CHILDREN.min, TUNING.MONKEYBARREL_CHILDREN.max))
-    end
-
-    WorldSettings_ChildSpawner_SpawnPeriod(inst, TUNING.MONKEYBARREL_SPAWN_PERIOD, TUNING.MONKEYBARREL_ENABLED)
-    WorldSettings_ChildSpawner_RegenPeriod(inst, TUNING.MONKEYBARREL_REGEN_PERIOD, TUNING.MONKEYBARREL_ENABLED)
-    if not TUNING.MONKEYBARREL_ENABLED then
-        childspawner.childreninside = 0
-    end
-
-    childspawner:StartRegen()
-    childspawner.childname = "monkey"
-    childspawner:StartSpawning()
-    childspawner.ongohome = ongohome
-    childspawner:SetSpawnedFn(shake)
+    inst:AddComponent("spawner")
+    WorldSettings_Spawner_SpawnDelay(inst, spawntime, true) --4 Days
+    inst.components.spawner:Configure("farmer_monkey", spawntime)
+    inst.components.spawner.onoccupied = onoccupied
+    inst.components.spawner.onvacate = onvacate
+    inst.components.spawner:SetWaterSpawning(false, true)
+    inst.components.spawner:CancelSpawning()
 
     inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetChanceLootTable('monkey_barrel')
-
     local workable = inst:AddComponent("workable")
     workable:SetWorkAction(ACTIONS.HAMMER)
     workable:SetWorkLeft(4)
@@ -209,46 +165,21 @@ local function fn()
         end
     end
 
-    --Monkeys all return on a quake start
-    inst:ListenForEvent("warnquake", ondanger, TheWorld.net)
-
-    --Monkeys all return on danger
-    inst:ListenForEvent("monkeydanger", ondanger)
-
-    -- Monkeys all return when acid rain starts
-    inst:WatchWorldState("isacidraining", function()
-        inst:DoTaskInTime(3 + 7 * math.random(), onacidrainresponse)
-    end)
-
-    inst:ListenForEvent("safetospawn", onsafetospawn)
-
     inst:AddComponent("inspectable")
+    inst.components.inspectable.getstatus = getstatus
 
     MakeLargeBurnable(inst)
 	MakeLargePropagator(inst)
     inst:ListenForEvent("onignite", OnIgniteFn)
 
-    inst:AddComponent("hauntable")
-    inst.components.hauntable:SetHauntValue(TUNING.HAUNT_SMALL)
-    inst.components.hauntable:SetOnHauntFn(OnHaunt)
-
-    enqueueShake(inst)
+    MakeHauntableWork(inst)
 
     inst.OnPreLoad = OnPreLoad
+    inst.OnSave = onsave
+    inst.OnLoad = onload
 
     return inst
 end
 
-local function onruinsrespawn(inst, respawner)
-	if not respawner:IsAsleep() then
-		inst.AnimState:PlayAnimation("spawn")
-		inst.AnimState:PushAnimation("idle", false)
-
-		local fx = SpawnPrefab("small_puff")
-		fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-		fx.Transform:SetScale(1.5, 1.5, 1.5)
-	end
-end
-
-return Prefab("monkeybarrel", fn, assets, prefabs),
-    RuinsRespawner.Inst("monkeybarrel", onruinsrespawn), RuinsRespawner.WorldGen("monkeybarrel", onruinsrespawn)
+return Prefab("farmermonkeypod", fn, assets, prefabs),
+    MakePlacer("farmermonkeypod_placer", "farmermonkeypod", "farmermonkeypod", "idle")

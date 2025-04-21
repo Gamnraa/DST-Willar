@@ -27,6 +27,21 @@ local function GetFollowPos(inst)
         inst:GetPosition()
 end
 
+local function GoHomeAction(inst)
+    local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
+
+    if home ~= nil and (home.components.burnable ~= nil and home.components.burnable:IsBurning()) then
+        home = nil
+    end 
+
+    return home ~= nil
+        and home:IsValid()
+        and home.components.spawner ~= nil
+        and (home.components.health == nil or not home.components.health:IsDead())
+        and BufferedAction(inst, home, ACTIONS.GOHOME)
+        or nil
+end
+
 local function HasFoodToStore(inst)
     local b =  inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") end)
     if not b then inst.storing = nil end 
@@ -133,11 +148,15 @@ end)
 local fridge_tags = {"fridge", "structure"}
 local chest_tags = {"chest", "structure"}
 
+
+
 function FarmerMonkeyBrain:OnStart()
     local root =
     PriorityNode(
     {
 		BrainCommon.PanicTrigger(self.inst),
+        WhileNode(function() return not TheWorld.state.iscaveday end, "Day Over",
+            DoAction(self.inst, function()return GoHomeAction(self.inst) end)),
         --If our inventory is full put stuff away first!
         IfNode(function() return WantsToStore(self.inst, fridge_tags) end, "Store Food in Fridge",
             WhileNode(function() return HasFoodToStore(self.inst) and self.inst.storing end, "Storing Food",

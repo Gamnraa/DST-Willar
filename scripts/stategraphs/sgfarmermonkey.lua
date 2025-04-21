@@ -27,6 +27,8 @@ local actionhandlers =
     ActionHandler(ACTIONS.INTERACT_WITH, "action"),
     ActionHandler(ACTIONS.FERTILIZE, "action"),
     ActionHandler(ACTIONS.DROP, "action"),
+    ActionHandler(ACTIONS.GOHOME, "action"),
+
 
     ActionHandler(ACTIONS.LOWER_ANCHOR, "action"),
     ActionHandler(ACTIONS.RAISE_SAIL, "action"),
