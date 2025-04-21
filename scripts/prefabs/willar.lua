@@ -174,7 +174,6 @@ local function onsave(inst, data)
 end
 
 local function onpreload(inst, data)
-	print("LOAD", data, data.willar_nightmaremode)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
 end
