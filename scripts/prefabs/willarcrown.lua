@@ -116,8 +116,6 @@ local function makecrown(name)
             return inst
         end
 
-        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED
-
         inst:AddComponent("fueled")
         inst.components.fueled.fueltype = FUELTYPE.NIGHTMARE
         inst.components.fueled:InitializeFuelLevel(30 * 16 * 3) --3 days
@@ -137,6 +135,7 @@ local function makecrown(name)
         inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
         inst.components.equippable:SetOnEquip(onequip)
         inst.components.equippable:SetOnUnequip(onunequip)
+        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED
 
         MakeHauntableLaunch(inst)
             
