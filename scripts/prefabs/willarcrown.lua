@@ -47,6 +47,10 @@ local function onequip(inst, owner)
     if inst.components.fueled ~= nil then
         inst.components.fueled:StartConsuming()
     end
+
+    if inst.prefab == "willarcrown_ruins" then
+        inst.onattach(owner)
+    end
 end
 
 local function onunequip(inst, owner)
@@ -74,7 +78,16 @@ local function onunequip(inst, owner)
 		inst.components.fueled:StopConsuming()
     end
     
+    if inst._fx ~= nil then
+        inst._fx:kill_fx()
+        inst._fx = nil
+    end
+
     removebuff(inst, owner)
+
+    if inst.prefab == "willarcrown_ruins" then
+        inst.ondetach()
+    end
 end
 
 local function ondepleted(inst)
@@ -83,12 +96,76 @@ local function ondepleted(inst)
         removebuff(inst, owner)
     end
 
+    if inst._fx ~= nil then
+        inst._fx:kill_fx()
+        inst._fx = nil
+    end
+
     if inst == "willarcrown" then inst:Remove() end
 end
 
 local function ontakefuel(inst)
     if inst.components.equippable:IsEquipped() and not inst.components.fueled:IsEmpty() then
         dobuff(inst, inst.components.inventoryitem:GetGrandOwner())
+    end
+end
+
+local function ruinshat_fxanim(inst)
+    inst._fx.AnimState:PlayAnimation("hit")
+    inst._fx.AnimState:PushAnimation("idle_loop")
+end
+
+local function ruinshat_oncooldown(inst)
+    inst._task = nil
+end
+
+local function ruinshat_unproc(inst)
+    if inst:HasTag("forcefield") then
+        inst:RemoveTag("forcefield")
+        if inst._fx ~= nil then
+            inst._fx:kill_fx()
+            inst._fx = nil
+        end
+        inst:RemoveEventCallback("armordamaged", ruinshat_fxanim)
+
+        inst.components.armor:SetAbsorption(0)
+        inst.components.armor.ontakedamage = nil
+
+        if inst._task ~= nil then
+            inst._task:Cancel()
+        end
+        inst._task = inst:DoTaskInTime(TUNING.ARMOR_RUINSHAT_COOLDOWN, ruinshat_oncooldown)
+    end
+end
+
+local function ruinshat_proc(inst, owner)
+    inst:AddTag("forcefield")
+    if inst._fx ~= nil then
+        inst._fx:kill_fx()
+    end
+    inst._fx = SpawnPrefab("forcefieldfx")
+    inst._fx.entity:SetParent(owner.entity)
+    inst._fx.Transform:SetPosition(0, 0.2, 0)
+    inst:ListenForEvent("armordamaged", ruinshat_fxanim)
+
+    inst.components.armor:SetAbsorption(TUNING.FULL_ABSORPTION)
+    inst.components.armor.ontakedamage = function(inst, damage_amount)
+        if owner ~= nil and owner.components.sanity ~= nil then
+            owner.components.sanity:DoDelta(-damage_amount * TUNING.ARMOR_RUINSHAT_DMG_AS_SANITY, false)
+        end
+    end
+
+    if inst._task ~= nil then
+        inst._task:Cancel()
+    end
+    inst._task = inst:DoTaskInTime(TUNING.ARMOR_RUINSHAT_DURATION, ruinshat_unproc)
+end
+
+local function tryproc(inst, owner, data)
+    if inst._task == nil and
+        not data.redirected and
+        math.random(100) < 13 then
+        ruinshat_proc(inst, owner)
     end
 end
 
@@ -135,7 +212,6 @@ local function makecrown(name)
         inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
         inst.components.equippable:SetOnEquip(onequip)
         inst.components.equippable:SetOnUnequip(onunequip)
-        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED
 
         MakeHauntableLaunch(inst)
             
@@ -148,12 +224,36 @@ local function makecrown(name)
             return inst
         end
 
-        --inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED_LARGE
+        inst:AddComponent("armor")
+        inst.components.armor:InitCondition(TUNING.ARMOR_RUINSHAT, 0)
 
-        inst:AddComponent("finiteuses")
-        inst.components.finiteuses:SetMaxUses(150)
-        inst.components.finiteuses:SetUses(150)
-        inst.components.finiteuses:SetOnFinished(inst.Remove)
+        if name == "willarcrown_ruins" then
+            inst._fx = nil
+            inst._task = nil
+            inst._owner = nil
+            inst.procfn = function(owner, data) tryproc(inst, owner, data) end
+            inst.onattach = function(owner)
+                if inst._owner ~= nil then
+                    inst:RemoveEventCallback("attacked", inst.procfn, inst._owner)
+                    inst:RemoveEventCallback("onremove", inst.ondetach, inst._owner)
+                end
+                inst:ListenForEvent("attacked", inst.procfn, owner)
+                inst:ListenForEvent("onremove", inst.ondetach, owner)
+                inst._owner = owner
+                inst._fx = nil
+                end
+            inst.ondetach = function()
+                ruinshat_unproc(inst)
+                if inst._owner ~= nil then
+                    inst:RemoveEventCallback("attacked", inst.procfn, inst._owner)
+                    inst:RemoveEventCallback("onremove", inst.ondetach, inst._owner)
+                    inst._owner = nil
+                    inst._fx = nil
+                end
+            end
+        end
+
+        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED_LARGE
 
         return inst
     end
