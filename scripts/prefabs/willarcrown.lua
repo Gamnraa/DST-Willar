@@ -161,8 +161,5 @@ local function makecrown(name)
     return Prefab(name, fn, assets)
 end
 
---MOVE TO OWN STRINGS FILE WHEN SET UP
-STRINGS.NAMES.WILLARCROWN = "Placeholder"
-
 return makecrown("willarcrown"),
         makecrown("willarcrown_ruins")
