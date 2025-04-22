@@ -9,7 +9,7 @@ local prefabs = {
 
 
 -- Custom starting inventory
-TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.GRAMNINTEN = {
+TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.WILLAR = {
 }
 
 local start_item_images = {
@@ -18,7 +18,7 @@ local start_item_images = {
 
 local start_inv = {}
 for k, v in pairs(TUNING.GAMEMODE_STARTING_ITEMS) do
-    start_inv[string.lower(k)] = v.GRAMNINTEN
+    start_inv[string.lower(k)] = v.WILLAR
 end
 
 --Used to keep monkey followers in nightmare form when wearing the crown
@@ -210,7 +210,7 @@ end
 -- This initializes for both the server and client. Tags can be added here.
 local common_postinit = function(inst) 
 	-- Minimap icon
-	inst.MiniMapEntity:SetIcon( "gramninten.tex" )
+	inst.MiniMapEntity:SetIcon( "willar.tex" )
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
 	inst:AddTag("willar")
 	inst:AddTag("monkey")
@@ -269,4 +269,4 @@ local master_postinit = function(inst)
 end
 
 
-return MakePlayerCharacter("gramninten", prefabs, assets, common_postinit, master_postinit, start_inv)
+return MakePlayerCharacter("willar", prefabs, assets, common_postinit, master_postinit, start_inv)

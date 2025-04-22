@@ -966,7 +966,7 @@ return {
             GHOST = "%s is my ghost friend now.",
             FIRESTARTER = "Whoa, man, careful with the fires.",
         },
-		GRAMNINTEN = 
+		WILLAR = 
 		{
 			GENERIC = "Lookin' handsome. Charmed, I'm sure. Heheheh.",
             ATTACKER = "Wow, I'm kind of a jerk.",

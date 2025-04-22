@@ -1,7 +1,8 @@
 
 local assets =
 {
-    Asset("ANIM", "anim/hat_ruins.zip"),
+    Asset("ANIM", "anim/willarcrown.zip"),
+    Asset("ANIM", "anim/willarcrown_ruins.zip")
 }
 
 local function dobuff(inst, owner)
@@ -31,7 +32,7 @@ local function removebuff(inst, owner)
 end
 
 local function onequip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_hat", "hat_ruins", "hat_ruins")
+    owner.AnimState:OverrideSymbol("swap_hat", inst.prefab, "swap_hat")
     owner.AnimState:Show("HAT")
     owner.AnimState:Hide("HAIR_HAT")
     owner.AnimState:Show("HAIR_NOHAT")
@@ -179,8 +180,8 @@ local function makecrown(name)
 
         MakeInventoryPhysics(inst)
 
-        inst.AnimState:SetBank("ruinshat")
-        inst.AnimState:SetBuild("hat_ruins")
+        inst.AnimState:SetBank(name)
+        inst.AnimState:SetBuild(name)
         inst.AnimState:PlayAnimation("anim")
 
         inst:AddTag("hat")

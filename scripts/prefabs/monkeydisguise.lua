@@ -1,12 +1,14 @@
 
-local assets = {}
+local assets = {
+    Asset("ANIM", "anim/dustmonkeyhat.zip"),
+}
 
 local function onequip(inst, owner)
 	local skin_build = inst:GetSkinBuild()
 	if skin_build then
 		owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, "swap_hat", inst.GUID, "mermhat")
     else
-		owner.AnimState:OverrideSymbol("swap_hat", "mermhat", "swap_hat")
+		owner.AnimState:OverrideSymbol("swap_hat", "hat_dustmonkey", "swap_hat")
     end
 
 	owner.AnimState:Show("HAT")
@@ -72,8 +74,8 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("minerhat")
-    inst.AnimState:SetBuild("minerhat")
+    inst.AnimState:SetBank("dustmonkeyhat")
+    inst.AnimState:SetBuild("dustmonkeyhat")
     inst.AnimState:PlayAnimation("anim")
 
     inst:AddTag("hat")
@@ -88,7 +90,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 	inst.inventory = inst.components.inventoryitem
-	inst.inventory.imagename = "mermhat"
+	--inst.inventory.imagename = "dustmonkeyhat"
 	--inst.inventory.atlasname = "images/inventoryimages/baseball_cap_ninten.xml"
     inst:AddComponent("inspectable")
 
@@ -119,7 +121,5 @@ local function fn()
 	
     return inst
 end
-
-STRINGS.NAMES.MONKEYDISGUISE  = "Cheeky Disguise"
 
 return Prefab("monkeydisguise", fn, assets)

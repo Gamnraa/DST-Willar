@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/monkey_small.zip"),
+    Asset("ANIM", "anim/farmermonkey.zip"),
 
     --for water fx build overrides
     Asset("ANIM", "anim/slide_puff.zip"),

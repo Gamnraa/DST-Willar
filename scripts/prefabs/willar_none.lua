@@ -1,21 +1,21 @@
 local prefabs = {}
 
-table.insert(prefabs, CreatePrefabSkin("gramninten_none", {
+table.insert(prefabs, CreatePrefabSkin("willar_none", {
 	assets = {
-		Asset("ANIM", "anim/gramninten.zip"),
-		Asset("ANIM", "anim/ghost_gramninten.zip"),
+		Asset("ANIM", "anim/willar.zip"),
+		Asset("ANIM", "anim/ghost_willar.zip"),
 	},
 	
 	skins = {
-		normal_skin = "gramninten",
-		ghost_skin = "ghost_gramninten",
+		normal_skin = "willar",
+		ghost_skin = "ghost_willar",
 	},
 	
-	base_prefab = "gramninten",
-	build_name_override = "gramninten",
+	base_prefab = "willar",
+	build_name_override = "willar",
 	type = "base",
 	rarity = "Character",
-	skin_tags = {"BASE", "GRAMNINTEN"},
+	skin_tags = {"BASE", "WILLAR"},
 }))
 
 return unpack(prefabs)

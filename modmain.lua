@@ -10,42 +10,54 @@ PrefabFiles = {
 }
 
 Assets = {
-    Asset( "IMAGE", "images/saveslot_portraits/gramninten.tex" ),
-    Asset( "ATLAS", "images/saveslot_portraits/gramninten.xml" ),
+    Asset( "IMAGE", "images/saveslot_portraits/willar.tex" ),
+    Asset( "ATLAS", "images/saveslot_portraits/willar.xml" ),
 
-    Asset( "IMAGE", "images/selectscreen_portraits/gramninten.tex" ),
-    Asset( "ATLAS", "images/selectscreen_portraits/gramninten.xml" ),
+    Asset( "IMAGE", "images/selectscreen_portraits/willar.tex" ),
+    Asset( "ATLAS", "images/selectscreen_portraits/willar.xml" ),
 	
-    Asset( "IMAGE", "images/selectscreen_portraits/gramninten_silho.tex" ),
-    Asset( "ATLAS", "images/selectscreen_portraits/gramninten_silho.xml" ),
+    Asset( "IMAGE", "images/selectscreen_portraits/willar_silho.tex" ),
+    Asset( "ATLAS", "images/selectscreen_portraits/willar_silho.xml" ),
 
-    Asset( "IMAGE", "bigportraits/gramninten.tex" ),
-    Asset( "ATLAS", "bigportraits/gramninten.xml" ),
+    Asset( "IMAGE", "bigportraits/willar.tex" ),
+    Asset( "ATLAS", "bigportraits/willar.xml" ),
 	
-	Asset( "IMAGE", "bigportraits/gramninten_none.tex" ),
-    Asset( "ATLAS", "bigportraits/gramninten_none.xml" ),
+	Asset( "IMAGE", "bigportraits/willar_none.tex" ),
+    Asset( "ATLAS", "bigportraits/willar_none.xml" ),
 	
 	
-	Asset( "IMAGE", "images/map_icons/gramninten.tex" ),
-	Asset( "ATLAS", "images/map_icons/gramninten.xml" ),
+	Asset( "IMAGE", "images/map_icons/willar.tex" ),
+	Asset( "ATLAS", "images/map_icons/willar.xml" ),
 	
-	Asset( "IMAGE", "images/avatars/avatar_gramninten.tex" ),
-    Asset( "ATLAS", "images/avatars/avatar_gramninten.xml" ),
+	Asset( "IMAGE", "images/avatars/avatar_willar.tex" ),
+    Asset( "ATLAS", "images/avatars/avatar_willar.xml" ),
 	
-	Asset( "IMAGE", "images/avatars/avatar_ghost_gramninten.tex" ),
-    Asset( "ATLAS", "images/avatars/avatar_ghost_gramninten.xml" ),
+	Asset( "IMAGE", "images/avatars/avatar_ghost_willar.tex" ),
+    Asset( "ATLAS", "images/avatars/avatar_ghost_willar.xml" ),
 	
-	Asset( "IMAGE", "images/avatars/self_inspect_gramninten.tex" ),
-    Asset( "ATLAS", "images/avatars/self_inspect_gramninten.xml" ),
+	Asset( "IMAGE", "images/avatars/self_inspect_willar.tex" ),
+    Asset( "ATLAS", "images/avatars/self_inspect_willar.xml" ),
 	
-	Asset( "IMAGE", "images/names_gramninten.tex" ),
-    Asset( "ATLAS", "images/names_gramninten.xml" ),
+	Asset( "IMAGE", "images/names_willar.tex" ),
+    Asset( "ATLAS", "images/names_willar.xml" ),
 	
-	Asset( "IMAGE", "images/names_gold_gramninten.tex" ),
-    Asset( "ATLAS", "images/names_gold_gramninten.xml" ),
+	Asset( "IMAGE", "images/names_gold_willar.tex" ),
+    Asset( "ATLAS", "images/names_gold_willar.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/monkeygoldsword.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/monkeygoldsword.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/willarcrown.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/willarcrown.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/willarcrown_ruins.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/willarcrown_ruins.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/hat_dustmonkey.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/hat_dustmonkey.xml" ),
 }
 
-AddMinimapAtlas("images/map_icons/gramninten.xml")
+AddMinimapAtlas("images/map_icons/willar.xml")
 
 
 GLOBAL.IsWillarLeader = function(inst) return inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") end
@@ -61,20 +73,20 @@ local EQUIPSLOTS = GLOBAL.EQUIPSLOTS
 --local TheWorld = GLOBAL.TheWorld
 
 -- The character select screen lines
-STRINGS.CHARACTER_TITLES.gramninten = "The Original"
-STRINGS.CHARACTER_NAMES.gramninten = "Willar"
-STRINGS.CHARACTER_DESCRIPTIONS.gramninten = "*Gifted with Powers\n*Dresses with Style\n*Lovable Asthmatic"
-STRINGS.CHARACTER_QUOTES.gramninten = "\"Now that the Earth's crisis is over...\""
-STRINGS.CHARACTER_SURVIVABILITY.gramninten = "Slim"
+STRINGS.CHARACTER_TITLES.willar = "The Original"
+STRINGS.CHARACTER_NAMES.willar = "Willar"
+STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Gifted with Powers\n*Dresses with Style\n*Lovable Asthmatic"
+STRINGS.CHARACTER_QUOTES.willar = "\"...\""
+STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
 
-STRINGS.SKIN_DESCRIPTIONS.gramninten_none = "Ninten's favorite outfit."
+STRINGS.SKIN_DESCRIPTIONS.willar_none = "Ninten's favorite outfit."
 
 -- Custom speech strings
-STRINGS.CHARACTERS.GRAMNINTEN = require "speech_gramninten"
+STRINGS.CHARACTERS.WILLAR = require "speech_willar"
 
 -- The character's name as appears in-game 
-STRINGS.NAMES.GRAMNINTEN = "Willar"
-STRINGS.SKIN_NAMES.gramninten_none = "Willar"
+STRINGS.NAMES.WILLAR = "Willar"
+STRINGS.SKIN_NAMES.willar_none = "Willar"
 
 -- The skins shown in the cycle view window on the character select screen.
 -- A good place to see what you can put in here is in skinutils.lua, in the function GetSkinModes
@@ -89,7 +101,7 @@ local skin_modes = {
 }
 
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
-AddModCharacter("gramninten", "MALE", skin_modes)
+AddModCharacter("willar", "MALE", skin_modes)
 
 
 modimport("scripts/strings")
