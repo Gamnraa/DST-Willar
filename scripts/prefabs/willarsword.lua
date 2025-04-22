@@ -1,16 +1,20 @@
 local assets =
 {
-    Asset("ANIM", "anim/nightmaresword.zip"),
-    Asset("ANIM", "anim/swap_nightmaresword.zip"),
+    Asset("ANIM", "anim/monkeygoldsword.zip"),
+    Asset("ANIM", "anim/monkeygoldsword_ground.zip"),
 }
+
+
+local SpDamageUtil = require"components/spdamageutil"
+
 
 local function onequip(inst, owner)
     local skin_build = inst:GetSkinBuild()
     if skin_build ~= nil then
         owner:PushEvent("equipskinneditem", inst:GetSkinName())
-        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_nightmaresword", inst.GUID, "swap_nightmaresword")
+        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "monkeygoldsword", inst.GUID, "swap_nightmaresword")
     else
-        owner.AnimState:OverrideSymbol("swap_object", "swap_nightmaresword", "swap_nightmaresword")
+        owner.AnimState:OverrideSymbol("swap_object", "monkeygoldsword", "swap_monkeygoldsword")
     end
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
@@ -34,8 +38,8 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("nightmaresword")
-    inst.AnimState:SetBuild("nightmaresword")
+    inst.AnimState:SetBank("monkeygoldsword_ground")
+    inst.AnimState:SetBuild("monkeygoldsword_ground")
     inst.AnimState:PlayAnimation("idle")
 	-- inst:AddTag("propweapon")
 
@@ -68,7 +72,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 	inst.inventory = inst.components.inventoryitem
-	inst.inventory.imagename = "nightmaresword"
+	inst.inventory.imagename = "nightsword"
 	--inst.inventory.atlasname = ""
 
     inst:AddComponent("equippable")
