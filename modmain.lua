@@ -41,8 +41,8 @@ Assets = {
 	Asset( "IMAGE", "images/names_gold_willar.tex" ),
     Asset( "ATLAS", "images/names_gold_willar.xml" ),
 
-    Asset( "IMAGE", "images/inventoryimages/monkeygoldsword.tex" ),
-	Asset( "ATLAS", "images/inventoryimages/monkeygoldsword.xml" ),
+    Asset( "IMAGE", "images/inventoryimages/willarsword.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/willarsword.xml" ),
 
     Asset( "IMAGE", "images/inventoryimages/willarcrown.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/willarcrown.xml" ),
@@ -50,8 +50,8 @@ Assets = {
     Asset( "IMAGE", "images/inventoryimages/willarcrown_ruins.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/willarcrown_ruins.xml" ),
 
-    Asset( "IMAGE", "images/inventoryimages/hat_dustmonkey.tex" ),
-	Asset( "ATLAS", "images/inventoryimages/hat_dustmonkey.xml" ),
+    Asset( "IMAGE", "images/inventoryimages/monkeydisguise.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/monkeydisguise.xml" ),
 }
 
 AddMinimapAtlas("images/map_icons/willar.xml")
