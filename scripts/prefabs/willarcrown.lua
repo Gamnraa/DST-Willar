@@ -203,8 +203,6 @@ local function makecrown(name)
 
         inst:AddComponent("inventoryitem")
         inst.inventory = inst.components.inventoryitem
-        inst.inventory.imagename = "ruinshat"
-        --inst.inventory.atlasname = "images/inventoryimages/ruinshat.xml"
         inst:AddComponent("inspectable")
 
         --inst:AddComponent("tradable")

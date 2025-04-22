@@ -3,7 +3,7 @@ local prefabs = {}
 table.insert(prefabs, CreatePrefabSkin("willar_none", {
 	assets = {
 		Asset("ANIM", "anim/willar.zip"),
-		Asset("ANIM", "anim/ghost_willar.zip"),
+		Asset("ANIM", "anim/ghost_willar_build.zip"),
 	},
 	
 	skins = {

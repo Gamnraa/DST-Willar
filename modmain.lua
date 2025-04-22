@@ -22,9 +22,6 @@ Assets = {
     Asset( "IMAGE", "bigportraits/willar.tex" ),
     Asset( "ATLAS", "bigportraits/willar.xml" ),
 	
-	Asset( "IMAGE", "bigportraits/willar_none.tex" ),
-    Asset( "ATLAS", "bigportraits/willar_none.xml" ),
-	
 	
 	Asset( "IMAGE", "images/map_icons/willar.tex" ),
 	Asset( "ATLAS", "images/map_icons/willar.xml" ),
@@ -82,7 +79,7 @@ STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
 STRINGS.SKIN_DESCRIPTIONS.willar_none = "Ninten's favorite outfit."
 
 -- Custom speech strings
-STRINGS.CHARACTERS.WILLAR = require "speech_willar"
+STRINGS.CHARACTERS.WILLAR = {}
 
 -- The character's name as appears in-game 
 STRINGS.NAMES.WILLAR = "Willar"
@@ -106,7 +103,10 @@ AddModCharacter("willar", "MALE", skin_modes)
 
 modimport("scripts/strings")
 
---RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/nintens_coat.xml"), "nintens_coat.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/monkeygoldsword.xml"), "monkeygoldsword.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown.xml"), "willarcrown.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown_ruins.xml"), "willarcrown_ruins.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/hat_dustmonkey.xml"), "hat_dustmonkey.tex")
 
 GLOBAL.FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
 
@@ -299,8 +299,6 @@ AddCharacterRecipe("willarsword",
 		product = "willarsword",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"WEAPONS",
@@ -316,8 +314,6 @@ AddCharacterRecipe("monkeydisguise",
 		product = "monkeydisguise",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"WEAPONS",
@@ -333,8 +329,6 @@ AddCharacterRecipe("willarcrown",
 		product = "willarcrown",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"CLOTHING", "MAGIC"
@@ -350,8 +344,6 @@ AddCharacterRecipe("willarcrown_ruins",
 		product = "willarcrown_ruins",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"CLOTHING", "ARMOUR", "MAGIC"
@@ -367,8 +359,6 @@ AddCharacterRecipe("farmermonkeypod_placer",
 		product = "farmermonkeypod_placer",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"STRUCTURES",
@@ -384,8 +374,6 @@ AddCharacterRecipe("monkeybarrel_placer",
 		product = "monkeybarrel_placer",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"STRUCTURES",
@@ -401,8 +389,6 @@ AddCharacterRecipe("monkeyhut_placer",
 		product = "monkeyhut_placer",
 		builder_tag = "willar",
 		numtogive = 1,
-		atlas = "images/inventoryimages/pk_flash.xml",
-		image = "pk_flash.tex"
 	},
 	{
 		"STRUCTURES",

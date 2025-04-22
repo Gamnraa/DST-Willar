@@ -72,8 +72,6 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 	inst.inventory = inst.components.inventoryitem
-	inst.inventory.imagename = "nightsword"
-	--inst.inventory.atlasname = ""
 
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)

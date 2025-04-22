@@ -1,12 +1,12 @@
 
 local assets = {
-    Asset("ANIM", "anim/dustmonkeyhat.zip"),
+    Asset("ANIM", "anim/hat_dustmonkey.zip"),
 }
 
 local function onequip(inst, owner)
 	local skin_build = inst:GetSkinBuild()
 	if skin_build then
-		owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, "swap_hat", inst.GUID, "mermhat")
+		owner.AnimState:OverrideItemSkinSymbol("swap_hat", skin_build, "swap_hat", inst.GUID, "hat_dustmonkey")
     else
 		owner.AnimState:OverrideSymbol("swap_hat", "hat_dustmonkey", "swap_hat")
     end
@@ -90,8 +90,6 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
 	inst.inventory = inst.components.inventoryitem
-	--inst.inventory.imagename = "dustmonkeyhat"
-	--inst.inventory.atlasname = "images/inventoryimages/baseball_cap_ninten.xml"
     inst:AddComponent("inspectable")
 
     inst:AddComponent("tradable")
