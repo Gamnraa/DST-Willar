@@ -91,6 +91,11 @@
         <file id="17" name="hand/hand-17.png" width="100" height="100" pivot_x="0.501494" pivot_y="0.697004"/>
 		<file id="18" name="hand/hand-18.png" width="100" height="100" pivot_x="0.518245" pivot_y="0.576755" />
 		<file id="19" name="hand/hand-19.png" width="100" height="100" pivot_x="0.471745" pivot_y="0.486405" />
+		<file id="20" name="hand/hand-20.png" width="100" height="100" pivot_x="0.518245" pivot_y="0.576755" />
+		<file id="21" name="hand/hand-21.png" width="100" height="100" pivot_x="0.471745" pivot_y="0.486405" />
+		<file id="22" name="hand/hand-22.png" width="100" height="100" pivot_x="0.471745" pivot_y="0.486405" />
+		<file id="23" name="hand/hand-23.png" width="100" height="100" pivot_x="0.471745" pivot_y="0.486405" />
+		<file id="24" name="hand/hand-24.png" width="100" height="100" pivot_x="0.471745" pivot_y="0.486405" />
     </folder>
     <folder id="6" name="leg">
         <file id="0" name="leg/leg-0.png" width="60" height="80" pivot_x="0.562074" pivot_y="0.751256"/>
@@ -195,7 +200,7 @@
     <folder id="19" name="face_sail">
         <file id="0" name="face_sail/face_sail-0.png" width="200" height="200" pivot_x="0.622747" pivot_y="0.570002"/>
     </folder>
-    <entity id="0" name="template">
+    <entity id="0" name="willar">
         <animation id="0" name="BUILD_PLAYER" length="1000">
             <mainline>
                 <key id="0">

@@ -103,10 +103,10 @@ AddModCharacter("willar", "MALE", skin_modes)
 
 modimport("scripts/strings")
 
-RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/monkeygoldsword.xml"), "monkeygoldsword.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarsword.xml"), "willarsword.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown.xml"), "willarcrown.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown_ruins.xml"), "willarcrown_ruins.tex")
-RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/hat_dustmonkey.xml"), "hat_dustmonkey.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/monkeydisguise.xml"), "monkeydisguise.tex")
 
 GLOBAL.FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
 
@@ -303,6 +303,8 @@ AddCharacterRecipe("willarsword",
 	{
 		"WEAPONS",
 	})
+STRINGS.RECIPE_DESC.WILLARSWORD = "Cutmore."
+
 
 AddCharacterRecipe("monkeydisguise",
 	{Ingredient("cave_banana", 2),
@@ -318,6 +320,7 @@ AddCharacterRecipe("monkeydisguise",
 	{
 		"WEAPONS",
 	})
+STRINGS.RECIPE_DESC.MONKEYDISGUISE = "Disguise yourself as a primemate."
 
 AddCharacterRecipe("willarcrown",
 	{Ingredient("cave_banana", 3),
@@ -333,6 +336,7 @@ AddCharacterRecipe("willarcrown",
 	{
 		"CLOTHING", "MAGIC"
 	})
+STRINGS.RECIPE_DESC.WILLARCROWN = "Become recognized for your monkey regality."
 
 AddCharacterRecipe("willarcrown_ruins",
 	{Ingredient("willarcrown", 1),
@@ -348,48 +352,53 @@ AddCharacterRecipe("willarcrown_ruins",
 	{
 		"CLOTHING", "ARMOUR", "MAGIC"
 	})
+STRINGS.RECIPE_DESC.WILLARCROWN_RUINS = "Enhance your influence over your subjects."
 
-AddCharacterRecipe("farmermonkeypod_placer",
+AddCharacterRecipe("farmermonkeypod",
 	{Ingredient("boards", 4),
 	 Ingredient("cave_banana", 4),
      Ingredient("strawhat", 1)
     },
 	 GLOBAL.TECH.SCIENCE_TWO,
 	 {
-		product = "farmermonkeypod_placer",
+		placer = "farmermonkeypod_placer",
 		builder_tag = "willar",
 		numtogive = 1,
 	},
 	{
 		"STRUCTURES",
 	})
+STRINGS.RECIPE_DESC.FARMERMONKEYPOD = "Houses one Farmer Monkey."
 
-AddCharacterRecipe("monkeybarrel_placer",
+AddCharacterRecipe("monkeybarrel",
 	{Ingredient("boards", 2),
 	 Ingredient("poop", 4),
      Ingredient("cave_banana", 4)
     },
 	 GLOBAL.TECH.SCIENCE_TWO,
 	 {
-		product = "monkeybarrel_placer",
+		placer = "monkeybarrel_placer",
 		builder_tag = "willar",
 		numtogive = 1,
+        image = "monkeybarrel.tex"
 	},
 	{
 		"STRUCTURES",
 	})
+STRINGS.RECIPE_DESC.MONKEYBARREL = "Construct a Splumonkey Pod."
 
-AddCharacterRecipe("monkeyhut_placer",
+AddCharacterRecipe("monkeyhut",
 	{Ingredient("boards", 2),
 	 Ingredient("rocks", 4),
      Ingredient("palmcone_scale", 2)
     },
 	 GLOBAL.TECH.SEAFARING_ONE,
 	 {
-		product = "monkeyhut_placer",
+		placer = "monkeyhut_placer",
 		builder_tag = "willar",
 		numtogive = 1,
 	},
 	{
 		"STRUCTURES",
 	})
+STRINGS.RECIPE_DESC.MONKEYHUT = "Construct a Powder Monkey Hut."
