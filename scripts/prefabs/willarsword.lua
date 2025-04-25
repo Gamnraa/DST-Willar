@@ -14,7 +14,7 @@ local function onequip(inst, owner)
         owner:PushEvent("equipskinneditem", inst:GetSkinName())
         owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "monkeygoldsword", inst.GUID, "swap_nightmaresword")
     else
-        owner.AnimState:OverrideSymbol("swap_object", "monkeygoldsword", "swap_monkeygoldsword")
+        owner.AnimState:OverrideSymbol("swap_object", "monkeygoldsword", "swap_goldsword")
     end
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
@@ -40,7 +40,7 @@ local function fn()
 
     inst.AnimState:SetBank("monkeygoldsword_ground")
     inst.AnimState:SetBuild("monkeygoldsword_ground")
-    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:PlayAnimation("anim")
 	-- inst:AddTag("propweapon")
 
     --weapon (from weapon component) added to pristine state for optimization
