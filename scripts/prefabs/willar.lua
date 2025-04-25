@@ -2,6 +2,7 @@ local MakePlayerCharacter = require "prefabs/player_common"
 
 local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
+	Asset("ANIM", "anim/shadow_willar.zip")
 }
 
 local prefabs = {
@@ -51,6 +52,7 @@ end
 local function DoTransform(inst)
 	local health = inst.components.health.current
 	if inst.willar_nightmaremode then
+		inst.AnimState:SetBuild("willar")
 		inst:RemoveTag("nightmarewillar")
 
 		inst.components.talker:Say("UNTRANSFORM")
@@ -72,6 +74,7 @@ local function DoTransform(inst)
 
 		if inst.nightmaretask then inst.nightmaretask:Cancel() end
 	else
+		inst.AnimState:SetBuild("shadow_willar")
 		inst:AddTag("nightmarewillar")
 		inst.components.talker:Say("TRANSFORM")
 		inst.components.combat.damagemultiplier = 1.25
