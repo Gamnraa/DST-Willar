@@ -257,6 +257,8 @@ local master_postinit = function(inst)
 	inst:AddTag("NIGHTMAREFUEL_eater")
 	inst.components.eater:SetOnEatFn(OnEat)
 
+	inst:RemoveComponent("talker")
+
 	-- Damage multiplier (optional)
     inst.components.combat.damagemultiplier = 1
 	
