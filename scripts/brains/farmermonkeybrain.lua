@@ -28,6 +28,10 @@ local function GetFollowPos(inst)
 end
 
 local function GoHomeAction(inst)
+    if inst.components.inventory ~= nil then
+        inst.components.inventory:DropEverything(false, true)
+    end
+
     local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
 
     if home ~= nil and (home.components.burnable ~= nil and home.components.burnable:IsBurning()) then
@@ -69,6 +73,8 @@ local function StoreInContainer(inst)
         return nil
     end
 
+    if inst.storing == nil then return nil end
+
     local item = inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") end)
 
     if item then
@@ -82,7 +88,7 @@ local function PickupCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, MUSTNOTTAGS, nil, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
