@@ -175,6 +175,6 @@ local function fn()
 end
 
 return Prefab("farmermonkeypod", fn, assets, prefabs),
-    MakePlacer("farmermonkeypod_placer", "farmermonkeypod", "farmermonkeypod", "idle"),
-    MakePlacer("monkeybarrel_placer", "monkeybarrel", "monkeybarrel", "idle"),
+    MakePlacer("farmermonkeypod_placer", "barrel", "monkey_barrel", "idle"),
+    MakePlacer("monkeybarrel_placer", "barrel", "monkey_barrel", "idle"),
     MakePlacer("monkeyhut_placer", "monkeyhut", "monkeyhut", "idle")
