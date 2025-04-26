@@ -47,7 +47,7 @@ local function GoHomeAction(inst)
 end
 
 local function HasFoodToStore(inst)
-    local b =  inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") end)
+    local b =  inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) end)
     if not b then inst.storing = nil end 
     return b
 end
@@ -75,7 +75,7 @@ local function StoreInContainer(inst)
 
     if inst.storing == nil then return nil end
 
-    local item = inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") end)
+    local item = inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) end)
 
     if item then
         local act = BufferedAction(inst, inst.storing, ACTIONS.STORE, item)
@@ -88,7 +88,7 @@ local function PickupCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"deployedfarmplant", "weighable_OVERSIZEDVEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"deployedfarmplant", "edible_"..FOODTYPE.VEGGIE, "weighable_OVERSIZEDVEGGIES"})
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
