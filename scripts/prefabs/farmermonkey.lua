@@ -197,7 +197,7 @@ local function fn()
     MakeCharacterPhysics(inst, 10, 0.25)
 
     inst.AnimState:SetBank("monkey_small")
-    inst.AnimState:SetBuild("monkey_small")
+    inst.AnimState:SetBuild("farmermonkey")
     inst.AnimState:PlayAnimation("idle", true)
 
     inst.AnimState:OverrideSymbol("fx_slidepuff01", "slide_puff", "fx_slidepuff01")
@@ -298,6 +298,13 @@ local function fn()
     inst:ListenForEvent("death", OnDeath)
     --inst:ListenForEvent("itemget", OnGotItem)
     inst:ListenForEvent("ms_seamlesscharacterspawned", onmonkeychange, TheWorld)
+
+    inst:DoTaskInTime(0, function()
+        local hat = SpawnPrefab("strawhat")
+        hat:AddTag("personal_possession")
+        inst.components.inventory:GiveItem(hat)
+        inst.components.inventory:Equip(hat)
+    end)
 
     MakeHauntablePanic(inst)
 
