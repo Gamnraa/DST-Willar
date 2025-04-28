@@ -11,6 +11,11 @@ local prefabs = {
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.WILLAR = {
+	"poop",
+	"poop",
+	"poop",
+	"dug_bananabush",
+	"dug_bananabush"
 }
 
 local start_item_images = {
@@ -55,7 +60,6 @@ local function DoTransform(inst)
 		inst.AnimState:SetBuild("willar")
 		inst:RemoveTag("nightmarewillar")
 
-		inst.components.talker:Say("UNTRANSFORM")
 		inst.components.combat.damagemultiplier = 1
 		inst.components.health:SetMaxHealth(150) --VARIABLE GOES HERE
 		inst.components.health.current = health
@@ -76,7 +80,7 @@ local function DoTransform(inst)
 	else
 		inst.AnimState:SetBuild("shadow_willar")
 		inst:AddTag("nightmarewillar")
-		inst.components.talker:Say("TRANSFORM")
+
 		inst.components.combat.damagemultiplier = 1.25
 		inst.components.health:SetMaxHealth(175)
 		inst.components.health.current = health
@@ -256,6 +260,8 @@ local master_postinit = function(inst)
 	table.insert(inst.components.eater.caneat, "NIGHTMAREFUEL")
 	inst:AddTag("NIGHTMAREFUEL_eater")
 	inst.components.eater:SetOnEatFn(OnEat)
+
+	inst.components.foodaffinity:AddPrefabAffinity("cave_banana", TUNING.AFFINITY_15_CALORIES_MED)
 
 	inst:RemoveComponent("talker")
 
