@@ -28,11 +28,12 @@ local function GetFollowPos(inst)
 end
 
 local function GoHomeAction(inst)
-    if inst.components.inventory ~= nil then
-        inst.components.inventory:DropEverything(false, true)
-    end
 
     local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
+
+    if home and inst.components.inventory then
+        inst.components.inventory:DropEverything(false, true)
+    end
 
     if home ~= nil and (home.components.burnable ~= nil and home.components.burnable:IsBurning()) then
         home = nil
