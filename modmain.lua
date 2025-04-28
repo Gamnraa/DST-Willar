@@ -70,13 +70,12 @@ local EQUIPSLOTS = GLOBAL.EQUIPSLOTS
 --local TheWorld = GLOBAL.TheWorld
 
 -- The character select screen lines
-STRINGS.CHARACTER_TITLES.willar = "The Original"
+STRINGS.CHARACTER_TITLES.willar = "Title"
 STRINGS.CHARACTER_NAMES.willar = "Willar"
-STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Gifted with Powers\n*Dresses with Style\n*Lovable Asthmatic"
+STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Perk/Attribute 1\n*Perk/Attribute 2\n*Perk/Attribute 3"
 STRINGS.CHARACTER_QUOTES.willar = "\"...\""
 STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
 
-STRINGS.SKIN_DESCRIPTIONS.willar_none = "Ninten's favorite outfit."
 
 -- Custom speech strings
 STRINGS.CHARACTERS.WILLAR = {}
