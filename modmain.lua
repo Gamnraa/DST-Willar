@@ -288,6 +288,22 @@ AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400)
 AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
 
+AddCharacterRecipe("cutless",
+	{Ingredient("boards", 1),
+	 Ingredient("rope", 1),
+     Ingredient("log", 1)
+    },
+	 GLOBAL.TECH.ANCIENT_TWO,
+	 {
+		product = "cutless",
+		builder_tag = "willar",
+		numtogive = 1,
+	},
+	{
+		"WEAPONS",
+	})
+STRINGS.RECIPE_DESC.WILLARSWORD = "Great for splinters."
+
 AddCharacterRecipe("willarsword",
 	{Ingredient("cutless", 1),
 	 Ingredient("thulecite", 2),
