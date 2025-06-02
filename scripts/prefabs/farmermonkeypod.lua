@@ -3,7 +3,7 @@ require "prefabutil"
 
 local assets =
 {
-    Asset("ANIM", "anim/monkey_barrel.zip"),
+    Asset("ANIM", "anim/bananahouse.zip"),
     Asset("SOUND", "sound/monkey.fsb"),
 }
 
@@ -128,10 +128,10 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("monkeybarrel.png")
 
-    MakeObstaclePhysics(inst, 1)
+    MakeObstaclePhysics(inst, 1.67, 0.15)
 
-    inst.AnimState:SetBank("barrel")
-    inst.AnimState:SetBuild("monkey_barrel")
+    inst.AnimState:SetBank("bananahouse")
+    inst.AnimState:SetBuild("bananahouse")
     inst.AnimState:PlayAnimation("idle", true)
 
     inst:AddTag("structure")
