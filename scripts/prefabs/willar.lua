@@ -28,6 +28,22 @@ for k, v in pairs(TUNING.GAMEMODE_STARTING_ITEMS) do
     start_inv[string.lower(k)] = v.WILLAR
 end
 
+local function DoFx(inst)
+    inst.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
+
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local fx = SpawnPrefab("statue_transition_2")
+    if fx ~= nil then
+        fx.Transform:SetPosition(x, y, z)
+        fx.Transform:SetScale(.8, .8, .8)
+    end
+    fx = SpawnPrefab("statue_transition")
+    if fx ~= nil then
+        fx.Transform:SetPosition(x, y, z)
+        fx.Transform:SetScale(.8, .8, .8)
+    end
+end
+
 --Used to keep monkey followers in nightmare form when wearing the crown
 local function nightmaremonkeyloop(inst)
     local timer = inst.components.timer
@@ -56,6 +72,7 @@ local function CanTransform(inst, into_nightmare)
 end
 
 local function DoTransform(inst)
+	DoFx(inst)
 	local health = inst.components.health.current
 	if inst.willar_nightmaremode then
 		inst.AnimState:SetBuild("willar")
