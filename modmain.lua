@@ -7,6 +7,7 @@ PrefabFiles = {
     "monkeydisguise",
     "farmermonkey",
     "farmermonkeypod",
+    "willartapestry",
 }
 
 Assets = {

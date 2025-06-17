@@ -51,6 +51,18 @@ local function onremoved(inst)
     onlosepower(inst)
 end
 
+
+local function onhammered_regular(inst, worker)
+    if inst.components.burnable ~= nil and inst.components.burnable:IsBurning() then
+        inst.components.burnable:Extinguish()
+    end
+    inst.components.lootdropper:DropLoot()
+    local fx = SpawnPrefab("collapse_big")
+    fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    fx:SetMaterial("wood")
+    inst:Remove()
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -92,4 +104,8 @@ local function fn()
 
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
+
+    return inst
 end
+
+return Prefab("willartapestry", fn, assets)
