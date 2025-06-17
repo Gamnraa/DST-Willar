@@ -9,7 +9,6 @@ local function dobuff(inst, owner)
     for follower, _ in pairs(owner.components.leader.followers) do
         if follower:HasTag("monkey") then
             follower.components.combat.externaldamagemultipliers:SetModifier(follower, inst.prefab == "willarcrown" and 1.15 or 1.35, "willarcrownbuff")
-            print(owner.willar_nightmaremode)
             if follower.prefab == "monkey" and owner.willar_nightmaremode then
                 follower.keepnightmareform = follower:DoPeriodicTask(55, function() owner.nightmaremonkeyloop(follower) end)
                 follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
