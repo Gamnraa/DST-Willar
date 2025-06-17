@@ -133,13 +133,26 @@ local function ShouldMonkeyAccept(inst, item, giver)
 end
 
 local function UpdateMaxHealth(inst, newmax)
-    local healthfactor = inst.components.health:GetPercent()
-    print("healthfactor", healthfactor)
+    local factor = inst.components.health:GetPercent()
     inst.components.health:SetMaxHealth(newmax)
-    inst:DoTaskInTime(0, function() inst.components.health.currenthealth = inst.components.health.currenthealth * healthfactor end)
+    inst:DoTaskInTime(0, function() inst.components.health.currenthealth = inst.components.health.currenthealth * factor end)
+end
+
+local function UpdateMaxSanity(inst, newmax)
+    local factor = inst.components.sanity:GetPercent()
+    inst.components.sanity:SetMaxHealth(newmax)
+    inst:DoTaskInTime(0, function() inst.components.sanity.current = inst.components.sanity.current * factor end)
+end
+
+local function UpdateMaxHunger(inst, newmax)
+    local factor = inst.components.hunger:GetPercent()
+    inst.components.hunger:SetMaxHealth(newmax)
+    inst:DoTaskInTime(0, function() inst.components.hunger.currentsanity = inst.components.hunger.currentsanity * factor end)
 end
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
+GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
+GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
 
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
