@@ -155,6 +155,7 @@ GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
 
+
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
@@ -260,6 +261,9 @@ local function NewMonkeyRetarget(inst)
     )
 end
 
+GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH = 50
+GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK = 1.15
+
 local function MakeMonkeysTamable(inst, duration)
     if not GLOBAL.TheWorld.ismastersim then return end
     inst:AddComponent("follower")
@@ -295,6 +299,11 @@ local function MakeMonkeysTamable(inst, duration)
             end
         end)
     end
+
+    if GLOBAL.TheWorld.willartapestrypowered then 
+		 Gram_UpdateMaxHealth(v, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
+         inst.components.combat.externaldamagemultipliers:SetModifier(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive")
+	end
 end
 
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)

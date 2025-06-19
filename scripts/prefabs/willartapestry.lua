@@ -4,35 +4,48 @@ local assets =
     Asset("MINIMAP_IMAGE", "merm_king_carpet"),
 }
 
-local buff_monkey_attack = 1.15
-local buff_monkey_health = 50
+
+local function anytapestryhaspower()
+    for _, v in pairs(TheSim:FindEntities(0,0,0, 9009, {"willarblanket"})) do
+        if v.powered then return true end
+    end
+    return false
+end
 
 local function onpoweredup(inst)
-    --Heaven forgive me wdym this is the way you get every type of prefab in the world
-    local x,y,z = inst.Transform:GetWorldPosition()
-    for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
-        if v:HasTag("player") then
-            Gram_UpdateMaxHealth(v, 10)
-            Gram_UpdateMaxSanity(v, 10)
-            Gram_UpdateMaxSanity(v, 10)
-        else
-            Gram_UpdateMaxHealth(v, buff_monkey_health)
-            v.components.combat.externaldamagemultipliers:SetModifier(v, buff_monkey_attack, "willartapestryactive")
+    
+    if not TheWorld.willartapestrypowered then
+        local x,y,z = inst.Transform:GetWorldPosition()
+        for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
+            if v:HasTag("player") then
+                Gram_UpdateMaxHealth(v, 10)
+                Gram_UpdateMaxSanity(v, 10)
+                Gram_UpdateMaxSanity(v, 10)
+            else
+                Gram_UpdateMaxHealth(v, WILLAR_TAPESTRY_BUFF_HEALTH)
+                v.components.combat.externaldamagemultipliers:SetModifier(v, WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive")
+            end
         end
     end
+    inst.powered = true
+    TheWorld.willartapestrypowered = true
 end
 
 local function onlosepower(inst)
-    local x,y,z = inst.Transform:GetWorldPosition()
-    for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
-        if v:HasTag("player") then
-            Gram_UpdateMaxHealth(v, -10)
-            Gram_UpdateMaxSanity(v, -10)
-            Gram_UpdateMaxSanity(v, -10)
-        else
-            Gram_UpdateMaxHealth(v, -buff_monkey_health)
-            v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive")
+    inst.powered = false
+    if not anytapestryhaspower() then
+        local x,y,z = inst.Transform:GetWorldPosition()
+        for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
+            if v:HasTag("player") then
+                Gram_UpdateMaxHealth(v, -10)
+                Gram_UpdateMaxSanity(v, -10)
+                Gram_UpdateMaxSanity(v, -10)
+            else
+                Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH)
+                v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive")
+            end
         end
+        TheWorld.willartapestrypowered = false
     end
 end
 
@@ -104,6 +117,8 @@ local function fn()
 
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
+
+    inst.powered = false
 
     return inst
 end

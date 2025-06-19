@@ -294,6 +294,11 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
+	if TheWorld.willartapestrypowered then 
+		Gram_UpdateMaxHealth(v, 10)
+        Gram_UpdateMaxSanity(v, 10)
+        Gram_UpdateMaxSanity(v, 10)
+	end
 end
 
 
