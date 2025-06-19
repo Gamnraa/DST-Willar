@@ -4,7 +4,7 @@ local assets =
     Asset("MINIMAP_IMAGE", "merm_king_carpet"),
 }
 
-local powerrequirments = {Ingredient("banana", 3), Ingredient("nightmarefuel", 3)}
+CONSTRUCTION_PLANS["willartapestry"] = {Ingredient("cave_banana", 3), Ingredient("nightmarefuel", 3)}
 
 local function anytapestryhaspower()
     for _, v in pairs(TheSim:FindEntities(0,0,0, 9009, {"willarblanket"})) do
@@ -52,7 +52,7 @@ end
 
 local function onconstructed(inst, doer)
     local concluded = true
-    for _, v in ipairs(powerrequirments) do
+    for _, v in ipairs(CONSTRUCTION_PLANS["willartapestry"]) do
         if inst.components.constructionsite:GetMaterialCount(v.type) < v.amount then
             concluded = false
             break
@@ -62,7 +62,7 @@ local function onconstructed(inst, doer)
     if concluded then
         onpoweredup(inst)
         new_throne.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
-        inst.components.timer:StartTimer("willartapestry", 8 * 60 * 3) -- 3 days DST time
+        inst.components.timer:StartTimer("willartapestry", 3) -- 3 days DST time
         inst:DoTaskInTime(0, function() inst:RemoveComponent("constructionsite") end)
     end
 end
@@ -135,6 +135,7 @@ local function fn()
     local constructionsite = inst:AddComponent("constructionsite")
     constructionsite:SetConstructionPrefab("construction_container")
     constructionsite:SetOnConstructedFn(onconstructed)
+    inst.constructionname = "CONSTRUCT_WILLAR_TAPESTRY"
 
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
@@ -146,5 +147,7 @@ local function fn()
 
     return inst
 end
+
+STRINGS.NAMES.CONSTRUCT_WILLAR_TAPESTRY = "Power On"
 
 return Prefab("willartapestry", fn, assets)
