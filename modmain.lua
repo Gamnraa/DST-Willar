@@ -141,14 +141,14 @@ end
 
 local function UpdateMaxSanity(inst, newmax)
     local factor = inst.components.sanity:GetPercent()
-    inst.components.sanity:SetMaxHealth(newmax)
+    inst.components.sanity:SetMax(newmax)
     inst:DoTaskInTime(0, function() inst.components.sanity.current = inst.components.sanity.current * factor end)
 end
 
 local function UpdateMaxHunger(inst, newmax)
     local factor = inst.components.hunger:GetPercent()
-    inst.components.hunger:SetMaxHealth(newmax)
-    inst:DoTaskInTime(0, function() inst.components.hunger.currentsanity = inst.components.hunger.currentsanity * factor end)
+    inst.components.hunger:SetMax(newmax)
+    inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
@@ -310,7 +310,6 @@ AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
-
 AddCharacterRecipe("cutless",
 	{Ingredient("boards", 1),
 	 Ingredient("rope", 1),
@@ -440,3 +439,4 @@ AddCharacterRecipe("monkeyhut",
 		"STRUCTURES",
 	})
 STRINGS.RECIPE_DESC.MONKEYHUT = "Construct a Powder Monkey Hut."
+
