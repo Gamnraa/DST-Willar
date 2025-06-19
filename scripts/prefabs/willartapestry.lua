@@ -4,6 +4,7 @@ local assets =
     Asset("MINIMAP_IMAGE", "merm_king_carpet"),
 }
 
+local powerrequirments = {Ingredient("banana", 3), Ingredient("nightmarefuel", 3)}
 
 local function anytapestryhaspower()
     for _, v in pairs(TheSim:FindEntities(0,0,0, 9009, {"willarblanket"})) do
@@ -49,19 +50,35 @@ local function onlosepower(inst)
     end
 end
 
-local function ontimerdone(inst, data)
-    if data.name == "willartapestry" then
-        --Debuff monkeys
-        onlosepower(inst)
-        --make component accept materials again
-    end
-end
-
 local function onconstructed(inst, doer)
+    local concluded = true
+    for _, v in ipairs(powerrequirments) do
+        if inst.components.constructionsite:GetMaterialCount(v.type) < v.amount then
+            concluded = false
+            break
+        end
+    end
+
+    if concluded then
+        onpoweredup(inst)
+        new_throne.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
+        inst.components.timer:StartTimer("willartapestry", 8 * 60 * 3) -- 3 days DST time
+        inst:DoTaskInTime(0, function() inst:RemoveComponent("constructionsite") end)
+    end
 end
 
 local function onremoved(inst)
     onlosepower(inst)
+end
+
+local function ontimerdone(inst, data)
+    if data.name == "willartapestry" then
+        --Debuff monkeys
+        onlosepower(inst)
+        local constructionsite = inst:AddComponent("constructionsite")
+        constructionsite:SetConstructionPrefab("construction_container")
+        constructionsite:SetOnConstructedFn(onconstructed)
+    end
 end
 
 
@@ -115,8 +132,15 @@ local function fn()
    
     MakeHauntableWork(inst)
 
+    local constructionsite = inst:AddComponent("constructionsite")
+    constructionsite:SetConstructionPrefab("construction_container")
+    constructionsite:SetOnConstructedFn(onconstructed)
+
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
+
+    inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", ontimerdone)
 
     inst.powered = false
 
