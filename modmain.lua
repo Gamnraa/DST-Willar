@@ -135,19 +135,19 @@ end
 
 local function UpdateMaxHealth(inst, newmax)
     local factor = inst.components.health:GetPercent()
-    inst.components.health:SetMaxHealth(newmax)
+    inst.components.health:SetMaxHealth(inst.components.health:GetMaxWithPenalty() + newmax)
     inst:DoTaskInTime(0, function() inst.components.health.currenthealth = inst.components.health.currenthealth * factor end)
 end
 
 local function UpdateMaxSanity(inst, newmax)
     local factor = inst.components.sanity:GetPercent()
-    inst.components.sanity:SetMax(newmax)
+    inst.components.sanity:SetMax(inst.components.sanity:GetMaxWithPenalty() + newmax)
     inst:DoTaskInTime(0, function() inst.components.sanity.current = inst.components.sanity.current * factor end)
 end
 
 local function UpdateMaxHunger(inst, newmax)
     local factor = inst.components.hunger:GetPercent()
-    inst.components.hunger:SetMax(newmax)
+    inst.components.hunger:SetMax(inst.components.hunger.max + newmax)
     inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
@@ -174,11 +174,11 @@ local function OnMonkeyGetItem(inst, giver, item)
             inst.components.follower:AddLoyaltyTime(240)
 
             if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
-                UpdateMaxHealth(inst, inst.components.health.maxhealth + 75)
+                UpdateMaxHealth(inst, 75)
             elseif inst.prefab == "powder_monkey" then
-                UpdateMaxHealth(inst, inst.components.health.maxhealth + 100)
+                UpdateMaxHealth(inst, 100)
             elseif inst.prefab == "prime_mate" then
-                UpdateMaxHealth(inst, inst.components.health.maxhealth + 50)
+                UpdateMaxHealth(inst, 50)
             end
             
             inst:SetBrain(willarmonkeybrain)
@@ -186,11 +186,11 @@ local function OnMonkeyGetItem(inst, giver, item)
             inst:ListenForEvent("loseloyalty", function() 
                 if inst.prefab == "monkey" then
                     inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
-                    UpdateMaxHealth(inst, 125)
+                    UpdateMaxHealth(inst, -75)
                 elseif inst.prefab == "powder_monkey" then
-                    UpdateMaxHealth(inst, 200)
+                    UpdateMaxHealth(inst, -100)
                 elseif inst.prefab == "prime_mate" then
-                    UpdateMaxHealth(inst, 350)
+                    UpdateMaxHealth(inst, -50)
                 end
                 inst:RemoveTag("willarfollower")
             end)
@@ -301,7 +301,7 @@ local function MakeMonkeysTamable(inst, duration)
     end
 
     if GLOBAL.TheWorld.willartapestrypowered then 
-		 Gram_UpdateMaxHealth(v, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
+		 UpdateMaxHealth(v, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
          inst.components.combat.externaldamagemultipliers:SetModifier(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive")
 	end
 end
