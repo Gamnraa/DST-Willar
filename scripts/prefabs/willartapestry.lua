@@ -18,13 +18,14 @@ local function onpoweredup(inst)
     if not TheWorld.willartapestrypowered then
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
+            print("v", v)
             if v:HasTag("player") then
                 Gram_UpdateMaxHealth(v, 10)
                 Gram_UpdateMaxSanity(v, 10)
                 Gram_UpdateMaxSanity(v, 10)
             else
-                Gram_UpdateMaxHealth(v, WILLAR_TAPESTRY_BUFF_HEALTH)
-                v.components.combat.externaldamagemultipliers:SetModifier(v, WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive")
+                if v.components.health then Gram_UpdateMaxHealth(v, WILLAR_TAPESTRY_BUFF_HEALTH) end
+                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive") end
             end
         end
     end
@@ -42,8 +43,8 @@ local function onlosepower(inst)
                 Gram_UpdateMaxSanity(v, -10)
                 Gram_UpdateMaxSanity(v, -10)
             else
-                Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH)
-                v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive")
+                if v.components.health then Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH) end
+                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive") end
             end
         end
         TheWorld.willartapestrypowered = false
@@ -61,7 +62,7 @@ local function onconstructed(inst, doer)
 
     if concluded then
         onpoweredup(inst)
-        new_throne.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
+        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
         inst.components.timer:StartTimer("willartapestry", 3) -- 3 days DST time
         inst:DoTaskInTime(0, function() inst:RemoveComponent("constructionsite") end)
     end
@@ -115,6 +116,8 @@ local function fn()
     inst.AnimState:SetSortOrder( 3 )
 
     inst:AddTag("mermthrone")
+    inst:AddTag("construnctionsite")
+    inst.constructionname = "CONSTRUCT_WILLAR_TAPESTRY"
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
@@ -135,7 +138,6 @@ local function fn()
     local constructionsite = inst:AddComponent("constructionsite")
     constructionsite:SetConstructionPrefab("construction_container")
     constructionsite:SetOnConstructedFn(onconstructed)
-    inst.constructionname = "CONSTRUCT_WILLAR_TAPESTRY"
 
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
