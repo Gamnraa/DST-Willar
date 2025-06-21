@@ -196,11 +196,13 @@ end
 local function onsave(inst, data)
 	data.willar_nightmaremode = inst.willar_nightmaremode
 	data.willar_nightmaremeter = inst.willar_nightmaremeter
+	data.willar_tapestrybuff = inst.willar_tapestrybuff
 end
 
 local function onpreload(inst, data)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
+	inst.tapestrybuff = data and data.willar_tapestrybuff
 end
 
 -- When loading or spawning the character
@@ -294,7 +296,9 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
-	if TheWorld.willartapestrypowered then 
+
+	inst.tapestrybuff = false
+	if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
 		inst:DoTaskInTime(0, function()
 			Gram_UpdateMaxHealth(inst, 10)
 			Gram_UpdateMaxSanity(inst, 10)
