@@ -164,7 +164,7 @@ local function OnMonkeyGetItem(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
 
-        if item:HasTag("monkeyqueenbribe") then
+        if item.prefab == "cave_banana" then
             if inst.components.combat.target == giver then
                 inst.components.combat:SetTarget(nil)
             end
@@ -377,7 +377,7 @@ STRINGS.RECIPE_DESC.WILLARCROWN = "Become recognized for your monkey regality."
 
 AddCharacterRecipe("willarcrown_ruins",
 	{Ingredient("willarcrown", 1),
-	 Ingredient("thulesite", 3),
+	 Ingredient("thulecite", 3),
      Ingredient("dreadstone", 1)
     },
 	 GLOBAL.TECH.ANCIENT_TWO,

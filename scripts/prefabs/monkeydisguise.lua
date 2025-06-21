@@ -75,7 +75,7 @@ local function fn()
     MakeInventoryPhysics(inst)
 
     inst.AnimState:SetBank("dustmonkeyhat")
-    inst.AnimState:SetBuild("dustmonkeyhat")
+    inst.AnimState:SetBuild("hat_dustmonkey")
     inst.AnimState:PlayAnimation("anim")
 
     inst:AddTag("hat")
