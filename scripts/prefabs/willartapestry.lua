@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/merm_king_carpet.zip"),
+    Asset("ANIM", "anim/monkey_carpet.zip"),
     Asset("MINIMAP_IMAGE", "merm_king_carpet"),
 }
 
@@ -94,6 +94,10 @@ local function onhammered_regular(inst, worker)
     inst:Remove()
 end
 
+local function onsleep(inst, sleeper)
+    sleeper.AnimState:OverrideSymbol("swap_bedroll", "swap_bedroll_straw", "bedroll_straw")
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -107,9 +111,9 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("merm_king_carpet.png")
 
-    inst.AnimState:SetBank("merm_king_carpet")
-    inst.AnimState:SetBuild("merm_king_carpet")
-    inst.AnimState:PlayAnimation("idle", true)
+    inst.AnimState:SetBank("monkey_carpet")
+    inst.AnimState:SetBuild("monkey_carpet")
+    inst.AnimState:PlayAnimation("idle")
 
     inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
     inst.AnimState:SetLayer( LAYER_BACKGROUND )
@@ -124,7 +128,7 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("inspectable")
+    --inst:AddComponent("inspectable")
 
     inst:AddComponent("lootdropper")
 
@@ -145,7 +149,14 @@ local function fn()
     inst:AddComponent("timer")
     inst:ListenForEvent("timerdone", ontimerdone)
 
+    inst:AddComponent("sleepingbag")
+    inst.components.sleepingbag.onsleep = onsleep
+    --inst.components.sleepingbag.onwake = onwake
+    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK *2
+    inst.components.sleepingbag.hunger_tick = -2
+
     inst.powered = false
+
 
     return inst
 end
