@@ -63,7 +63,7 @@ local function onconstructed(inst, doer)
     if concluded then
         onpoweredup(inst)
         inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
-        inst.components.timer:StartTimer("willartapestry", 3) -- 3 days DST time
+        inst.components.timer:StartTimer("willartapestry", 8 * 60 * 3) -- 3 days DST time
         inst:DoTaskInTime(0, function() inst:RemoveComponent("constructionsite") end)
     end
 end

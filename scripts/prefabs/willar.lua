@@ -215,11 +215,11 @@ local function onload(inst, data)
 	inst:DoTaskInTime(0, function()
 		for follower, _ in pairs(inst.components.leader.followers) do
 			if follower.prefab == "monkey" then
-                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 75)
+                Gram_UpdateMaxHealth(follower, 75)
             elseif follower.prefab == "powder_monkey" then
-                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 100)
+                Gram_UpdateMaxHealth(follower, 100)
             elseif inst.prefab == "prime_mate" then
-                Gram_UpdateMaxHealth(follower, follower.components.health.maxhealth + 50)
+                Gram_UpdateMaxHealth(follower, 50)
             end
 		end
 	end)
@@ -295,9 +295,11 @@ local master_postinit = function(inst)
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
 	if TheWorld.willartapestrypowered then 
-		Gram_UpdateMaxHealth(v, 10)
-        Gram_UpdateMaxSanity(v, 10)
-        Gram_UpdateMaxSanity(v, 10)
+		inst:DoTaskInTime(0, function()
+			Gram_UpdateMaxHealth(inst, 10)
+			Gram_UpdateMaxSanity(inst, 10)
+			Gram_UpdateMaxSanity(inst, 10)
+		end)
 	end
 end
 
