@@ -42,7 +42,9 @@ local function onequip(inst, owner)
 	owner.AnimState:Hide("HEAD_HAT_NOHELM")
 	owner.AnimState:Hide("HEAD_HAT_HELM")
 
-    owner:DoTaskInTime(.15, dobuff, owner)
+    if owner:HasTag("willar") then
+        owner:DoTaskInTime(.15, dobuff, owner)
+    end
 
     if inst.components.fueled ~= nil then
         inst.components.fueled:StartConsuming()
@@ -74,10 +76,6 @@ local function onunequip(inst, owner)
         inst.components.fueled:StopConsuming()
     end
 
-    if inst.components.fueled ~= nil then
-		inst.components.fueled:StopConsuming()
-    end
-    
     if inst._fx ~= nil then
         inst._fx:kill_fx()
         inst._fx = nil
@@ -192,24 +190,25 @@ local function makecrown(name)
         if not TheWorld.ismastersim then
             return inst
         end
-
-        inst:AddComponent("fueled")
-        inst.components.fueled.fueltype = FUELTYPE.NIGHTMARE
-        inst.components.fueled:InitializeFuelLevel(30 * 16 * 3) --3 days
-        inst.components.fueled:SetDepletedFn(ondepleted)
-        inst.components.fueled:SetTakeFuelFn(ontakefuel)
-        inst.components.fueled.accepting = true
-
+        
         inst:AddComponent("inventoryitem")
-        inst.inventory = inst.components.inventoryitem
         inst:AddComponent("inspectable")
-
-        --inst:AddComponent("tradable")
 
         inst:AddComponent("equippable")
         inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
         inst.components.equippable:SetOnEquip(onequip)
         inst.components.equippable:SetOnUnequip(onunequip)
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        --inst.components.fueled.secondaryfueltype = FUELTYPE.NIGHTMARE
+        inst.components.fueled:InitializeFuelLevel(30 * 16 * 3) --3 days
+        inst.components.fueled:SetDepletedFn(ondepleted)
+        inst.components.fueled:SetTakeFuelFn(ontakefuel)
+        inst.components.fueled.accepting = true
+
+        --inst:AddComponent("tradable")
+
 
         MakeHauntableLaunch(inst)
             
@@ -223,7 +222,7 @@ local function makecrown(name)
         end
 
         inst:AddComponent("armor")
-        inst.components.armor:InitCondition(TUNING.ARMOR_RUINSHAT, 0)
+        --inst.components.armor:InitCondition(TUNING.ARMOR_RUINSHAT, 0)
 
         if name == "willarcrown_ruins" then
             inst._fx = nil
