@@ -167,6 +167,10 @@ local function tryproc(inst, owner, data)
     end
 end
 
+local function syncfueledarmor(inst, data)
+    inst.components.armor.condition = data.percent * 100
+end
+
 local function makecrown(name)
     local function fn()
         local inst = CreateEntity()
@@ -251,6 +255,8 @@ local function makecrown(name)
         end
 
         inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED_LARGE
+
+        inst:ListenForEvent("percentusedchange", syncfueledarmor)
 
         return inst
     end
