@@ -6,6 +6,11 @@ local assets =
 
 CONSTRUCTION_PLANS["willartapestry"] = {Ingredient("cave_banana", 3), Ingredient("nightmarefuel", 3)}
 
+local function getstatus(inst)
+    return (inst:HasTag("burnt") and "BURNT")
+        or "GENERIC"
+end
+
 local function anytapestryhaspower()
     for _, v in pairs(TheSim:FindEntities(0,0,0, 9009, {"willarblanket"})) do
         if v.powered then return true end
@@ -33,24 +38,6 @@ local function onpoweredup(inst)
     TheWorld.willartapestrypowered = true
 end
 
-local function onlosepower(inst)
-    inst.powered = false
-    if not anytapestryhaspower() then
-        local x,y,z = inst.Transform:GetWorldPosition()
-        for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
-            if v:HasTag("player") then
-                Gram_UpdateMaxHealth(v, -10)
-                Gram_UpdateMaxSanity(v, -10)
-                Gram_UpdateMaxSanity(v, -10)
-            else
-                if v.components.health then Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH) end
-                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive") end
-            end
-        end
-        TheWorld.willartapestrypowered = false
-    end
-end
-
 local function onconstructed(inst, doer)
     local concluded = true
     for _, v in ipairs(CONSTRUCTION_PLANS["willartapestry"]) do
@@ -65,6 +52,31 @@ local function onconstructed(inst, doer)
         inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/merm/throne/build")
         inst.components.timer:StartTimer("willartapestry", 8 * 60 * 3) -- 3 days DST time
         inst:DoTaskInTime(0, function() inst:RemoveComponent("constructionsite") end)
+    end
+end
+
+local function onlosepower(inst)
+    inst.powered = false
+
+    if not inst:HasTag("burnt") then
+        local constructionsite = inst:AddComponent("constructionsite")
+        constructionsite:SetConstructionPrefab("construction_container")
+        constructionsite:SetOnConstructedFn(onconstructed)
+    end
+
+    if not anytapestryhaspower() then
+        local x,y,z = inst.Transform:GetWorldPosition()
+        for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
+            if v:HasTag("player") then
+                Gram_UpdateMaxHealth(v, -10)
+                Gram_UpdateMaxSanity(v, -10)
+                Gram_UpdateMaxSanity(v, -10)
+            else
+                if v.components.health then Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH) end
+                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive") end
+            end
+        end
+        TheWorld.willartapestrypowered = false
     end
 end
 
@@ -94,8 +106,24 @@ local function onhammered_regular(inst, worker)
     inst:Remove()
 end
 
+local function onburnt(inst)
+    onlosepower(inst)
+end
+
 local function onsleep(inst, sleeper)
     sleeper.AnimState:OverrideSymbol("swap_bedroll", "swap_bedroll_straw", "bedroll_straw")
+end
+
+local function onsave(inst, data)
+    data.powered = inst.powered
+    if inst:HasTag("burnt") or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+        data.burnt = true
+    end
+end
+
+local function onload(inst, data)
+    inst.powered = data.powered
+    if data.burnt then inst.components.burnable.onburnt(inst) end
 end
 
 local function fn()
@@ -119,16 +147,13 @@ local function fn()
     inst.AnimState:SetLayer( LAYER_BACKGROUND )
     inst.AnimState:SetSortOrder( 3 )
 
-    inst:AddTag("mermthrone")
-    inst:AddTag("construnctionsite")
-    inst.constructionname = "CONSTRUCT_WILLAR_TAPESTRY"
-
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
 
     --inst:AddComponent("inspectable")
+    --inst.components.inspectable.getstatus = getstatus
 
     inst:AddComponent("lootdropper")
 
@@ -138,13 +163,20 @@ local function fn()
     workable:SetOnFinishCallback(onhammered_regular)
    
     MakeHauntableWork(inst)
+    MakeLargeBurnable(inst, nil, nil, true)
 
-    local constructionsite = inst:AddComponent("constructionsite")
-    constructionsite:SetConstructionPrefab("construction_container")
-    constructionsite:SetOnConstructedFn(onconstructed)
+    inst:DoTaskInTime(0, function()
+        if not inst.powered then
+            local constructionsite = inst:AddComponent("constructionsite")
+            constructionsite:SetConstructionPrefab("construction_container")
+            constructionsite:SetOnConstructedFn(onconstructed)
+            --inst:AddTag("construnctionsite")
+        end
+    end)
 
     inst:ListenForEvent("ondeconstructstructure", onremoved)
     inst:ListenForEvent("onremove", onremoved)
+    inst:ListenForEvent("onburnt", onburnt)
 
     inst:AddComponent("timer")
     inst:ListenForEvent("timerdone", ontimerdone)
@@ -152,11 +184,11 @@ local function fn()
     inst:AddComponent("sleepingbag")
     inst.components.sleepingbag.onsleep = onsleep
     --inst.components.sleepingbag.onwake = onwake
-    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK *2
+    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 2
     inst.components.sleepingbag.hunger_tick = -2
 
-    inst.powered = false
-
+    inst.OnSave = onsave
+    inst.OnLoad = onload
 
     return inst
 end
