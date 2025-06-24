@@ -123,6 +123,8 @@ end
 AddPrefabPostInit("nightmarefuel", SetNightmareFuelEdible)
 AddPrefabPostInit("horrorfuel", SetNightmareFuelEdible)
 
+
+--Code related to taming monkeys
 local function ShouldMonkeyAccept(inst, item, giver)
     if inst.components.health and inst.components.health:IsDead() then
         return false, "DEAD"
@@ -310,6 +312,7 @@ AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
+--Code related to the blanket
  local State = GLOBAL.State
  local FRAMES = GLOBAL.FRAMES
  local TimeEvent = GLOBAL.TimeEvent
@@ -392,7 +395,7 @@ local willar_sleep = State({
                 inst:ClearBufferedAction()
                 inst.sg:GoToState("idle")
                 if inst.components.talker ~= nil then
-                    inst.components.talker:Say(GetString(inst, failreason))
+                    inst.components.talker:Say(GLOBAL.GetString(inst, failreason))
                 end
                 return
             end
@@ -512,6 +515,14 @@ local willar_sleep_action_client = State({
 AddStategraphState("wilson_client", willar_sleep_client)
 AddStategraphState("wilson_client", willar_sleep_action_client)
 
+local oldconstructstrfn = GLOBAL.ACTIONS.CONSTRUCT.strfn
+
+GLOBAL.ACTIONS.CONSTRUCT.strfn = function(act)
+    return act.target.prefab == "willartapestry" and "TURNON" or oldconstructstrfn(act)
+end
+
+
+--Recipes
 AddCharacterRecipe("cutless",
 	{Ingredient("boards", 1),
 	 Ingredient("rope", 1),
