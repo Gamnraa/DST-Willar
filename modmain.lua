@@ -521,6 +521,15 @@ GLOBAL.ACTIONS.CONSTRUCT.strfn = function(act)
     return act.target.prefab == "willartapestry" and "TURNON" or oldconstructstrfn(act)
 end
 
+GLOBAL.ACTIONS.SLEEPIN.priority = 10
+
+AddComponentAction("SCENE", "sleepingbag", function(inst, doer, actions, right)
+    if GLOBAL.TheInput:IsKeyDown(GLOBAL.KEY_ALT) and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
+        (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
+            table.insert(actions, GLOBAL.ACTIONS.SLEEPIN)
+    end
+end)
+
 
 --Recipes
 AddCharacterRecipe("cutless",
@@ -653,3 +662,18 @@ AddCharacterRecipe("monkeyhut",
 	})
 STRINGS.RECIPE_DESC.MONKEYHUT = "Construct a Powder Monkey Hut."
 
+AddCharacterRecipe("willartapestry",
+    {Ingredient("goldnugget", 3),
+     Ingredient("beefalowool", 3),
+     Ingredient("steeelwool", 3)
+    },
+    GLOBAL.TECH.SCIENCE_TWO,
+    {
+        placer = "willartapestry_placer",
+        builder_tag = "willar",
+        numtogive = 1,
+    },
+    {
+        "STRUCTURES",
+    })
+STRINGS.RECIPE_DESC.WILLARTAPESTRY = "Construct a Royal Blanket."
