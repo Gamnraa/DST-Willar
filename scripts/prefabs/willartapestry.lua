@@ -88,9 +88,6 @@ local function ontimerdone(inst, data)
     if data.name == "willartapestry" then
         --Debuff monkeys
         onlosepower(inst)
-        local constructionsite = inst:AddComponent("constructionsite")
-        constructionsite:SetConstructionPrefab("construction_container")
-        constructionsite:SetOnConstructedFn(onconstructed)
     end
 end
 
@@ -122,8 +119,8 @@ local function onsave(inst, data)
 end
 
 local function onload(inst, data)
-    inst.powered = data.powered
-    if data.burnt then inst.components.burnable.onburnt(inst) end
+    inst.powered = data and data.powered or false
+    if data and data.burnt then inst.components.burnable.onburnt(inst) end
 end
 
 local function fn()
@@ -152,8 +149,8 @@ local function fn()
         return inst
     end
 
-    --inst:AddComponent("inspectable")
-    --inst.components.inspectable.getstatus = getstatus
+    inst:AddComponent("inspectable")
+    inst.components.inspectable.getstatus = getstatus
 
     inst:AddComponent("lootdropper")
 
@@ -187,6 +184,8 @@ local function fn()
     inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 2
     inst.components.sleepingbag.hunger_tick = -2
 
+    inst:AddComponent("doubleactionfix")
+
     inst.OnSave = onsave
     inst.OnLoad = onload
 
@@ -195,4 +194,5 @@ end
 
 STRINGS.NAMES.CONSTRUCT_WILLAR_TAPESTRY = "Power On"
 
-return Prefab("willartapestry", fn, assets)
+return Prefab("willartapestry", fn, assets),
+    MakePlacer("willartapestry_placer", "monkey_carpet", "monkey_carpet", "idle")

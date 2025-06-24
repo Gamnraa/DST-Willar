@@ -374,6 +374,7 @@ local willar_sleep = State({
         tags = { "bedroll", "busy", "nomorph" },
 
         onenter = function(inst)
+            print("BLANKET ONENTER")
             inst.components.locomotor:Stop()
 
             local failreason =
@@ -489,7 +490,7 @@ local willar_sleep_action_client = State({
 			inst.AnimState:PlayAnimation("dozy")
 			inst.AnimState:PushAnimation("sleep_loop", false)
 			inst:PerformPreviewBufferedAction()
-			inst.sg:SetTimeout(TIMEOUT)
+			inst.sg:SetTimeout(2)
 		end,
 
 		onupdate = function(inst)
@@ -521,14 +522,19 @@ GLOBAL.ACTIONS.CONSTRUCT.strfn = function(act)
     return act.target.prefab == "willartapestry" and "TURNON" or oldconstructstrfn(act)
 end
 
-GLOBAL.ACTIONS.SLEEPIN.priority = 10
+local sleepinfn = GLOBAL.ACTIONS.SLEEPIN.fn
+AddAction("SLEEPBLANKET", "Sleep", GLOBAL.ACTIONS.SLEEPIN.fn)
+GLOBAL.ACTIONS.SLEEPBLANKET.priority = 10
 
-AddComponentAction("SCENE", "sleepingbag", function(inst, doer, actions, right)
+AddComponentAction("SCENE", "doubleactionfix", function(inst, doer, actions, right)
     if GLOBAL.TheInput:IsKeyDown(GLOBAL.KEY_ALT) and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
         (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
-            table.insert(actions, GLOBAL.ACTIONS.SLEEPIN)
+            table.insert(actions, GLOBAL.ACTIONS.SLEEPBLANKET)
     end
 end)
+
+AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
+AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
 
 
 --Recipes
