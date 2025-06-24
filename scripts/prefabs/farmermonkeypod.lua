@@ -159,7 +159,7 @@ local function fn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
 
-    MakeLargeBurnable(inst)
+    --MakeLargeBurnable(inst)
 	MakeLargePropagator(inst)
     inst:ListenForEvent("onignite", OnIgniteFn)
 
