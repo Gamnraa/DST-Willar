@@ -561,7 +561,6 @@ AddAction("SLEEPBLANKET", "Sleep", GLOBAL.ACTIONS.SLEEPIN.fn)
 GLOBAL.ACTIONS.SLEEPBLANKET.priority = 10
 
 AddComponentAction("SCENE", "doubleactionfix", function(inst, doer, actions, right)
-    print(doer.willartapestrykey)
     if doer.willartapestrykey == GLOBAL.KEY_ALT and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
         (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
             table.insert(actions, GLOBAL.ACTIONS.SLEEPBLANKET)
