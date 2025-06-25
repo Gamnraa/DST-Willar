@@ -313,6 +313,28 @@ AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400)
 AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
 
 --Code related to the blanket
+local function tapestry_rpc(inst, key)
+    inst.willartapestrykey = key
+end
+AddModRPCHandler("GramWillarTapestryRPC", "GramWillarTapestry", tapestry_rpc)
+
+AddSimPostInit(function()
+    GLOBAL.TheInput:AddKeyHandler(function(key, down)
+        --I'm gonna be nice for once
+        if key == GLOBAL.KEY_LALT and down then
+            GLOBAL.ThePlayer.willartapestrykey = GLOBAL.KEY_ALT
+            if not GLOBAL.TheWorld.ismastersim then
+                GLOBAL.SendModRPCToServer(GLOBAL.GetModRPC("GramWillarTapestryRPC", "GramWillarTapestry"), GLOBAL.KEY_ALT)
+            end
+        elseif key == GLOBAL.KEY_LALT and not down then
+            GLOBAL.ThePlayer.willartapestrykey = nil
+            if not GLOBAL.TheWorld.ismastersim then
+                GLOBAL.SendModRPCToServer(GLOBAL.GetModRPC("GramWillarTapestryRPC", "GramWillarTapestry"), nil)
+            end
+        end
+    end)
+end)
+
  local State = GLOBAL.State
  local FRAMES = GLOBAL.FRAMES
  local TimeEvent = GLOBAL.TimeEvent
@@ -479,7 +501,7 @@ local willar_sleep_client = State({
 		name = "willar_blanket",
 		server_states = { "willar_blanket"},
 		forward_server_states = true,
-		onenter = function(inst) inst.sg:GoToState("willar_blanket_action") end,
+		onenter = function(inst) print(GLOBAL.hash("willar_blanket"), GLOBAL.hash("idle")) inst.sg:GoToState("willar_blanket_action") end,
 	})
 
 local willar_sleep_action_client = State({
@@ -527,13 +549,14 @@ AddAction("SLEEPBLANKET", "Sleep", GLOBAL.ACTIONS.SLEEPIN.fn)
 GLOBAL.ACTIONS.SLEEPBLANKET.priority = 10
 
 AddComponentAction("SCENE", "doubleactionfix", function(inst, doer, actions, right)
-    if GLOBAL.TheInput:IsKeyDown(GLOBAL.KEY_ALT) and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
+    print(doer.willartapestrykey)
+    if doer.willartapestrykey == GLOBAL.KEY_ALT and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
         (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
             table.insert(actions, GLOBAL.ACTIONS.SLEEPBLANKET)
     end
 end)
 
-AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
+AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, function(inst, action) print("HELLO??") return "willar_blanket" end))
 AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
 
 
