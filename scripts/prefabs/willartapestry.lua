@@ -36,6 +36,8 @@ local function onpoweredup(inst)
     end
     inst.powered = true
     TheWorld.willartapestrypowered = true
+    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 4
+    inst.Light:Enable(true)
 end
 
 local function onconstructed(inst, doer)
@@ -57,7 +59,7 @@ end
 
 local function onlosepower(inst)
     inst.powered = false
-
+    inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 2
     if not inst:HasTag("burnt") then
         local constructionsite = inst:AddComponent("constructionsite")
         constructionsite:SetConstructionPrefab("construction_container")
@@ -77,6 +79,7 @@ local function onlosepower(inst)
             end
         end
         TheWorld.willartapestrypowered = false
+        inst.Light:Enable(false)
     end
 end
 
@@ -130,11 +133,18 @@ local function fn()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()
+    inst.entity:AddLight()
     inst.entity:AddNetwork()
 
     inst.Transform:SetScale(0.9, 0.9, 0.9)
 
     inst.MiniMapEntity:SetIcon("merm_king_carpet.png")
+
+    inst.Light:SetFalloff(1)
+    inst.Light:SetIntensity(1.5)
+    inst.Light:SetRadius(6)
+    inst.Light:SetColour(180 / 255, 195 / 255, 225 / 255)
+    inst.Light:Enable(false)
 
     inst.AnimState:SetBank("monkey_carpet")
     inst.AnimState:SetBuild("monkey_carpet")
@@ -162,12 +172,16 @@ local function fn()
     MakeHauntableWork(inst)
     MakeLargeBurnable(inst, nil, nil, true)
 
+    local constructionsite = inst:AddComponent("constructionsite")
+    constructionsite:SetConstructionPrefab("construction_container")
+    constructionsite:SetOnConstructedFn(onconstructed)
+
     inst:DoTaskInTime(0, function()
-        if not inst.powered then
-            local constructionsite = inst:AddComponent("constructionsite")
-            constructionsite:SetConstructionPrefab("construction_container")
-            constructionsite:SetOnConstructedFn(onconstructed)
+        if inst.powered then
+            inst:RemoveComponent("constructionsite")
             --inst:AddTag("construnctionsite")
+            inst.Light:Enable(true)
+        else inst.Light:Enable(false)
         end
     end)
 

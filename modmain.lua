@@ -553,8 +553,7 @@ AddStategraphState("wilson_client", willar_sleep_action_client)
 local oldconstructstrfn = GLOBAL.ACTIONS.CONSTRUCT.strfn
 
 GLOBAL.ACTIONS.CONSTRUCT.strfn = function(act)
-    act.target:DoTaskInTime(2 * GLOBAL.FRAMES, function() 
-    return act.target.prefab == "willartapestry" and "TURNON" or oldconstructstrfn(act) end)
+    return act.target.prefab == "willartapestry" and "TURNON" or oldconstructstrfn(act)
 end
 
 local sleepinfn = GLOBAL.ACTIONS.SLEEPIN.fn
