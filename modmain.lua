@@ -53,6 +53,18 @@ Assets = {
 
     Asset( "IMAGE", "images/inventoryimages/monkeydisguise.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/monkeydisguise.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/farmermonkeypod.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/farmermonkeypod.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/willarblanket.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/willarblanket.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/monkeybarrelrecipe.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/monkeybarrelrecipe.xml" ),
+
+    Asset( "IMAGE", "images/inventoryimages/monkeyhutrecipe.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/monkeyhutrecipe.xml" ),
 }
 
 AddMinimapAtlas("images/map_icons/willar.xml")
@@ -652,6 +664,8 @@ AddCharacterRecipe("farmermonkeypod",
 		placer = "farmermonkeypod_placer",
 		builder_tag = "willar",
 		numtogive = 1,
+        atlas = "images/inventoryimages/farmermonkeypod.xml",
+        image = "farmermonkeypod.tex"
 	},
 	{
 		"STRUCTURES",
@@ -668,7 +682,9 @@ AddCharacterRecipe("monkeybarrel",
 		placer = "monkeybarrel_placer",
 		builder_tag = "willar",
 		numtogive = 1,
-        image = "monkeybarrel.tex"
+        atlas = "images/inventoryimages/monkeybarrelrecipe.xml",
+        image = "monkeybarrelrecipe.tex"
+        
 	},
 	{
 		"STRUCTURES",
@@ -685,6 +701,8 @@ AddCharacterRecipe("monkeyhut",
 		placer = "monkeyhut_placer",
 		builder_tag = "willar",
 		numtogive = 1,
+        atlas = "images/inventoryimages/monkeyhutrecipe.xml",
+        image = "monkeyhutrecipe.tex"
 	},
 	{
 		"STRUCTURES",
@@ -701,6 +719,8 @@ AddCharacterRecipe("willartapestry",
         placer = "willartapestry_placer",
         builder_tag = "willar",
         numtogive = 1,
+        atlas = "images/inventoryimages/willarblanket.xml",
+        image = "willarblanket.tex"
     },
     {
         "STRUCTURES",
