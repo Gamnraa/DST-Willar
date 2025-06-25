@@ -23,7 +23,6 @@ local function onpoweredup(inst)
     if not TheWorld.willartapestrypowered then
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
-            print("v", v)
             if v:HasTag("player") then
                 Gram_UpdateMaxHealth(v, 10)
                 Gram_UpdateMaxSanity(v, 10)
@@ -38,6 +37,7 @@ local function onpoweredup(inst)
     TheWorld.willartapestrypowered = true
     inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 4
     inst.Light:Enable(true)
+    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 end
 
 local function onconstructed(inst, doer)
@@ -80,6 +80,7 @@ local function onlosepower(inst)
         end
         TheWorld.willartapestrypowered = false
         inst.Light:Enable(false)
+        inst.AnimState:ClearBloomEffectHandle()
     end
 end
 
@@ -140,11 +141,12 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("merm_king_carpet.png")
 
-    inst.Light:SetFalloff(1)
-    inst.Light:SetIntensity(1.5)
-    inst.Light:SetRadius(6)
+    inst.Light:SetFalloff(1.22)
+    inst.Light:SetIntensity(.35)
+    inst.Light:SetRadius(3)
     inst.Light:SetColour(180 / 255, 195 / 255, 225 / 255)
     inst.Light:Enable(false)
+    inst.AnimState:ClearBloomEffectHandle()
 
     inst.AnimState:SetBank("monkey_carpet")
     inst.AnimState:SetBuild("monkey_carpet")
@@ -153,6 +155,10 @@ local function fn()
     inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
     inst.AnimState:SetLayer( LAYER_BACKGROUND )
     inst.AnimState:SetSortOrder( 3 )
+
+    inst.AnimState:SetLightOverride(0.5)
+
+    inst:AddTag("light")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
@@ -179,9 +185,12 @@ local function fn()
     inst:DoTaskInTime(0, function()
         if inst.powered then
             inst:RemoveComponent("constructionsite")
-            --inst:AddTag("construnctionsite")
+            inst:AddTag("construnctionsite")
             inst.Light:Enable(true)
-        else inst.Light:Enable(false)
+            inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+        else 
+            inst.Light:Enable(false)
+            inst.AnimState:ClearBloomEffectHandle()
         end
     end)
 
