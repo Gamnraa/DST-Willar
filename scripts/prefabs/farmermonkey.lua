@@ -123,9 +123,9 @@ local function OnLoad(inst, data)
 	end
 end
 
-local function OnDeath(inst,data)
-    inst.components.inventory:DropItem(item, nil, true)
-end
+--local function OnDeath(inst,data)
+--   inst.components.inventory:DropItem(item, nil, true)
+--end
 
 local function OnGotItem(inst,data)
     if data.item and (data.item.prefab == "cave_banana" or data.item.prefab == "cave_banana_cooked") then
@@ -295,7 +295,7 @@ local function fn()
     inst:ListenForEvent("onpickupitem", OnPickup)
 	--inst:ListenForEvent("dropitem", OnDropItem)
     inst:ListenForEvent("attacked", OnAttacked)
-    inst:ListenForEvent("death", OnDeath)
+    --inst:ListenForEvent("death", OnDeath)
     --inst:ListenForEvent("itemget", OnGotItem)
     inst:ListenForEvent("ms_seamlesscharacterspawned", onmonkeychange, TheWorld)
 
