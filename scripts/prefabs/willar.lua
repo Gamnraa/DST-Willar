@@ -99,10 +99,10 @@ local function DoTransform(inst)
 		inst.AnimState:SetBuild("shadow_willar")
 		inst:AddTag("nightmarewillar")
 
-		inst.components.combat.damagemultiplier = 1.25
-		inst.components.health:SetMaxHealth(175)
+		--inst.components.combat.damagemultiplier = 1.25 shadow aligned only, handled by onequip now
+		inst.components.health:SetMaxHealth(200)
 		inst.components.health.current = health
-		inst.components.health:DoDelta(25)
+		inst.components.health:DoDelta(50)
 		inst.components.locomotor:SetExternalSpeedMultiplier(inst, "willar_nightmare_speed_mod", 1.25)
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
@@ -161,20 +161,30 @@ end
 
 local pirate_weapons = {
 	["cutless"] = true,
-	["oar_monkey"] = true,
+	["nightsword"] = true,
 	["willarsword"] = true,
+	["glasscutter"] = true,
+	["sword_lunarplant"] = true,
 }
 
 local function OnEquip(inst, data)
 	if pirate_weapons[data.item.prefab] then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
 	end
+
+	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
+		inst.components.combat.damagemultiplier = 1.25
+	end
 end
 
 local function OnUnequip(inst, data)
 	local inv = inst.components.inventory
-	if not (pirate_weapons[(EQUIPSLOTS.HANDS)]) then 
+	if not (pirate_weapons[data.item.prefab]) then 
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
+	end
+
+	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
+		inst.components.combat.damagemultiplier = 1.00
 	end
 end
 
