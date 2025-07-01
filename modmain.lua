@@ -85,7 +85,7 @@ local EQUIPSLOTS = GLOBAL.EQUIPSLOTS
 -- The character select screen lines
 STRINGS.CHARACTER_TITLES.willar = "Title"
 STRINGS.CHARACTER_NAMES.willar = "Willar"
-STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Perk/Attribute 1\n*Perk/Attribute 2\n*Perk/Attribute 3"
+STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Easily misunderstood, has a dark side\n*Is a monkey, with BIG ideas\n*Is both a warrior and king (sorta)"
 STRINGS.CHARACTER_QUOTES.willar = "\"...\""
 STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
 
@@ -586,7 +586,7 @@ AddCharacterRecipe("cutless",
 	{
 		"WEAPONS",
 	})
-STRINGS.RECIPE_DESC.WILLARSWORD = "Great for splinters."
+STRINGS.RECIPE_DESC.WILLARSWORD = "A sword for stealing riches."
 
 AddCharacterRecipe("willarsword",
 	{Ingredient("cutless", 1),
@@ -602,7 +602,7 @@ AddCharacterRecipe("willarsword",
 	{
 		"WEAPONS",
 	})
-STRINGS.RECIPE_DESC.WILLARSWORD = "Cutmore."
+STRINGS.RECIPE_DESC.WILLARSWORD = "A sword made of riches, for taking lives."
 
 
 AddCharacterRecipe("monkeydisguise",
@@ -619,7 +619,7 @@ AddCharacterRecipe("monkeydisguise",
 	{
 		"WEAPONS",
 	})
-STRINGS.RECIPE_DESC.MONKEYDISGUISE = "Disguise yourself as a primemate."
+STRINGS.RECIPE_DESC.MONKEYDISGUISE = "Look like the best."
 
 AddCharacterRecipe("willarcrown",
 	{Ingredient("cave_banana", 3),
@@ -635,7 +635,7 @@ AddCharacterRecipe("willarcrown",
 	{
 		"CLOTHING", "MAGIC"
 	})
-STRINGS.RECIPE_DESC.WILLARCROWN = "Become recognized for your monkey regality."
+STRINGS.RECIPE_DESC.WILLARCROWN = "Good start, helps kings lead."
 
 AddCharacterRecipe("willarcrown_ruins",
 	{Ingredient("willarcrown", 1),
@@ -651,7 +651,7 @@ AddCharacterRecipe("willarcrown_ruins",
 	{
 		"CLOTHING", "ARMOUR", "MAGIC"
 	})
-STRINGS.RECIPE_DESC.WILLARCROWN_RUINS = "Enhance your influence over your subjects."
+STRINGS.RECIPE_DESC.WILLARCROWN_RUINS = "The real deal, fit for a king."
 
 AddCharacterRecipe("farmermonkeypod",
 	{Ingredient("boards", 4),
@@ -669,7 +669,7 @@ AddCharacterRecipe("farmermonkeypod",
 	{
 		"STRUCTURES",
 	})
-STRINGS.RECIPE_DESC.FARMERMONKEYPOD = "Houses one Farmer Monkey."
+STRINGS.RECIPE_DESC.FARMERMONKEYPOD = "Handles all the busywork."
 
 AddCharacterRecipe("monkeybarrel",
 	{Ingredient("boards", 2),
@@ -688,7 +688,7 @@ AddCharacterRecipe("monkeybarrel",
 	{
 		"STRUCTURES",
 	})
-STRINGS.RECIPE_DESC.MONKEYBARREL = "Construct a Splumonkey Pod."
+STRINGS.RECIPE_DESC.MONKEYBARREL = "A barrel of friends."
 
 AddCharacterRecipe("monkeyhut",
 	{Ingredient("boards", 2),
@@ -706,7 +706,7 @@ AddCharacterRecipe("monkeyhut",
 	{
 		"STRUCTURES",
 	})
-STRINGS.RECIPE_DESC.MONKEYHUT = "Construct a Powder Monkey Hut."
+STRINGS.RECIPE_DESC.MONKEYHUT = "Subjects from across the big lake."
 
 AddCharacterRecipe("willartapestry",
     {Ingredient("goldnugget", 3),
@@ -724,4 +724,4 @@ AddCharacterRecipe("willartapestry",
     {
         "STRUCTURES",
     })
-STRINGS.RECIPE_DESC.WILLARTAPESTRY = "Construct a Royal Blanket."
+STRINGS.RECIPE_DESC.WILLARTAPESTRY = "Looks comfy, and magical."
