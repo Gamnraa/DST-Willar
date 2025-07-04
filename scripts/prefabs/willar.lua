@@ -14,7 +14,6 @@ local prefabs = {
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.WILLAR = {
 	"poop",
 	"poop",
-	"poop",
 	"dug_bananabush",
 	"dug_bananabush"
 }
@@ -132,10 +131,6 @@ end
 
 local banana_food = {
 	["cave_banana"] = true,
-	["cave_banana_cooked"] = true,
-	["bananapop"] = true,
-	["forzenbananadaiquiri"] = true,
-	["bananajuice"] = true
 }
 
 local function OnEat(inst, food)
@@ -168,6 +163,10 @@ local pirate_weapons = {
 }
 
 local function OnEquip(inst, data)
+	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
+	end
+	
 	if pirate_weapons[data.item.prefab] then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
 	end
