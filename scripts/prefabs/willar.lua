@@ -166,7 +166,7 @@ local function OnEquip(inst, data)
 	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
 	end
-	
+
 	if pirate_weapons[data.item.prefab] then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
 	end
@@ -250,7 +250,7 @@ local common_postinit = function(inst)
 	--inst:ListenForEvent("playeractivated", onPlayerSpawn)
 	inst:AddTag("willar")
 	inst:AddTag("monkey")
-	inst:AddTag("wonkey")
+	--inst:AddTag("wonkey")
 
 	--inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.willar_nightmaremeter", "nightmaremeterdirty")
 end
