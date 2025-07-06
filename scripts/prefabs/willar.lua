@@ -76,6 +76,7 @@ local function DoTransform(inst)
 	if inst.willar_nightmaremode then
 		inst.AnimState:SetBuild("willar")
 		inst:RemoveTag("nightmarewillar")
+		inst:RemoveTag("monster")
 
 		inst.components.combat.damagemultiplier = 1
 		inst.components.health:SetMaxHealth(150) --VARIABLE GOES HERE
@@ -97,6 +98,7 @@ local function DoTransform(inst)
 	else
 		inst.AnimState:SetBuild("shadow_willar")
 		inst:AddTag("nightmarewillar")
+		inst:AddTag("monster") --make pigs hostile to us
 
 		--inst.components.combat.damagemultiplier = 1.25 shadow aligned only, handled by onequip now
 		inst.components.health:SetMaxHealth(200)
@@ -242,6 +244,10 @@ local function onload(inst, data)
     end
 end
 
+local function sgpost(inst, oldfn)
+	oldfn(inst)
+	inst.sg.statemem.normalwonkey = true
+end
 
 -- This initializes for both the server and client. Tags can be added here.
 local common_postinit = function(inst) 
@@ -253,7 +259,11 @@ local common_postinit = function(inst)
 	--inst:AddTag("wonkey")
 
 	--inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.willar_nightmaremeter", "nightmaremeterdirty")
+	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, inst.sg.sg.states["run_start"].onenter) end
+	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, inst.sg.sg.states["run_start"].onenter) end
 end
+
+
 
 -- This initializes for the server only. Components are added here.
 local master_postinit = function(inst)
@@ -269,7 +279,7 @@ local master_postinit = function(inst)
 	-- Stats	
 	inst.components.health:SetMaxHealth(150)
 	inst.components.hunger:SetMax(150)
-	inst.components.sanity:SetMax(200)
+	inst.components.sanity:SetMax(150)
 	--inst.components.sanity.custom_rate_fn = UpdateClothingSanity
 	
 	--
