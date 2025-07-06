@@ -301,7 +301,7 @@ local function ConfigureRunState_server(inst)
 		inst.sg:AddStateTag("noslip")
     else
         inst.sg.statemem.normal = true
-        inst.sg.statemem.normalwonkey = inst:HasTag("wonkey") or nil
+        inst.sg.statemem.normalwonkey = inst:HasTag("willar") or nil
     end
 end
 
@@ -485,33 +485,34 @@ local master_postinit = function(inst)
 			Gram_UpdateMaxSanity(inst, 10)
 		end)
 	end
+	inst:DoTaskInTime(2 * FRAMES, function()
+		local oldrunstart = inst.sg.sg.states["run_start"].onenter
+		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
-	local oldrunstart = inst.sg.sg.states["run_start"].onenter
-	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
+		local oldrun = inst.sg.sg.states["run"].onenter
+		inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
 
-	local oldrun = inst.sg.sg.states["run"].onenter
-	inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+		inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
+			ConfigureRunState_server(inst)
+			inst.Transform:SetPredictedSixFaced()
+			inst.components.locomotor:RunForward()
+			inst.AnimState:PlayAnimation("run_monkey_pre")
+		end
 
-	inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
-		ConfigureRunState_server(inst)
-		inst.Transform:SetPredictedSixFaced()
-        inst.components.locomotor:RunForward()
-        inst.AnimState:PlayAnimation("run_monkey_pre")
-	end
+		inst.sg.sg.states["run_monkey"].onenter = function(inst)
+			ConfigureRunState_server(inst)
+			inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+			inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE * TUNING.WONKEY_RUN_HUNGER_RATE_MULT)
+			inst.Transform:SetPredictedSixFaced()
+			inst.components.locomotor:RunForward()
 
-	inst.sg.sg.states["run_monkey"].onenter = function(inst)
-		ConfigureRunState_server(inst)
-		inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
-        inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE * TUNING.WONKEY_RUN_HUNGER_RATE_MULT)
-        inst.Transform:SetPredictedSixFaced()
-        inst.components.locomotor:RunForward()
+			if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
+				inst.AnimState:PlayAnimation("run_monkey_loop", true)
+			end
 
-        if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
-            inst.AnimState:PlayAnimation("run_monkey_loop", true)
-        end
-
-        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-	end
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+		end
+	end)
 end
 
 
