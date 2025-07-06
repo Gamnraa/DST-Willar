@@ -83,7 +83,7 @@ local EQUIPSLOTS = GLOBAL.EQUIPSLOTS
 --local TheWorld = GLOBAL.TheWorld
 
 -- The character select screen lines
-STRINGS.CHARACTER_TITLES.willar = "Title"
+STRINGS.CHARACTER_TITLES.willar = "The Usurper"
 STRINGS.CHARACTER_NAMES.willar = "Willar"
 STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Easily misunderstood, has a dark side\n*Is a monkey, with BIG ideas\n*Is both a warrior and king (sorta)"
 STRINGS.CHARACTER_QUOTES.willar = "\"...\""
