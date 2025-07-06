@@ -305,6 +305,18 @@ local function ConfigureRunState_server(inst)
     end
 end
 
+local function IsChannelCasting(inst) --clientside
+	--essentially prediction, since the actions aren't busy w/ lag states
+	local buffaction = inst.sg.mem.preview_channelcast_action
+	if buffaction then
+		return buffaction.action == ACTIONS.START_CHANNELCAST
+		--Don't use "or inst:IsChannelCasting()"
+		--We want to be able to return false here when predicting!
+	end
+	--otherwise return server state
+	return inst:IsChannelCasting()
+end
+
 local function ConfigureRunState_client(inst)
 	local rider = inst.replica.rider
 	local mount = rider and rider:GetMount() or nil
@@ -385,7 +397,7 @@ local common_postinit = function(inst)
 
 	inst:DoTaskInTime(0, function() 
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
-		inst.sg.sg.states["runstart"].onenter = function() sgpost(inst, oldrunstart) end
+		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
 		local oldrun = inst.sg.sg.states["run"].onenter
 		inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
@@ -475,7 +487,7 @@ local master_postinit = function(inst)
 	end
 
 	local oldrunstart = inst.sg.sg.states["run_start"].onenter
-	inst.sg.sg.states["runstart"].onenter = function() sgpost(inst, oldrunstart) end
+	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
 	local oldrun = inst.sg.sg.states["run"].onenter
 	inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
