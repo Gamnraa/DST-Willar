@@ -244,6 +244,129 @@ local function onload(inst, data)
     end
 end
 
+local function ConfigureRunState_server(inst)
+	local mount = inst.components.rider:GetMount()
+	if mount then
+        inst.sg.statemem.riding = true
+		if inst:HasTag("groggy") then
+			inst.sg.statemem.groggy = true
+		else
+			inst.sg.statemem.normalriding = true
+		end
+        inst.sg:AddStateTag("nodangle")
+		inst.sg:AddStateTag("noslip")
+
+		if mount:HasTag("woby") then
+			inst.sg.statemem.ridingwoby = true
+			--Assumes we can only ride our own woby!
+			inst.sg.statemem.canwobysprint =
+				inst.woby_commands_classified ~= nil and
+				inst.woby_commands_classified:ShouldSprint() and
+				inst.components.skilltreeupdater:IsActivated("walter_woby_sprint")
+		end
+    elseif inst.components.inventory:IsHeavyLifting() then
+        inst.sg.statemem.heavy = true
+		inst.sg.statemem.heavy_fast = inst.components.mightiness ~= nil and inst.components.mightiness:IsMighty()
+		inst.sg:AddStateTag("noslip")
+	elseif inst:IsChannelCasting() then
+		inst.sg.statemem.channelcast = true
+		inst.sg.statemem.channelcastitem = inst:IsChannelCastingItem()
+    elseif inst:HasTag("wereplayer") then
+        inst.sg.statemem.iswere = true
+		inst.sg:AddStateTag("noslip")
+
+        if inst:HasTag("weremoose") then
+            if inst:HasTag("groggy") then
+                inst.sg.statemem.moosegroggy = true
+            else
+                inst.sg.statemem.moose = true
+            end
+        elseif inst:HasTag("weregoose") then
+            if inst:HasTag("groggy") then
+                inst.sg.statemem.goosegroggy = true
+            else
+                inst.sg.statemem.goose = true
+            end
+        elseif inst:HasTag("groggy") then
+            inst.sg.statemem.groggy = true
+        else
+            inst.sg.statemem.normal = true
+        end
+	elseif inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
+        inst.sg.statemem.sandstorm = true
+    elseif inst:HasTag("groggy") then
+        inst.sg.statemem.groggy = true
+    elseif inst:IsCarefulWalking() then
+        inst.sg.statemem.careful = true
+		inst.sg:AddStateTag("noslip")
+    else
+        inst.sg.statemem.normal = true
+        inst.sg.statemem.normalwonkey = inst:HasTag("wonkey") or nil
+    end
+end
+
+local function ConfigureRunState_client(inst)
+	local rider = inst.replica.rider
+	local mount = rider and rider:GetMount() or nil
+	if mount then
+        inst.sg.statemem.riding = true
+		if inst:HasTag("groggy") then
+			inst.sg.statemem.groggy = true
+		else
+			inst.sg.statemem.normalriding = true
+		end
+									   
+							   
+
+		if mount:HasTag("woby") then
+			inst.sg.statemem.ridingwoby = true
+			--Assumes we can only ride our own woby!
+			inst.sg.statemem.canwobysprint =
+				inst.woby_commands_classified ~= nil and
+				inst.woby_commands_classified:ShouldSprint() and
+				inst.components.skilltreeupdater:IsActivated("walter_woby_sprint")
+		end
+    elseif inst.replica.inventory:IsHeavyLifting() then
+        inst.sg.statemem.heavy = true
+		inst.sg.statemem.heavy_fast = inst:HasTag("mightiness_mighty")
+							   
+	elseif IsChannelCasting(inst) then
+		inst.sg.statemem.channelcast = true
+		inst.sg.statemem.channelcastitem = IsChannelCastingItem(inst)
+    elseif inst:HasTag("wereplayer") then
+        inst.sg.statemem.iswere = true
+							   
+
+        if inst:HasTag("weremoose") then
+            if inst:HasTag("groggy") then
+                inst.sg.statemem.moosegroggy = true
+            else
+                inst.sg.statemem.moose = true
+            end
+        elseif inst:HasTag("weregoose") then
+            if inst:HasTag("groggy") then
+                inst.sg.statemem.goosegroggy = true
+            else
+                inst.sg.statemem.goose = true
+            end
+        elseif inst:HasTag("groggy") then
+            inst.sg.statemem.groggy = true
+        else
+            inst.sg.statemem.normal = true
+        end
+	elseif inst:IsInAnyStormOrCloud() and not inst.components.playervision:HasGoggleVision() then
+        inst.sg.statemem.sandstorm = true
+    elseif inst:HasTag("groggy") then
+        inst.sg.statemem.groggy = true
+    elseif inst:IsCarefulWalking() then
+        inst.sg.statemem.careful = true
+							   
+    else
+        inst.sg.statemem.normal = true
+        inst.sg.statemem.normalwonkey = inst:HasTag("willar") or nil
+    end
+end
+
 local function sgpost(inst, oldfn)
 	oldfn(inst)
 	inst.sg.statemem.normalwonkey = true
@@ -259,8 +382,34 @@ local common_postinit = function(inst)
 	--inst:AddTag("wonkey")
 
 	--inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.willar_nightmaremeter", "nightmaremeterdirty")
-	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, inst.sg.sg.states["run_start"].onenter) end
-	inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, inst.sg.sg.states["run_start"].onenter) end
+
+	inst:DoTaskInTime(0, function() 
+		local oldrunstart = inst.sg.sg.states["run_start"].onenter
+		inst.sg.sg.states["runstart"].onenter = function() sgpost(inst, oldrunstart) end
+
+		local oldrun = inst.sg.sg.states["run"].onenter
+		inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+
+		inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
+			ConfigureRunState_client(inst)
+			inst.Transform:SetPredictedSixFaced()
+			inst.components.locomotor:RunForward()
+			inst.AnimState:PlayAnimation("run_monkey_pre")
+		end
+
+		inst.sg.sg.states["run_monkey"].onenter = function(inst)
+			ConfigureRunState_client(inst)
+			inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+			inst.Transform:SetPredictedSixFaced()
+			inst.components.locomotor:RunForward()
+
+			if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
+				inst.AnimState:PlayAnimation("run_monkey_loop", true)
+			end
+
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+		end
+	end)
 end
 
 
@@ -323,6 +472,33 @@ local master_postinit = function(inst)
 			Gram_UpdateMaxSanity(inst, 10)
 			Gram_UpdateMaxSanity(inst, 10)
 		end)
+	end
+
+	local oldrunstart = inst.sg.sg.states["run_start"].onenter
+	inst.sg.sg.states["runstart"].onenter = function() sgpost(inst, oldrunstart) end
+
+	local oldrun = inst.sg.sg.states["run"].onenter
+	inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+
+	inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
+		ConfigureRunState_server(inst)
+		inst.Transform:SetPredictedSixFaced()
+        inst.components.locomotor:RunForward()
+        inst.AnimState:PlayAnimation("run_monkey_pre")
+	end
+
+	inst.sg.sg.states["run_monkey"].onenter = function(inst)
+		ConfigureRunState_server(inst)
+		inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+        inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE * TUNING.WONKEY_RUN_HUNGER_RATE_MULT)
+        inst.Transform:SetPredictedSixFaced()
+        inst.components.locomotor:RunForward()
+
+        if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
+            inst.AnimState:PlayAnimation("run_monkey_loop", true)
+        end
+
+        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 	end
 end
 
