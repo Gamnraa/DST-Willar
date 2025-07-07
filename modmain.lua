@@ -135,6 +135,24 @@ end
 AddPrefabPostInit("nightmarefuel", SetNightmareFuelEdible)
 AddPrefabPostInit("horrorfuel", SetNightmareFuelEdible)
 
+local NIGHTVISION_COLOURCUBES =
+{
+    day = "images/colour_cubes/mole_vision_off_cc.tex",
+    dusk = "images/colour_cubes/mole_vision_on_cc.tex",
+    night = "images/colour_cubes/mole_vision_on_cc.tex",
+    full_moon = "images/colour_cubes/mole_vision_off_cc.tex",
+}
+AddClientModRPCHandler("willarstatewatcher", "onworldstatechange", function(inst, isnightmare)
+
+    print(isnightmare, GLOBAL.TheWorld.state.isnight)
+    if isnightmare and (GLOBAL.TheWorld.state.isnight or GLOBAL.TheWorld:HasTag("cave")) then
+        print("???")
+        inst.components.playervision:PushForcedNightVision(inst, 2, NIGHTVISION_COLOURCUBES, false)
+    else
+        inst.components.playervision:PopForcedNightVision(inst)
+    end
+end)
+
 
 --Code related to taming monkeys
 local function ShouldMonkeyAccept(inst, item, giver)

@@ -43,28 +43,6 @@ local function DoFx(inst)
     end
 end
 
-local NIGHTVISION_COLOURCUBES =
-{
-    day = "images/colour_cubes/mole_vision_off_cc.tex",
-    dusk = "images/colour_cubes/mole_vision_on_cc.tex",
-    night = "images/colour_cubes/mole_vision_on_cc.tex",
-    full_moon = "images/colour_cubes/mole_vision_off_cc.tex",
-}
-
-local function SetNightVision(inst)
-	local notsim = not TheWorld.ismastersim
-
-    if inst.willar_nightmaremode and (TheWorld.state.isnight or TheWorld:HasTag("cave")) then
-		if notsim then
-        	inst.components.playervision:PushForcedNightVision(inst, 2, NIGHTVISION_COLOURCUBES, false)
-		end
-    else
-		if notsim then
-        	inst.components.playervision:PopForcedNightVision(inst)
-		end
-    end
-end
-
 --Used to keep monkey followers in nightmare form when wearing the crown
 local function nightmaremonkeyloop(inst)
     local timer = inst.components.timer
@@ -144,7 +122,13 @@ end
 
 local function OnWorldStateChange(inst)
 	if CanTransform(inst, not inst.willar_nightmaremode) then DoTransform(inst) end
-	SetNightVision(inst)
+
+	local ids = {}
+	for _, player in pairs(AllPlayers) do
+		table.insert(ids, player == inst and player.userid or nil)
+	end
+
+	inst:DoTaskInTime(1, function() SendModRPCToClient(GetClientModRPC("willarstatewatcher", "onworldstatechange"), ids, inst, inst.willar_nightmaremode) end)
 end
 
 local function OnTimerDone(inst, data)
@@ -415,8 +399,7 @@ local common_postinit = function(inst)
 	inst:AddTag("willar")
 	inst:AddTag("monkey")
 	--inst:AddTag("wonkey")
-
-	--inst.willar_nightmaremeter = net_tinybyte(inst.GUID, "willar.willar_nightmaremeter", "nightmaremeterdirty")
+	--inst.nightmaremode = net_bool(inst.GUID, "willarnightmaremode", "willarnightmaremodedirty")
 
 	inst:DoTaskInTime(0, function() 
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
