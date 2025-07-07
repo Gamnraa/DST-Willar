@@ -276,7 +276,7 @@ local function NewMonkeyRetarget(inst)
 end
 
 GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH = 50
-GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK = 1.15
+GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK = 13
 
 local function MakeMonkeysTamable(inst, duration)
     if not GLOBAL.TheWorld.ismastersim then return end
@@ -316,7 +316,7 @@ local function MakeMonkeysTamable(inst, duration)
 
     if GLOBAL.TheWorld.willartapestrypowered then 
 		 UpdateMaxHealth(v, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
-         inst.components.combat.externaldamagemultipliers:SetModifier(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive")
+         inst.components.combat.damagebonus = inst.prefab == "monkey" and GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK or (GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK + 8)
 	end
 end
 

@@ -24,12 +24,11 @@ local function onpoweredup(inst)
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
             if v:HasTag("player") then
-                Gram_UpdateMaxHealth(v, 10)
-                Gram_UpdateMaxSanity(v, 10)
-                Gram_UpdateMaxSanity(v, 10)
+                Gram_UpdateMaxHealth(v, 50)
+                Gram_UpdateMaxSanity(v, 100)
             else
                 if v.components.health then Gram_UpdateMaxHealth(v, WILLAR_TAPESTRY_BUFF_HEALTH) end
-                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, WILLAR_TAPESTRY_BUFF_ATTACK, "willartapestryactive") end
+                if v.components.combat then v.components.combat.damagebonus = inst.prefab == "monkey" and WILLAR_TAPESTRY_BUFF_ATTACK or (WILLAR_TAPESTRY_BUFF_ATTACK + 8) end
             end
         end
     end
@@ -70,12 +69,11 @@ local function onlosepower(inst)
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
             if v:HasTag("player") then
-                Gram_UpdateMaxHealth(v, -10)
-                Gram_UpdateMaxSanity(v, -10)
-                Gram_UpdateMaxSanity(v, -10)
+                Gram_UpdateMaxHealth(v, -50)
+                Gram_UpdateMaxSanity(v, -100)
             else
                 if v.components.health then Gram_UpdateMaxHealth(v, -WILLAR_TAPESTRY_BUFF_HEALTH) end
-                if v.components.combat then v.components.combat.externaldamagemultipliers:SetModifier(v, 1.00, "willartapestryactive") end
+                if v.components.combat then v.components.combat.damagebonus = 0 end
             end
         end
         TheWorld.willartapestrypowered = false

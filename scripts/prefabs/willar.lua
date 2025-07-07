@@ -480,9 +480,8 @@ local master_postinit = function(inst)
 	inst.tapestrybuff = false
 	if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
 		inst:DoTaskInTime(0, function()
-			Gram_UpdateMaxHealth(inst, 10)
-			Gram_UpdateMaxSanity(inst, 10)
-			Gram_UpdateMaxSanity(inst, 10)
+			Gram_UpdateMaxHealth(inst, 50)
+			Gram_UpdateMaxSanity(inst, 100)
 		end)
 	end
 	inst:DoTaskInTime(2 * FRAMES, function()
