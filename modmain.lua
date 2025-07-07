@@ -315,7 +315,7 @@ local function MakeMonkeysTamable(inst, duration)
     end
 
     if GLOBAL.TheWorld.willartapestrypowered then 
-		 UpdateMaxHealth(v, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
+		 UpdateMaxHealth(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
          inst.components.combat.damagebonus = inst.prefab == "monkey" and GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK or (GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK + 8)
 	end
 end
