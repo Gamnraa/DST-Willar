@@ -18,6 +18,13 @@ local function anytapestryhaspower()
     return false
 end
 
+local function tapestryloop()
+    local timer = TheWorld.components.piratespawner.queen.components.timer
+	local time = timer:TimerExists("right_of_passage") and timer:GetTimeLeft("right_of_passage") or 0
+	timer:StopTimer("right_of_passage")
+	timer:StartTimer("right_of_passage", 60 + time)
+end
+
 local function onpoweredup(inst)
     
     if not TheWorld.willartapestrypowered then
@@ -33,7 +40,13 @@ local function onpoweredup(inst)
         end
     end
     inst.powered = true
+
     TheWorld.willartapestrypowered = true
+    if not TheWorld.willartapestryloop then
+        tapestryloop()
+        TheWorld.willartapestryloop = TheWorld:DoPeriodicTask(55, function() tapestryloop() end)
+    end
+
     inst.components.sleepingbag.health_tick = TUNING.SLEEP_HEALTH_PER_TICK * 4
     inst.Light:Enable(true)
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
@@ -66,6 +79,7 @@ local function onlosepower(inst)
     end
 
     if not anytapestryhaspower() then
+        if TheWorld.components.piratespawner and TUNING.PIRATE_RAIDS_ENABLED then TheWorld:StartUpdatingComponent(TheWorld.components.piratespawner) end
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
             if v:HasTag("player") then
@@ -76,7 +90,13 @@ local function onlosepower(inst)
                 if v.components.combat then v.components.combat.damagebonus = 0 end
             end
         end
+
         TheWorld.willartapestrypowered = false
+        if TheWorld.willartapestryloop then
+            TheWorld.willartapestryloop:Cancel()
+            TheWorld.willartapestryloop = nil
+        end
+
         inst.Light:Enable(false)
         inst.AnimState:ClearBloomEffectHandle()
     end
@@ -186,9 +206,19 @@ local function fn()
             inst:AddTag("construnctionsite")
             inst.Light:Enable(true)
             inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+            TheWorld.willartapestrypowered = true
+            if not TheWorld.willartapestryloop then
+                tapestryloop()
+                TheWorld.willartapestryloop = TheWorld:DoPeriodicTask(55, function() tapestryloop() end)
+            end
         else 
             inst.Light:Enable(false)
             inst.AnimState:ClearBloomEffectHandle()
+            TheWorld.willartapestrypowered = false
+            if TheWorld.willartapestryloop then
+                TheWorld.willartapestryloop:Cancel()
+                TheWorld.willartapestryloop = nil
+            end
         end
     end)
 
