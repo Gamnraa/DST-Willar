@@ -332,10 +332,12 @@ local function MakeMonkeysTamable(inst, duration)
         end)
     end
 
-    if GLOBAL.TheWorld.willartapestrypowered then 
-		 UpdateMaxHealth(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
-         inst.components.combat.damagebonus = inst.prefab == "monkey" and GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK or (GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK + 8)
-	end
+    inst:DoTaskInTime(0, function() 
+         if GLOBAL.TheWorld.willartapestrypowered then 
+            UpdateMaxHealth(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
+            inst.components.combat.damagebonus = inst.prefab == "monkey" and GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK or (GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK + 8)
+         end
+	end)
 end
 
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)

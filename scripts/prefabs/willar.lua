@@ -219,13 +219,13 @@ end
 local function onsave(inst, data)
 	data.willar_nightmaremode = inst.willar_nightmaremode
 	data.willar_nightmaremeter = inst.willar_nightmaremeter
-	data.willar_tapestrybuff = inst.willar_tapestrybuff
+	--data.willar_tapestrybuff = inst.willar_tapestrybuff
 end
 
 local function onpreload(inst, data)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
-	inst.tapestrybuff = data and data.willar_tapestrybuff
+	--inst.tapestrybuff = data and data.willar_tapestrybuff
 end
 
 -- When loading or spawning the character
@@ -488,13 +488,15 @@ local master_postinit = function(inst)
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
 
-	inst.tapestrybuff = false
-	if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
-		inst:DoTaskInTime(0, function()
+	--inst.tapestrybuff = false
+	inst:DoTaskInTime(0, function()
+		if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
 			Gram_UpdateMaxHealth(inst, 50)
 			Gram_UpdateMaxSanity(inst, 100)
-		end)
-	end
+			--inst.tapestrybuff = true
+		end
+	end)
+
 	inst:DoTaskInTime(2 * FRAMES, function()
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
 		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
