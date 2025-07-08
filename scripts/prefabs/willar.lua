@@ -73,7 +73,10 @@ end
 local function DoTransform(inst)
 	DoFx(inst)
 	local health = inst.components.health.current
+	inst.components.playervision.nightvision = inst.willar_nightmaremode
 	if inst.willar_nightmaremode then
+		inst.components.playervision:ForceNightVision(false)
+		--inst:PushEvent("nightvision", false)
 		inst.AnimState:SetBuild("willar")
 		inst:RemoveTag("nightmarewillar")
 		inst:RemoveTag("monster")
@@ -96,6 +99,8 @@ local function DoTransform(inst)
 
 		if inst.nightmaretask then inst.nightmaretask:Cancel() end
 	else
+		--inst:PushEvent("nightvision", true)
+		inst:DoTaskInTime(.8, function() inst.components.playervision:ForceNightVision(true) end)
 		inst.AnimState:SetBuild("shadow_willar")
 		inst:AddTag("nightmarewillar")
 		inst:AddTag("monster") --make pigs hostile to us
