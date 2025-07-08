@@ -146,20 +146,20 @@ end
 local banana_food = {
 	["cave_banana"] = true,
 }
-
+--1 day 2 nf 3 days 1 hf
 local function OnEat(inst, food)
 	if food.components.edible.foodtype == "NIGHTMAREFUEL" then
-		local amt = food.prefab == "horrorfuel" and 4 or 1
+		local amt = food.prefab == "horrorfuel" and 6 or 2
 		
 		inst.willar_nightmaremeter = inst.willar_nightmaremeter or 0
 
 		inst.willar_nightmaremeter = inst.willar_nightmaremeter + amt
 
-		if inst.willar_nightmaremeter >= 4 then
+		if inst.willar_nightmaremeter >= 2 then
 			local timer = inst.components.timer
 			local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
 			timer:StopTimer("forcenightmare")
-			timer:StartTimer("forcenightmare", 60 + time)
+			timer:StartTimer("forcenightmare", 60 * 8 * (math.floor(amt / 2)) + time)
 			OnWorldStateChange(inst)
 			inst.willar_nightmaremeter = 0
 		end
