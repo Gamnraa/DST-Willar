@@ -19,6 +19,7 @@ local function anytapestryhaspower()
 end
 
 local function tapestryloop()
+    if not (TheWorld.components.piratespawner or TheWorld.components.piratespawner.queen) then return end
     local timer = TheWorld.components.piratespawner.queen.components.timer
 	local time = timer:TimerExists("right_of_passage") and timer:GetTimeLeft("right_of_passage") or 0
 	timer:StopTimer("right_of_passage")
@@ -42,7 +43,7 @@ local function onpoweredup(inst)
     inst.powered = true
 
     TheWorld.willartapestrypowered = true
-    if not TheWorld.willartapestryloop then
+    if not TheWorld.willartapestryloop and TheWorld.components.piratespawner and TheWorld.components.piratespawner.queen then
         tapestryloop()
         TheWorld.willartapestryloop = TheWorld:DoPeriodicTask(55, function() tapestryloop() end)
     end
@@ -79,7 +80,10 @@ local function onlosepower(inst)
     end
 
     if not anytapestryhaspower() then
-        if TheWorld.components.piratespawner and TUNING.PIRATE_RAIDS_ENABLED then TheWorld:StartUpdatingComponent(TheWorld.components.piratespawner) end
+        if TheWorld.components.piratespawner and TUNING.PIRATE_RAIDS_ENABLED and not TheWorld.willartapestryloop then
+            TheWorld.willartapestryloop:Cancel()
+            TheWorld.willartapestryloop = nil
+        end
         local x,y,z = inst.Transform:GetWorldPosition()
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
             if v:HasTag("player") then
@@ -92,10 +96,6 @@ local function onlosepower(inst)
         end
 
         TheWorld.willartapestrypowered = false
-        if TheWorld.willartapestryloop then
-            TheWorld.willartapestryloop:Cancel()
-            TheWorld.willartapestryloop = nil
-        end
 
         inst.Light:Enable(false)
         inst.AnimState:ClearBloomEffectHandle()
@@ -207,7 +207,7 @@ local function fn()
             inst.Light:Enable(true)
             inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
             TheWorld.willartapestrypowered = true
-            if not TheWorld.willartapestryloop then
+            if not TheWorld.willartapestryloop and TheWorld.components.piratespawner and TheWorld.components.piratespawner.queen then
                 tapestryloop()
                 TheWorld.willartapestryloop = TheWorld:DoPeriodicTask(55, function() tapestryloop() end)
             end
