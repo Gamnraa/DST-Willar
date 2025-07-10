@@ -156,6 +156,7 @@ local function OnEat(inst, food)
 		inst.willar_nightmaremeter = inst.willar_nightmaremeter + amt
 
 		if inst.willar_nightmaremeter >= 2 then
+			inst.components.sanity:DoDelta(-30)
 			local timer = inst.components.timer
 			local time = timer:TimerExists("forcenightmare") and timer:GetTimeLeft("forcenightmare") or 0
 			timer:StopTimer("forcenightmare")
