@@ -4,7 +4,7 @@ local assets =
     Asset("MINIMAP_IMAGE", "merm_king_carpet"),
 }
 
-CONSTRUCTION_PLANS["willartapestry"] = {Ingredient("cave_banana", 3), Ingredient("nightmarefuel", 3)}
+CONSTRUCTION_PLANS["willartapestry"] = {Ingredient("cave_banana", 2), Ingredient("nightmarefuel", 4)}
 
 local function getstatus(inst)
     return (inst:HasTag("burnt") and "BURNT")
