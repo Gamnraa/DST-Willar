@@ -42,8 +42,11 @@ local function onequip(inst, owner)
 	owner.AnimState:Hide("HEAD_HAT_NOHELM")
 	owner.AnimState:Hide("HEAD_HAT_HELM")
 
+    inst.components.equippable.dapperness = -TUNING.DAPPERNESS_MED
+
     if owner:HasTag("willar") then
         owner:DoTaskInTime(.15, dobuff, owner)
+        inst.components.equippable.dapperness = (inst.prefab == "willarcrown" and TUNING.DAPPERNESS_MED) or TUNING.DAPPERNESS_LARGE
     end
 
     if inst.components.fueled ~= nil then
@@ -146,7 +149,7 @@ local function ruinshat_proc(inst, owner)
     inst._fx.Transform:SetPosition(0, 0.2, 0)
     inst:ListenForEvent("armordamaged", ruinshat_fxanim)
 
-    inst.components.armor:SetAbsorption(TUNING.FULL_ABSORPTION)
+    inst.components.armor:SetAbsorption(.9)
     inst.components.armor.ontakedamage = function(inst, damage_amount)
         if owner ~= nil and owner.components.sanity ~= nil then
             owner.components.sanity:DoDelta(-damage_amount * TUNING.ARMOR_RUINSHAT_DMG_AS_SANITY, false)
@@ -160,9 +163,9 @@ local function ruinshat_proc(inst, owner)
 end
 
 local function tryproc(inst, owner, data)
-    if inst._task == nil and
+    if inst._task == nil and owner:HasTag("willar") and
         not data.redirected and
-        math.random(100) < 13 then
+        math.random(100) < 7 then
         ruinshat_proc(inst, owner)
     end
 end
@@ -253,8 +256,6 @@ local function makecrown(name)
                 end
             end
         end
-
-        inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED_LARGE
 
         inst:ListenForEvent("percentusedchange", syncfueledarmor)
 
