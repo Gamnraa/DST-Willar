@@ -22,6 +22,9 @@ Assets = {
 
     Asset( "IMAGE", "bigportraits/willar.tex" ),
     Asset( "ATLAS", "bigportraits/willar.xml" ),
+
+    Asset( "IMAGE", "bigportraits/willar_none.tex" ),
+    Asset( "ATLAS", "bigportraits/willar_none.xml" ),
 	
 	
 	Asset( "IMAGE", "images/map_icons/willar.tex" ),
@@ -88,6 +91,10 @@ STRINGS.CHARACTER_NAMES.willar = "Willar"
 STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Easily misunderstood, has a dark side\n*Is a monkey, with BIG ideas\n*Is both a warrior and king (sorta)"
 STRINGS.CHARACTER_QUOTES.willar = "\"...\""
 STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
+
+TUNING.WILLAR_HEALTH = 150
+TUNING.WILLAR_HUNGER = 150
+TUNING.WILLAR_SANITY = 150
 
 
 -- Custom speech strings
