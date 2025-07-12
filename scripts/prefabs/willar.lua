@@ -193,6 +193,7 @@ local function OnEquip(inst, data)
 end
 
 local function OnUnequip(inst, data)
+	if not data.item then return end
 	local inv = inst.components.inventory
 	if not (pirate_weapons[data.item.prefab]) then 
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
