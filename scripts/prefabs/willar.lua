@@ -149,7 +149,7 @@ local banana_food = {
 --1 day 2 nf 3 days 1 hf
 local function OnEat(inst, food)
 	if food.components.edible.foodtype == "NIGHTMAREFUEL" then
-		local amt = food.prefab == "horrorfuel" and 6 or 2
+		local amt = food.prefab == "horrorfuel" and 6 or 1
 		
 		inst.willar_nightmaremeter = inst.willar_nightmaremeter or 0
 
@@ -398,6 +398,41 @@ local function sgpost(inst, oldfn)
 	inst.sg.statemem.normalwonkey = true
 end
 
+local function onmovementpredictionenabled(inst, enable)
+	if enable and not (TheWorld.ismastersim or inst.willarsgfix) then
+		inst:DoTaskInTime(.5, function() 
+			if inst.sg then
+				inst.willarsgfix = true
+				local oldrunstart = inst.sg.sg.states["run_start"].onenter
+				inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
+
+				local oldrun = inst.sg.sg.states["run"].onenter
+				inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+
+				inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
+					ConfigureRunState_client(inst)
+					inst.Transform:SetPredictedSixFaced()
+					inst.components.locomotor:RunForward()
+					inst.AnimState:PlayAnimation("run_monkey_pre")
+				end
+
+				inst.sg.sg.states["run_monkey"].onenter = function(inst)
+					ConfigureRunState_client(inst)
+					inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+					inst.Transform:SetPredictedSixFaced()
+					inst.components.locomotor:RunForward()
+
+					if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
+						inst.AnimState:PlayAnimation("run_monkey_loop", true)
+					end
+
+					inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+				end
+			end
+		end)
+	end
+end
+
 -- This initializes for both the server and client. Tags can be added here.
 local common_postinit = function(inst) 
 	-- Minimap icon
@@ -408,31 +443,36 @@ local common_postinit = function(inst)
 	--inst:AddTag("wonkey")
 	--inst.nightmaremode = net_bool(inst.GUID, "willarnightmaremode", "willarnightmaremodedirty")
 
-	inst:DoTaskInTime(0, function() 
-		local oldrunstart = inst.sg.sg.states["run_start"].onenter
-		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
+	inst:ListenForEvent("enablemovementprediction", onmovementpredictionenabled)
 
-		local oldrun = inst.sg.sg.states["run"].onenter
-		inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+	inst:DoTaskInTime(.5, function() 
+		if inst.sg then
+			inst.willarsgfix = true
+			local oldrunstart = inst.sg.sg.states["run_start"].onenter
+			inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
-		inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
-			ConfigureRunState_client(inst)
-			inst.Transform:SetPredictedSixFaced()
-			inst.components.locomotor:RunForward()
-			inst.AnimState:PlayAnimation("run_monkey_pre")
-		end
+			local oldrun = inst.sg.sg.states["run"].onenter
+			inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
 
-		inst.sg.sg.states["run_monkey"].onenter = function(inst)
-			ConfigureRunState_client(inst)
-			inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
-			inst.Transform:SetPredictedSixFaced()
-			inst.components.locomotor:RunForward()
-
-			if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
-				inst.AnimState:PlayAnimation("run_monkey_loop", true)
+			inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
+				ConfigureRunState_client(inst)
+				inst.Transform:SetPredictedSixFaced()
+				inst.components.locomotor:RunForward()
+				inst.AnimState:PlayAnimation("run_monkey_pre")
 			end
 
-			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+			inst.sg.sg.states["run_monkey"].onenter = function(inst)
+				ConfigureRunState_client(inst)
+				inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+				inst.Transform:SetPredictedSixFaced()
+				inst.components.locomotor:RunForward()
+
+				if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
+					inst.AnimState:PlayAnimation("run_monkey_loop", true)
+				end
+
+				inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+			end
 		end
 	end)
 end
@@ -499,7 +539,7 @@ local master_postinit = function(inst)
 		end
 	end)
 
-	inst:DoTaskInTime(2 * FRAMES, function()
+	inst:DoTaskInTime(.55, function()
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
 		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
