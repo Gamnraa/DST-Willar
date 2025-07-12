@@ -597,7 +597,7 @@ AddCharacterRecipe("cutless",
 	 Ingredient("rope", 1),
      Ingredient("log", 1)
     },
-	 GLOBAL.TECH.ANCIENT_TWO,
+	 GLOBAL.TECH.SEAFARING_ONE,
 	 {
 		product = "cutless",
 		builder_tag = "willar",
@@ -628,7 +628,7 @@ STRINGS.RECIPE_DESC.WILLARSWORD = "A sword made of riches, for taking lives."
 AddCharacterRecipe("monkeydisguise",
 	{Ingredient("cave_banana", 2),
 	 Ingredient("twigs", 2),
-     Ingredient("beardhair", 3)
+     Ingredient("beardhair", 2)
     },
 	 GLOBAL.TECH.SCIENCE_TWO,
 	 {
@@ -637,7 +637,7 @@ AddCharacterRecipe("monkeydisguise",
 		numtogive = 1,
 	},
 	{
-		"WEAPONS",
+		"CLOTHING", "MAGIC"
 	})
 STRINGS.RECIPE_DESC.MONKEYDISGUISE = "Look like the best."
 
@@ -653,7 +653,7 @@ AddCharacterRecipe("willarcrown",
 		numtogive = 1,
 	},
 	{
-		"CLOTHING", "MAGIC"
+		"ARMOUR", "MAGIC"
 	})
 STRINGS.RECIPE_DESC.WILLARCROWN = "Good start, helps kings lead."
 
@@ -669,7 +669,7 @@ AddCharacterRecipe("willarcrown_ruins",
 		numtogive = 1,
 	},
 	{
-		"CLOTHING", "ARMOUR", "MAGIC"
+		"ARMOUR", "MAGIC"
 	})
 STRINGS.RECIPE_DESC.WILLARCROWN_RUINS = "The real deal, fit for a king."
 
@@ -731,7 +731,7 @@ STRINGS.RECIPE_DESC.MONKEYHUT = "Subjects from across the big lake."
 AddCharacterRecipe("willartapestry",
     {Ingredient("goldnugget", 3),
      Ingredient("beefalowool", 3),
-     Ingredient("steeelwool", 3)
+     Ingredient("cave_banana", 2)
     },
     GLOBAL.TECH.SCIENCE_TWO,
     {
