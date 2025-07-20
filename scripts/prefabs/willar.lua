@@ -496,9 +496,9 @@ local master_postinit = function(inst)
    	inst.talker_path_override = "monkeyisland/characters/"
 	
 	-- Stats	
-	inst.components.health:SetMaxHealth(150)
-	inst.components.hunger:SetMax(150)
-	inst.components.sanity:SetMax(150)
+	inst.components.health:SetMaxHealth(TUNING.WILLAR_HEALTH)
+	inst.components.hunger:SetMax(TUNING.WILLAR_HUNGER)
+	inst.components.sanity:SetMax(TUNING.WILLAR_SANITY)
 
 	inst.components.sanity:SetLightDrainImmune(true)
 	inst.components.sanity.custom_rate_fn = customsanityfn
