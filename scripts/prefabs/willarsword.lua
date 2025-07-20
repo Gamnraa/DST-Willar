@@ -29,11 +29,38 @@ local function onunequip(inst, owner)
     end
 end
 
+local function onattack(inst, attacker, target)
+    if target.components.health:IsDead() and target.components.lootdropper then
+        inst:DoTaskInTime(0, function() 
+            if not Gram_LootDropped[target.GUID] then return end
+            local loot = Gram_LootDropped[target.GUID][math.random(#Gram_LootDropped[target.GUID])]
+            local loot = SpawnPrefab(loot)
+            target.components.lootdropper:FlingItem(loot, target:GetPosition())
+
+            if Gram_DroppedChanceLoot[target.GUID] and Gram_DroppedChanceLoot[target.GUID] ~= true and math.random(100) < 25 then
+                print("drop chance loot")
+                local loots = {}
+                local t = LootTables[lootdropper.chanceloottable]
+				if t then
+					for k, v in pairs(LootTables[lootdropper.chanceloottable]) do
+						if v[2] < 1.00 then table.insert(loots, v[1]) end
+					end
+				end
+
+                local loot = loots[math.random(#loots)]
+			    loot = SpawnPrefab(loot)
+			    lootdropper:FlingItem(loot, target:GetPosition())
+            end 
+        end)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddLight()
     inst.entity:AddNetwork()
 
     MakeInventoryPhysics(inst)
@@ -44,6 +71,8 @@ local function fn()
 	-- inst:AddTag("propweapon")
 
     --weapon (from weapon component) added to pristine state for optimization
+
+
     inst:AddTag("weapon")
     inst:AddTag("sharp")
     inst:AddTag("shadowlevel")
@@ -60,6 +89,7 @@ local function fn()
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(42)
+    inst.components.weapon:SetOnAttack(onattack)
 
     -------
 

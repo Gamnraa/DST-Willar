@@ -597,6 +597,31 @@ end)
 AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, function(inst, action) print("HELLO??") return "willar_blanket" end))
 AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
 
+--Code related to the sword looting ability
+GLOBAL.Gram_DroppedChanceLoot = {}
+GLOBAL.Gram_LootDropped = {}
+local function onspawnloot(inst, data)
+    if not inst.components.health and not inst.components.health:IsDead() then return end
+
+    if not GLOBAL.Gram_LootDropped[inst.GUID] then GLOBAL.Gram_LootDropped[inst.GUID] = {} end
+
+    local lootdropper = inst.components.lootdropper
+    local randomloot = {}
+    
+    if data.loot and (lootdropper.chanceloottable and GLOBAL.LootTables[lootdropper.chanceloottable][data.loot.prefab] < 1.00) then
+        GLOBAL.DroppedChanceLoot[inst.GUID] = true
+    else
+        table.insert(GLOBAL.Gram_LootDropped[inst.GUID], data.loot.prefab)
+    end
+end
+
+AddPrefabPostInitAny(function(inst)
+    if not GLOBAL.TheWorld.ismastersim then return end
+    if inst.components.lootdropper then
+        inst:ListenForEvent("loot_prefab_spawned", onspawnloot)
+    end
+end)
+
 
 --Recipes
 AddCharacterRecipe("cutless",
