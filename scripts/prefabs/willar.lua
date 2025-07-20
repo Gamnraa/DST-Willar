@@ -204,6 +204,10 @@ local function OnUnequip(inst, data)
 	end
 end
 
+local function customsanityfn(inst)
+	return (TheWorld.state.isday and not TheWorld:HasTag("cave")) and TUNING.SANITY_NIGHT_MID or 0
+end
+
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when not a ghost (optional)
@@ -495,7 +499,9 @@ local master_postinit = function(inst)
 	inst.components.health:SetMaxHealth(150)
 	inst.components.hunger:SetMax(150)
 	inst.components.sanity:SetMax(150)
-	--inst.components.sanity.custom_rate_fn = UpdateClothingSanity
+
+	inst.components.sanity:SetLightDrainImmune(true)
+	inst.components.sanity.custom_rate_fn = customsanityfn
 	
 	--
 	inst:WatchWorldState("isnight", OnWorldStateChange)
