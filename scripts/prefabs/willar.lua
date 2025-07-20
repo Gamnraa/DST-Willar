@@ -452,6 +452,8 @@ local common_postinit = function(inst)
 
 	inst:DoTaskInTime(.5, function() 
 		if inst.sg then
+			--CommonStates.AddIpecacPoopState(inst.sg.sg.states)
+
 			inst.willarsgfix = true
 			local oldrunstart = inst.sg.sg.states["run_start"].onenter
 			inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
@@ -539,9 +541,9 @@ local master_postinit = function(inst)
 
 	inst:AddComponent("periodicspawner")
     inst.components.periodicspawner:SetPrefab("poop")
-    inst.components.periodicspawner:SetRandomTimes(2 * 60 * 8, 5 * 60 * 5)
-    inst.components.periodicspawner:SetDensityInRange(20, 2)
-    inst.components.periodicspawner:SetMinimumSpacing(8)
+    inst.components.periodicspawner:SetRandomTimes(2 * 8 * 60, 5 * 8 * 60)
+    --inst.components.periodicspawner:SetDensityInRange(5, 5)
+    --inst.components.periodicspawner:SetMinimumSpacing(8)
     inst.components.periodicspawner:Start()
 
 	--inst.tapestrybuff = false
@@ -554,6 +556,9 @@ local master_postinit = function(inst)
 	end)
 
 	inst:DoTaskInTime(.55, function()
+
+		--CommonStates.AddIpecacPoopState(inst.sg.sg.states)
+
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
 		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
 
