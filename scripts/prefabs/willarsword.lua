@@ -34,11 +34,11 @@ local function onattack(inst, attacker, target)
         inst:DoTaskInTime(0, function() 
             if not Gram_LootDropped[target.GUID] then return end
             local loot = Gram_LootDropped[target.GUID][math.random(#Gram_LootDropped[target.GUID])]
-            local loot = SpawnPrefab(loot)
-            target.components.lootdropper:FlingItem(loot, target:GetPosition())
+            loot = SpawnPrefab(loot)
+            local lootdropper = target.components.lootdropper
+            lootdropper:FlingItem(loot, target:GetPosition())
 
-            if Gram_DroppedChanceLoot[target.GUID] and Gram_DroppedChanceLoot[target.GUID] ~= true and math.random(100) < 25 then
-                print("drop chance loot")
+            if lootdropper.chanceloottable and not Gram_DroppedChanceLoot[target.GUID] and math.random(100) < 25 then
                 local loots = {}
                 local t = LootTables[lootdropper.chanceloottable]
 				if t then
@@ -50,7 +50,9 @@ local function onattack(inst, attacker, target)
                 local loot = loots[math.random(#loots)]
 			    loot = SpawnPrefab(loot)
 			    lootdropper:FlingItem(loot, target:GetPosition())
-            end 
+            end
+            Gram_DroppedChanceLoot[inst.GUID] = nil
+            Gram_LootDropped[target.GUID] = nil 
         end)
     end
 end

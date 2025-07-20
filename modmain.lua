@@ -606,10 +606,18 @@ local function onspawnloot(inst, data)
     if not GLOBAL.Gram_LootDropped[inst.GUID] then GLOBAL.Gram_LootDropped[inst.GUID] = {} end
 
     local lootdropper = inst.components.lootdropper
-    local randomloot = {}
+    local chanceloot = {}
+
+    local t = GLOBAL.LootTables[lootdropper.chanceloottable]
+	if t then
+		for k, v in pairs(GLOBAL.LootTables[lootdropper.chanceloottable]) do
+			if v[2] < 1.00 then chanceloot[v[1]] = v[2] end
+            print(v[1])
+		end
+	end
     
-    if data.loot and (lootdropper.chanceloottable and GLOBAL.LootTables[lootdropper.chanceloottable][data.loot.prefab] < 1.00) then
-        GLOBAL.DroppedChanceLoot[inst.GUID] = true
+    if data.loot and chanceloot[data.loot.prefab] then
+        GLOBAL.Gram_DroppedChanceLoot[inst.GUID] = true
     else
         table.insert(GLOBAL.Gram_LootDropped[inst.GUID], data.loot.prefab)
     end
