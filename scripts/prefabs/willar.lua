@@ -537,6 +537,13 @@ local master_postinit = function(inst)
 
 	inst.nightmaremonkeyloop = nightmaremonkeyloop
 
+	inst:AddComponent("periodicspawner")
+    inst.components.periodicspawner:SetPrefab("poop")
+    inst.components.periodicspawner:SetRandomTimes(2 * 60 * 8, 5 * 60 * 5)
+    inst.components.periodicspawner:SetDensityInRange(20, 2)
+    inst.components.periodicspawner:SetMinimumSpacing(8)
+    inst.components.periodicspawner:Start()
+
 	--inst.tapestrybuff = false
 	inst:DoTaskInTime(0, function()
 		if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
