@@ -57,6 +57,19 @@ local function onattack(inst, attacker, target)
     end
 end
 
+local function shouldaccept(inst, item, giver)
+    return item.prefab == "thulecite" or item.prefab == "goldnugget"
+end
+
+local function onaccept(inst, giver, item)
+    local finiteuses = inst.components.finiteuses
+    if item.prefab == "thulecite" then
+        inst.components.finiteuses:Repair(finiteuses.total * .24)
+    elseif item.prefab == "goldnugget" then
+        finiteuses:Repair(finiteuses.total * .04)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -90,15 +103,21 @@ local function fn()
     end
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(42)
+    inst.components.weapon:SetDamage(52.5)
     inst.components.weapon:SetOnAttack(onattack)
 
     -------
 
     inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(100)
-    inst.components.finiteuses:SetUses(100)
+    inst.components.finiteuses:SetMaxUses(250)
+    inst.components.finiteuses:SetUses(250)
     inst.components.finiteuses:SetOnFinished(inst.Remove)
+
+    inst:AddComponent("trader")
+    inst.components.trader:SetAcceptTest(shouldaccept)
+    inst.components.trader:SetAbleToAcceptTest(function(inst, item) return inst.components.finiteuses:GetPercent() < 1 end)
+    inst.components.trader.onaccept = onaccept
+    inst.components.trader.deleteitemonaccept = false
 
     inst:AddComponent("inspectable")
 
@@ -109,8 +128,8 @@ local function fn()
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
 
-    inst:AddComponent("planardamage")
-    inst.components.planardamage:SetBaseDamage(18)
+    --inst:AddComponent("planardamage")
+    --inst.components.planardamage:SetBaseDamage(18)
 
     inst:AddComponent("damagetypebonus")
     inst.components.damagetypebonus:AddBonus("lunar_aligned", inst, TUNING.WEAPONS_VOIDCLOTH_VS_LUNAR_BONUS) --%10 bonus to lunar aligned
