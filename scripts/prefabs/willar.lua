@@ -452,34 +452,7 @@ local common_postinit = function(inst)
 
 	inst:DoTaskInTime(.5, function() 
 		if inst.sg then
-			--CommonStates.AddIpecacPoopState(inst.sg.sg.states)
-
-			inst.willarsgfix = true
-			local oldrunstart = inst.sg.sg.states["run_start"].onenter
-			inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
-
-			local oldrun = inst.sg.sg.states["run"].onenter
-			inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
-
-			inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
-				ConfigureRunState_client(inst)
-				inst.Transform:SetPredictedSixFaced()
-				inst.components.locomotor:RunForward()
-				inst.AnimState:PlayAnimation("run_monkey_pre")
-			end
-
-			inst.sg.sg.states["run_monkey"].onenter = function(inst)
-				ConfigureRunState_client(inst)
-				inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
-				inst.Transform:SetPredictedSixFaced()
-				inst.components.locomotor:RunForward()
-
-				if not inst.AnimState:IsCurrentAnimation("run_monkey_loop") then
-					inst.AnimState:PlayAnimation("run_monkey_loop", true)
-				end
-
-				inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-			end
+			onmovementpredictionenabled(inst, true)
 		end
 	end)
 end
@@ -560,10 +533,21 @@ local master_postinit = function(inst)
 		--CommonStates.AddIpecacPoopState(inst.sg.sg.states)
 
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
-		inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
+		inst.sg.sg.states["run_start"].onenter = function()
+			ConfigureRunState_server(inst)
+			if inst.sg.statemem.normalwonkey then
+				if inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
+					inst.sg:GoToState("run_monkey") --resuming after brief stop from changing directions, or resuming prediction after running into obstacle
+					return
+				end 
+			end
+			inst.components.locomotor:RunForward()
+            inst.AnimState:PlayAnimation("run_pre")
+			inst.sg.mem.footsteps = (inst.sg.statemem.goose or inst.sg.statemem.goosegroggy) and 4 or 0
+		end
 
 		local oldrun = inst.sg.sg.states["run"].onenter
-		inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+		inst.sg.sg.states["run"].onenter = function(inst) sgpost(inst, oldrun) end
 
 		inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
 			ConfigureRunState_server(inst)
