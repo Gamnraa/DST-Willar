@@ -601,7 +601,8 @@ AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(GLOBAL.ACTIONS.
 GLOBAL.Gram_DroppedChanceLoot = {}
 GLOBAL.Gram_LootDropped = {}
 local function onspawnloot(inst, data)
-    if not inst.components.health and not inst.components.health:IsDead() then return end
+    if not inst.components.health then return end 
+    if not inst.components.health:IsDead() then return end
 
     if not GLOBAL.Gram_LootDropped[inst.GUID] then GLOBAL.Gram_LootDropped[inst.GUID] = {} end
 
@@ -646,7 +647,7 @@ AddCharacterRecipe("cutless",
 	{
 		"WEAPONS",
 	})
-STRINGS.RECIPE_DESC.WILLARSWORD = "A sword for stealing riches."
+STRINGS.RECIPE_DESC.CUTLESS = "A sword for stealing riches."
 
 AddCharacterRecipe("willarsword",
 	{Ingredient("cutless", 1),
