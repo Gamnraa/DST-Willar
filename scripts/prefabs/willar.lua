@@ -400,7 +400,9 @@ end
 
 local function sgpost(inst, oldfn)
 	oldfn(inst)
-	inst.sg.statemem.normalwonkey = true
+	if inst:HasTag("willar") then
+		inst.sg.statemem.normalwonkey = true
+	end
 end
 
 local function onmovementpredictionenabled(inst, enable)
@@ -533,17 +535,8 @@ local master_postinit = function(inst)
 		--CommonStates.AddIpecacPoopState(inst.sg.sg.states)
 
 		local oldrunstart = inst.sg.sg.states["run_start"].onenter
-		inst.sg.sg.states["run_start"].onenter = function()
-			ConfigureRunState_server(inst)
-			if inst.sg.statemem.normalwonkey then
-				if inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
-					inst.sg:GoToState("run_monkey") --resuming after brief stop from changing directions, or resuming prediction after running into obstacle
-					return
-				end 
-			end
-			inst.components.locomotor:RunForward()
-            inst.AnimState:PlayAnimation("run_pre")
-			inst.sg.mem.footsteps = (inst.sg.statemem.goose or inst.sg.statemem.goosegroggy) and 4 or 0
+		inst.sg.sg.states["run_start"].onenter = function(inst)
+			sgpost(inst, oldrunstart)
 		end
 
 		local oldrun = inst.sg.sg.states["run"].onenter
