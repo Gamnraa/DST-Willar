@@ -242,7 +242,16 @@ local function onload(inst, data)
     inst:ListenForEvent("ms_respawnedfromghost", onbecamehuman)
     inst:ListenForEvent("ms_becameghost", onbecameghost)
 
-	if inst.willar_nightmaremode then inst.nightmaretask = inst:DoPeriodicTask(0, NightmareTask) end
+	if inst.willar_nightmaremode then
+		inst.willar_nightmaremode = false
+		local ids = {}
+		for _, player in pairs(AllPlayers) do
+			table.insert(ids, player == inst and player.userid or nil)
+		end
+		inst:DoTaskInTime(0.5, function() SendModRPCToClient(GetClientModRPC("willarstatewatcher", "onworldstatechange"), ids, inst, inst.willar_nightmaremode) end)
+		DoTransform(inst) 
+		inst.nightmaretask = inst:DoPeriodicTask(0, NightmareTask) 
+	end
 
 	inst:DoTaskInTime(0, function()
 		for follower, _ in pairs(inst.components.leader.followers) do
