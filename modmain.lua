@@ -153,7 +153,6 @@ AddClientModRPCHandler("willarstatewatcher", "onworldstatechange", function(inst
 
     print(isnightmare, GLOBAL.TheWorld.state.isnight)
     if isnightmare and (GLOBAL.TheWorld.state.isnight or GLOBAL.TheWorld:HasTag("cave")) then
-        print("???")
         inst.components.playervision:PushForcedNightVision(inst, 2, NIGHTVISION_COLOURCUBES, false)
     else
         inst.components.playervision:PopForcedNightVision(inst)
