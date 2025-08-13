@@ -43,6 +43,41 @@ local function DoFx(inst)
     end
 end
 
+local pirate_weapons = {
+	["cutless"] = true,
+	["nightsword"] = true,
+	["willarsword"] = true,
+	["oar_money"] = true,
+	["glasscutter"] = true,
+	["sword_lunarplant"] = true,
+}
+
+local function OnEquip(inst, data)
+	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
+	end
+
+	if pirate_weapons[data.item.prefab] then
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
+	end
+
+	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
+		inst.components.combat.damagemultiplier = 1.25
+	end
+end
+
+local function OnUnequip(inst, data)
+	if not data.item then return end
+	local inv = inst.components.inventory
+	if not (pirate_weapons[data.item.prefab]) then 
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
+	end
+
+	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
+		inst.components.combat.damagemultiplier = 1.00
+	end
+end
+
 --Used to keep monkey followers in nightmare form when wearing the crown
 local function nightmaremonkeyloop(inst)
     local timer = inst.components.timer
@@ -121,6 +156,7 @@ local function DoTransform(inst)
 		end
 
 		inst.nightmaretask = inst:DoPeriodicTask(0, NightmareTask)
+		OnEquip(inst, {item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)})
 	end
 	inst.willar_nightmaremode = not inst.willar_nightmaremode
 end
@@ -166,41 +202,6 @@ local function OnEat(inst, food)
 		end
 	elseif banana_food[food.prefab] then 
 		inst.components.sanity:DoDelta(10)
-	end
-end
-
-local pirate_weapons = {
-	["cutless"] = true,
-	["nightsword"] = true,
-	["willarsword"] = true,
-	["oar_money"] = true,
-	["glasscutter"] = true,
-	["sword_lunarplant"] = true,
-}
-
-local function OnEquip(inst, data)
-	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
-		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
-	end
-
-	if pirate_weapons[data.item.prefab] then
-		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
-	end
-
-	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
-		inst.components.combat.damagemultiplier = 1.25
-	end
-end
-
-local function OnUnequip(inst, data)
-	if not data.item then return end
-	local inv = inst.components.inventory
-	if not (pirate_weapons[data.item.prefab]) then 
-		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
-	end
-
-	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
-		inst.components.combat.damagemultiplier = 1.00
 	end
 end
 
