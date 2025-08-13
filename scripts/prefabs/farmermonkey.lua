@@ -178,7 +178,6 @@ local function onremove(inst)
     if inst.cannon then
         inst.cannon.operator = nil
     end
-    inst:ClearTinkerTarget()
 end
 
 local function fn()
@@ -300,10 +299,16 @@ local function fn()
     inst:ListenForEvent("ms_seamlesscharacterspawned", onmonkeychange, TheWorld)
 
     inst:DoTaskInTime(0, function()
+        for k, v in pairs(inst.components.inventory.equipslots) do
+		    if v.persists and v:HasTag("personal_possession") then
+			    return
+		    end
+	    end
         local hat = SpawnPrefab("strawhat")
         hat:AddTag("personal_possession")
         inst.components.inventory:GiveItem(hat)
         inst.components.inventory:Equip(hat)
+        inst.hat = true
     end)
 
     MakeHauntablePanic(inst)
