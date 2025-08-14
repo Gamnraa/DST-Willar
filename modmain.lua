@@ -127,7 +127,8 @@ RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willar
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown_ruins.xml"), "willarcrown_ruins.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/monkeydisguise.xml"), "monkeydisguise.tex")
 
-GLOBAL.FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
+local FOODTYPE = GLOBAL.FOODTYPE
+FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
 
 local function SetNightmareFuelEdible(inst)
     if not GLOBAL.TheWorld.ismastersim then return end
@@ -213,6 +214,7 @@ local function OnMonkeyGetItem(inst, giver, item)
 
             if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
                 UpdateMaxHealth(inst, 75)
+                inst.components.inventory:DropEverything()
             elseif inst.prefab == "powder_monkey" then
                 UpdateMaxHealth(inst, 100)
             elseif inst.prefab == "prime_mate" then
@@ -630,6 +632,33 @@ AddPrefabPostInitAny(function(inst)
     end
 end)
 
+--Farmer Pod widget
+local containers = require("containers")
+local farmerpod = 
+{
+    widget = {
+        slotpos = {},
+        animbank = "ui_chest_3x3",
+        animbuild = "ui_chest_3x3",
+        animbank_upgraded = "ui_chest_upgraded_3x3",
+        animbuild_upgraded = "ui_chest_upgraded_3x3",
+        pos = GLOBAL.Vector3(0, 200, 0),
+        side_align_tip = 160,
+    },
+    type = "chest",
+}
+
+for y = 2, 0, -1 do
+    for x = 0, 2 do
+        table.insert(farmerpod.widget.slotpos, GLOBAL.Vector3(80 * x - 80 * 2 + 80, 80 * y - 80 * 2 + 80, 0))
+    end
+end
+
+containers.params.farmerpod = farmerpod
+
+function containers.params.farmerpod.itemtestfn(container, item, slot)
+	return (item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) or item:HasTag("cutgrass") or item:HasTag("twigs"))
+end
 
 --Recipes
 AddCharacterRecipe("cutless",
@@ -658,6 +687,7 @@ AddCharacterRecipe("willarsword",
 		product = "willarsword",
 		builder_tag = "willar",
 		numtogive = 1,
+        description = "Luicas"
 	},
 	{
 		"WEAPONS",

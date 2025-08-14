@@ -12,7 +12,8 @@ local TARGET_FOLLOW_DIST = 5
 local MAX_WANDER_DIST = 20
 
 
-local MUSTNOTTAGS = {"INLIMBO"}
+local MUSTNOTTAGS = {"INLIMBO", "tree"}
+local HARVESTTAGS = {"deployedfarmplant", "edible_"..FOODTYPE.VEGGIE, "weighable_OVERSIZEDVEGGIES", "cutgrass", "twigs"}
 
 local function GetFaceTargetFn(inst)
     return inst.components.follower.leader
@@ -60,7 +61,7 @@ end
 
 local function WantsToStore(inst, tags)
     --If our current storage choice is a chest but we want a fridge, or our current storage choice is full:
-    if inst.storing and (inst.storing:HasTag("chest") and tags[1] == "fridge" or inst.storing.components.container:IsFull()) then
+    if inst.storing and (inst.storing:HasTag("chest") and tags[1] == "farmerpod" or inst.storing.components.container:IsFull()) then
         inst.storing = GetStorageSpace(inst, tags)
     --We have no current storage option
     elseif not inst.storing then
@@ -76,7 +77,10 @@ local function StoreInContainer(inst)
 
     if inst.storing == nil then return nil end
 
-    local item = inst.components.inventory:FindItem(function(item) return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) end)
+    local item = inst.components.inventory:FindItem(function(item) 
+        return item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) or item:HasTag("cutgrass") or item:HasTag("twigs")
+    end)
+
 
     if item then
         local act = BufferedAction(inst, inst.storing, ACTIONS.STORE, item)
@@ -89,7 +93,7 @@ local function PickupCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"deployedfarmplant", "edible_"..FOODTYPE.VEGGIE, "weighable_OVERSIZEDVEGGIES"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, HARVESTTAGS)
     return target and BufferedAction(inst, target, ACTIONS.PICKUP) or nil
 end
 
@@ -98,7 +102,7 @@ local function HarvestCrop(inst)
         return nil
     end
 
-    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"bush", "bananabush", "readyforharvest"})
+    local target = FindEntity(inst, MAX_WANDER_DIST, nil, nil, MUSTNOTTAGS, {"bush", "bananabush", "readyforharvest", "plant"})
     if target and target.components.pickable then
         return target and target.components.pickable:CanBePicked() and BufferedAction(inst, target, ACTIONS.PICK) or nil
     end
@@ -152,7 +156,7 @@ local FarmerMonkeyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-local fridge_tags = {"fridge", "structure"}
+local fridge_tags = {"farmerpod", "structure"}
 local chest_tags = {"chest", "structure"}
 
 
@@ -179,7 +183,7 @@ function FarmerMonkeyBrain:OnStart()
                 })
         )),
         DoAction(self.inst, PickupCrop, "Pick Up Crop"),
-        DoAction(self.inst, HarvestCrop, "Haverst Crop"),
+        DoAction(self.inst, HarvestCrop, "Harvest Crop"),
         WhileNode(function() return WantsToFertilze(self.inst) end, "Fertilizing Bushes",
             PriorityNode({
                 DoAction(self.inst, PickupFertilzer, "Pick Up Fertlizer"),

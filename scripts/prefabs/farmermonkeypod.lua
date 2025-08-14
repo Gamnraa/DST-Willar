@@ -135,9 +135,11 @@ local function fn()
     inst.AnimState:PlayAnimation("idle", true)
 
     inst:AddTag("structure")
+    inst:AddTag("farmerpod")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
+        inst.OnEntityReplicated = function(inst) inst.replica.container:WidgetSetup("farmerpod") end
         return inst
     end
 
@@ -158,6 +160,9 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
+
+    inst:AddComponent("container")
+    inst.components.container:WidgetSetup("farmerpod")
 
     --MakeLargeBurnable(inst)
 	MakeLargePropagator(inst)

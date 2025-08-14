@@ -308,7 +308,6 @@ local function fn()
         hat:AddTag("personal_possession")
         inst.components.inventory:GiveItem(hat)
         inst.components.inventory:Equip(hat)
-        inst.hat = true
     end)
 
     MakeHauntablePanic(inst)
