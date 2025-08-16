@@ -4,6 +4,7 @@ local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
 	Asset("ANIM", "anim/shadow_willar.zip"),
 	Asset("SOUND", "sound/webber.fsb"),
+	Asset("SCRIPT", "scripts/prefabs/skilltree_willar")
 }
 
 local prefabs = {
@@ -53,6 +54,8 @@ local pirate_weapons = {
 }
 
 local function OnEquip(inst, data)
+	if not data.item then return end
+
 	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
 	end
