@@ -8,6 +8,7 @@ PrefabFiles = {
     "farmermonkey",
     "farmermonkeypod",
     "willartapestry",
+    --"skilltree_willar"
 }
 
 Assets = {
@@ -68,6 +69,9 @@ Assets = {
 
     Asset( "IMAGE", "images/inventoryimages/monkeyhutrecipe.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/monkeyhutrecipe.xml" ),
+
+    Asset( "IMAGE", "images/wilar_skilltree.tex"),
+    Asset( "ATLAS", "images/wilar_skilltree.xml"),
 }
 
 AddMinimapAtlas("images/map_icons/willar.xml")
@@ -121,6 +125,7 @@ AddModCharacter("willar", "MALE", skin_modes)
 
 
 modimport("scripts/strings")
+modimport("scripts/willarskilltree")
 
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarsword.xml"), "willarsword.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown.xml"), "willarcrown.tex")
