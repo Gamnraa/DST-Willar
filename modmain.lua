@@ -70,8 +70,8 @@ Assets = {
     Asset( "IMAGE", "images/inventoryimages/monkeyhutrecipe.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/monkeyhutrecipe.xml" ),
 
-    Asset( "IMAGE", "images/wilar_skilltree.tex"),
-    Asset( "ATLAS", "images/wilar_skilltree.xml"),
+    Asset( "IMAGE", "images/willar_skilltree.tex"),
+    Asset( "ATLAS", "images/willar_skilltree.xml"),
 }
 
 AddMinimapAtlas("images/map_icons/willar.xml")
@@ -119,13 +119,13 @@ local skin_modes = {
         offset = { 0, -25 } 
     },
 }
-
+modimport("scripts/willarskilltree")
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
 AddModCharacter("willar", "MALE", skin_modes)
 
 
 modimport("scripts/strings")
-modimport("scripts/willarskilltree")
+
 
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarsword.xml"), "willarsword.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown.xml"), "willarcrown.tex")
@@ -195,9 +195,15 @@ local function UpdateMaxHunger(inst, newmax)
     inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
+local function UpdateDurability(inst, percent)
+    local factor = inst.components.finiteuses.total * percent
+    inst:DoTaskInTime(0, function() inst.components.finiteuses.current = inst.components.finiteuses:GetUses() + factor end) --finite uses seems to have no checks for current > total so
+end
+
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
+GLOBAL.Gram_UpdateDurability = UpdateDurability
 
 
 local monkeybrain = require "brains/monkeybrain"
