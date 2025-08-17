@@ -4,7 +4,7 @@ local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
 	Asset("ANIM", "anim/shadow_willar.zip"),
 	Asset("SOUND", "sound/webber.fsb"),
-	Asset("SCRIPT", "scripts/prefabs/skilltree_willar")
+	Asset("SCRIPT", "scripts/prefabs/skilltree_willar.lua")
 }
 
 local prefabs = {
@@ -53,19 +53,55 @@ local pirate_weapons = {
 	["sword_lunarplant"] = true,
 }
 
+local flint_tools = {
+	["pickaxe"] = true,
+	["shovel"] = true,
+	["axe"] = true,
+	["pitchfork"] = true,
+	["farm_hoe"] = true,
+}
+
+local regal_tools = {
+	["goldenpickaxe"] = true,
+	["goldenshovel"] = true,
+	["goldenaxe"] = true,
+	["goldenpitchfork"] = true,
+	["golden_farm_hoe"] = true,
+}
+
 local function OnEquip(inst, data)
 	if not data.item then return end
+
+	local name = data.item.prefab
 
 	if data.item.components.equippable and data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.10, "willarpiratebuff")
 	end
 
-	if pirate_weapons[data.item.prefab] then
+	if pirate_weapons[name] then
 		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.25, "willarpiratebuff")
 	end
 
-	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
+	if data.item:HasTag("shadow_aligned") or data.item:HasTag("shadow") and inst.willar_nightmaremode then
 		inst.components.combat.damagemultiplier = 1.25
+	end
+
+
+	if not (flint_tools[name] or regal_tools[name]) then return end
+
+	local tool_mod = (inst.components.skilltreeupdater:IsActivated("regal_work_1") and .33) or (inst.components.skilltreeupdater:IsActivated("regal_work_2") and .50) or 0
+	tool_mod = tool_mod * (flint_tools[name] and -1 or 1)
+
+	inst.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, tool_mod, "willarskill")
+	inst.components.workmultiplier:AddMultiplier(ACTIONS.MINE, tool_mod, "willarskill")
+	inst.components.workmultiplier:AddMultiplier(ACTIONS.HAMMER, tool_mod, "willarskill")
+
+	if inst.components.skilltreeupdater:IsActivated("regal_work_3") then
+		tool_mod = flint_tools[name] and -.25 or .25
+		inst.components.efficientuser:AddMultiplier(ACTIONS.CHOP, tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.MINE, tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.HAMMER, tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.ATTACK, tool_mod, inst)
 	end
 end
 
@@ -73,11 +109,25 @@ local function OnUnequip(inst, data)
 	if not data.item then return end
 	local inv = inst.components.inventory
 	if not (pirate_weapons[data.item.prefab]) then 
-		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.00, "willarpiratebuff")
+		inst.components.combat.externaldamagemultipliers:SetModifier(inst, 1.0, "willarpiratebuff")
 	end
 
 	if data.item:HasTag("shadow_aligned") and inst.willar_nightmaremode then
-		inst.components.combat.damagemultiplier = 1.00
+		inst.components.combat.damagemultiplier = 1.0
+	end
+
+	if data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
+		inst.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, 1.0, "willarskill")
+		inst.components.workmultiplier:AddMultiplier(ACTIONS.MINE, 1.0, "willarskill")
+		inst.components.workmultiplier:AddMultiplier(ACTIONS.HAMMER, 1.0, "willarskill")
+	end
+
+	if inst.components.skilltreeupdater:IsActivated("regal_work_3") and (flint_tools[data.item.prefab] or regal_tools[data.item.prefab]) then
+		local tool_mod = flint_tools[name] and -.25 or .25
+		inst.components.efficientuser:AddMultiplier(ACTIONS.CHOP, -tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.MINE, -tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.HAMMER, -tool_mod, inst)
+		inst.components.efficientuser:AddMultiplier(ACTIONS.ATTACK, -tool_mod, inst)
 	end
 end
 
@@ -533,6 +583,10 @@ local master_postinit = function(inst)
     --inst.components.periodicspawner:SetDensityInRange(5, 5)
     --inst.components.periodicspawner:SetMinimumSpacing(8)
     inst.components.periodicspawner:Start()
+
+	if not inst.components.efficientuser then
+		inst:AddComponent("efficientuser")
+	end
 
 	--inst.tapestrybuff = false
 	inst:DoTaskInTime(0, function()
