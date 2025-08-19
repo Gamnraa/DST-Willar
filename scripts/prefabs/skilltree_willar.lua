@@ -1,17 +1,17 @@
-local vspace = 36
+local vspace = 40
 local order_hspace = 150
 
 local korx = -214
 local porx = -77
-local iorx = 30
-local aorx = 137
+local iorx = 70
+local aorx = 210
 
 local ORDERS =
 {
     {"King",        {korx+18,   176 +30}},
     {"Pirate",      {porx+18,   176 +30}},
-    {"Instinct",    {iorx-18,      176 +30}},
-    {"Affinity",    {aorx-18,    276    }}
+    {"Instinct",    {iorx-18,   176 +30}},
+    {"Affinity",    {aorx-18,   176 +30}}
 }
 
 local function BuildSkillsData(SkillTreeFns)
@@ -323,7 +323,7 @@ local function BuildSkillsData(SkillTreeFns)
               --  inst:AddTag("willar_regalwork3")
             end,
             connects = {
-                "trail_tricks_3"
+                "tail_tricks_3"
             },
         },
         tail_tricks_3 = {
@@ -361,7 +361,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = "Allow others to follow your teleport.",
             desc = "Increase loyalty time of acquired primate followers.",
             icon = "wilson_alchemy_1",
-            pos = {korx, 176-(vspace*4)},
+            pos = {iorx, 176-(vspace*4)},
             group = "Instinct",
             tags = {"willarinstinct"},
             onactivate = function(inst, fromload)

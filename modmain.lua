@@ -119,8 +119,9 @@ local skin_modes = {
         offset = { 0, -25 } 
     },
 }
-modimport("scripts/willarskilltree")
+
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
+modimport("scripts/willarskilltree")
 AddModCharacter("willar", "MALE", skin_modes)
 
 
@@ -372,6 +373,7 @@ AddModRPCHandler("GramWillarTapestryRPC", "GramWillarTapestry", tapestry_rpc)
 AddSimPostInit(function()
     GLOBAL.TheInput:AddKeyHandler(function(key, down)
         --I'm gonna be nice for once
+        if not GLOBAL.ThePlayer then return end
         if key == GLOBAL.KEY_LALT and down then
             GLOBAL.ThePlayer.willartapestrykey = GLOBAL.KEY_ALT
             if not GLOBAL.TheWorld.ismastersim then
