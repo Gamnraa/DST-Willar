@@ -120,9 +120,14 @@ local skin_modes = {
     },
 }
 
--- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
+GLOBAL.GramHasSkill = function(inst, skill)
+    return inst.components.skilltreeupdater:IsActivated(skill)
+end
+
+
 modimport("scripts/willarskilltree")
 modimport("scripts/strings")
+-- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
 AddModCharacter("willar", "MALE", skin_modes)
 
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarsword.xml"), "willarsword.tex")
