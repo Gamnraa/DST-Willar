@@ -40,6 +40,7 @@ GLOBAL.Gram_UpdateDurability = UpdateDurability
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
+local hasskill = GLOBAL.GramHasSkill
 
 local function OnMonkeyGetItem(inst, giver, item)
     if inst.components.eater:CanEat(item) then
@@ -52,7 +53,7 @@ local function OnMonkeyGetItem(inst, giver, item)
 
             giver:PushEvent("makefriend")
             giver.components.leader:AddFollower(inst)
-            inst.components.follower:AddLoyaltyTime(240)
+            inst.components.follower:AddLoyaltyTime(240 * (hasskill(inst, "loyal_subjects_1") and 1.5 or 1))
 
             if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
                 UpdateMaxHealth(inst, 75)
