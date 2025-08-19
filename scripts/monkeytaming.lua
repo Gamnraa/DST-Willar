@@ -42,43 +42,56 @@ local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
 local hasskill = GLOBAL.GramHasSkill
 
+local function BecomeFollower(inst, giver)
+    if inst.components.combat.target == giver then
+        inst.components.combat:SetTarget(nil)
+    end
+    giver:PushEvent("makefriend")
+    giver.components.leader:AddFollower(inst)
+    inst.components.follower:AddLoyaltyTime(240 * (hasskill(inst, "loyal_subjects_1") and 1.5 or 1))
+
+    if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
+        UpdateMaxHealth(inst, 75)
+        inst.components.inventory:DropEverything()
+    elseif inst.prefab == "powder_monkey" then
+        UpdateMaxHealth(inst, 100)
+    elseif inst.prefab == "prime_mate" then
+        UpdateMaxHealth(inst, 50)
+    end
+            
+    inst:SetBrain(willarmonkeybrain)
+
+    inst:ListenForEvent("loseloyalty", function() 
+        if inst.prefab == "monkey" then
+            inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
+            UpdateMaxHealth(inst, -75)
+        elseif inst.prefab == "powder_monkey" then
+            UpdateMaxHealth(inst, -100)
+        elseif inst.prefab == "prime_mate" then
+            UpdateMaxHealth(inst, -50)
+        end
+        inst:RemoveTag("willarfollower")
+    end)
+
+    inst:AddTag("willarfollower")
+end
+
 local function OnMonkeyGetItem(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
 
         if item.prefab == "cave_banana" then
-            if inst.components.combat.target == giver then
-                inst.components.combat:SetTarget(nil)
-            end
-
-            giver:PushEvent("makefriend")
-            giver.components.leader:AddFollower(inst)
-            inst.components.follower:AddLoyaltyTime(240 * (hasskill(inst, "loyal_subjects_1") and 1.5 or 1))
-
-            if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
-                UpdateMaxHealth(inst, 75)
-                inst.components.inventory:DropEverything()
-            elseif inst.prefab == "powder_monkey" then
-                UpdateMaxHealth(inst, 100)
-            elseif inst.prefab == "prime_mate" then
-                UpdateMaxHealth(inst, 50)
-            end
-            
-            inst:SetBrain(willarmonkeybrain)
-
-            inst:ListenForEvent("loseloyalty", function() 
-                if inst.prefab == "monkey" then
-                    inst:SetBrain(inst:HasTag("nightmare") and monkeynightmarebrain or monkeybrain)
-                    UpdateMaxHealth(inst, -75)
-                elseif inst.prefab == "powder_monkey" then
-                    UpdateMaxHealth(inst, -100)
-                elseif inst.prefab == "prime_mate" then
-                    UpdateMaxHealth(inst, -50)
+            BecomeFollower(inst, giver)
+            if hasskill(giver, "loyalsubjects_3") then
+                local x, y, z = inst.Transform:GetWorldPosition()
+                local monkeys = TheSim:FindEntities(x,y,z, 10, nil, {"FX", "NOCLICK", "DECOR", "INLIMBO", "willarfollower"}, {"monkey"})
+                local maxm = 2
+                for _, v in pairs(monkeys) do
+                    if maxm <= 0 then break end
+                    BecomeFollower(v, giver)
+                    maxm = maxm - 1
                 end
-                inst:RemoveTag("willarfollower")
-            end)
-
-            inst:AddTag("willarfollower")
+            end
         end
     elseif item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
         local current = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
