@@ -1,3 +1,6 @@
+TUNING.WILLAR_RECRUIT_TIME = 360
+
+local IsWillarLeader = GLOBAL.IsWillarLeader
 local function ShouldMonkeyAccept(inst, item, giver)
     if inst.components.health and inst.components.health:IsDead() then
         return false, "DEAD"
@@ -26,16 +29,23 @@ local function UpdateMaxHunger(inst, newmax)
     inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
-local function UpdateDurability(inst, percent)
-    local factor = inst.components.finiteuses.total * percent
-    inst:DoTaskInTime(0, function() inst.components.finiteuses.current = inst.components.finiteuses:GetUses() + factor end) --finite uses seems to have no checks for current > total so
-end
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
-GLOBAL.Gram_UpdateDurability = UpdateDurability
 
+GLOBAL.MakePrimemateRun = function(inst)
+    local cs = require("stategraphs/commonstates")
+    inst.sg.sg.events.locomote = GLOBAL.CommonHandlers.OnLocomote(true, true)
+    .AddRunStates(inst.sg, 
+    {
+        runtimeline =
+        {
+            GLOBAL.TimeEvent(0, GLOBAL.PlayFootstep),
+            GLOBAL.TimeEvent(10 * FRAMES, GLOBAL.PlayFootstep),
+        },
+    })
+end
 
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
@@ -48,15 +58,48 @@ local function BecomeFollower(inst, giver)
     end
     giver:PushEvent("makefriend")
     giver.components.leader:AddFollower(inst)
-    inst.components.follower:AddLoyaltyTime(240 * (hasskill(inst, "loyal_subjects_1") and 1.5 or 1))
+    inst.components.follower:AddLoyaltyTime(TUNING.WILLAR_RECRUIT_TIME * (hasskill(giver, "subjects_1") and 1.5 or 1))
 
     if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
         UpdateMaxHealth(inst, 75)
         inst.components.inventory:DropEverything()
+        local thrower = GLOBAL.CreateEntity()
+        thrower.name = "Thrower"
+        thrower.entity:AddTransform()
+        thrower:AddComponent("weapon")
+        thrower.components.weapon:SetDamage(TUNING.MONKEY_RANGED_DAMAGE)
+        thrower.components.weapon:SetRange(TUNING.MONKEY_RANGED_RANGE)
+        thrower.components.weapon:SetProjectile("monkeyprojectile")
+        thrower.components.weapon:SetOnProjectileLaunch(onthrow)
+        thrower:AddComponent("inventoryitem")
+        thrower.persists = false
+        thrower.components.inventoryitem:SetOnDroppedFn(thrower.Remove)
+        thrower:AddComponent("equippable")
+        thrower:AddTag("nosteal")
+        inst.components.inventory:GiveItem(thrower)
+        inst.weaponitems.thrower = thrower
+
+        local hitter = GLOBAL.CreateEntity()
+        hitter.name = "Hitter"
+        hitter.entity:AddTransform()
+        hitter:AddComponent("weapon")
+        hitter.components.weapon:SetDamage(TUNING.MONKEY_MELEE_DAMAGE)
+        hitter.components.weapon:SetRange(0)
+        hitter:AddComponent("inventoryitem")
+        hitter.persists = false
+        hitter.components.inventoryitem:SetOnDroppedFn(hitter.Remove)
+        hitter:AddComponent("equippable")
+        hitter:AddTag("nosteal")
+        inst.components.inventory:GiveItem(hitter)
+        inst.weaponitems.hitter = hitter
     elseif inst.prefab == "powder_monkey" then
         UpdateMaxHealth(inst, 100)
     elseif inst.prefab == "prime_mate" then
         UpdateMaxHealth(inst, 50)
+        if hasskill(giver, "subjects_2") then
+            inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
+           GLOBAL.MakePrimemateRun(inst)
+        end
     end
             
     inst:SetBrain(willarmonkeybrain)
@@ -77,13 +120,14 @@ local function BecomeFollower(inst, giver)
 end
 
 local function OnMonkeyGetItem(inst, giver, item)
+    local x, y, z = inst.Transform:GetWorldPosition()
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
 
         if item.prefab == "cave_banana" then
             BecomeFollower(inst, giver)
-            if hasskill(giver, "loyalsubjects_3") then
-                local x, y, z = inst.Transform:GetWorldPosition()
+            if hasskill(giver, "subjects_3") then
+                
                 local monkeys = TheSim:FindEntities(x,y,z, 10, nil, {"FX", "NOCLICK", "DECOR", "INLIMBO", "willarfollower"}, {"monkey"})
                 local maxm = 2
                 for _, v in pairs(monkeys) do
@@ -100,6 +144,29 @@ local function OnMonkeyGetItem(inst, giver, item)
         end
         inst.components.inventory:Equip(item)
         inst.AnimState:Show("hat")
+    elseif hasskill(giver, "subjects_2") and inst.prefab == "powder_monkey" and item.prefab == "idk" then
+        --turn into prime_mate
+        primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
+        local fx = SpawnPrefab("statue_transition_2")
+        if fx ~= nil then
+            fx.Transform:SetPosition(x, y, z)
+            fx.Transform:SetScale(.8, .8, .8)
+        end
+        fx = SpawnPrefab("statue_transition")
+        if fx ~= nil then
+            fx.Transform:SetPosition(x, y, z)
+            fx.Transform:SetScale(.8, .8, .8)
+        end
+        
+        inst:DoTaskInTime(.25, function()
+            local primemate = GLOBAL.SpawnPrefab("prime_mate")
+            if primemate then
+                primemate.Transform:SetPosition(x,y,z)
+                if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
+                if inst.components.combat:HasTarget() then primemate.components.combat:SetTarget(inst.components.combat.target) end
+                inst:Remove()
+            end
+        end)
     end
 end
 
