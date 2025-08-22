@@ -70,8 +70,12 @@ local function BuildSkillsData(SkillTreeFns)
             group = "King",
             tags = {"willarking"},
             onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+                for follower, _ in pairs(inst.components.leader.followers) do
+                  if follower.prefab == "prime_mate" then
+                    inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
+                    MakePrimemateRun(inst)
+                  end
+                end
             end,
             root = true,
             connects = {
@@ -125,8 +129,8 @@ local function BuildSkillsData(SkillTreeFns)
         },
 
         diplo = {
-            title = "Loyal Subjects I",
-            desc = "Increase loyalty time of acquired primate followers.",
+            title = "Diplomacy",
+            desc = "Improve trade rewards with Pig King and Monkey Queen.",
             icon = "wilson_alchemy_1",
             pos = {korx, 176-(vspace*3)},
             group = "King",
@@ -151,8 +155,11 @@ local function BuildSkillsData(SkillTreeFns)
             group = "Pirate",
             tags = {"willarpirate"},
             onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+              if not inst.components.expertsailor then
+                inst:AddComponent("expertsailor")
+              end
+              inst.components.expertsailor:SetRowForceMultiplier(1.5)
+              inst.components.expersailor:SetAnchorRaisingSpeed(1.5)
             end,
             root = true,
             connects = {
@@ -168,8 +175,11 @@ local function BuildSkillsData(SkillTreeFns)
             group = "Pirate",
             tags = {"willarpirate"},
             onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+              if not inst.components.expertsailor then
+                inst:AddComponent("expertsailor")
+              end
+              inst.components.expertsailor:SetRowForceMultiplier(2)
+              inst.components.expersailor:SetAnchorRaisingSpeed(2)
             end,
         },
 
