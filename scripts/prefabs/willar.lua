@@ -53,6 +53,12 @@ local pirate_weapons = {
 	["sword_lunarplant"] = true,
 }
 
+local pirate_hats = {
+	["monkey_smallhat"] = 0.055,
+	["monkey_mediumhat"] = 0.09,
+	["polly_rogershat"] = 0.112,
+}
+
 local flint_tools = {
 	["pickaxe"] = true,
 	["shovel"] = true,
@@ -259,7 +265,12 @@ local function OnEat(inst, food)
 end
 
 local function customsanityfn(inst)
-	return (TheWorld.state.isday and not TheWorld:HasTag("cave")) and TUNING.SANITY_NIGHT_MID or 0
+	local amt = 0
+	amt = (TheWorld.state.isday and not TheWorld:HasTag("cave")) and TUNING.SANITY_NIGHT_MID or 0
+	if GramHasSkill("crewmate") then
+		local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+		amt = amt + (item and pirate_hats[item.prefab] or 0)
+	return amt
 end
 
 -- When the character is revived from human
