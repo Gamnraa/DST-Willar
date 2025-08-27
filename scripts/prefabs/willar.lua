@@ -267,9 +267,10 @@ end
 local function customsanityfn(inst)
 	local amt = 0
 	amt = (TheWorld.state.isday and not TheWorld:HasTag("cave")) and TUNING.SANITY_NIGHT_MID or 0
-	if GramHasSkill("crewmate") then
+	if GramHasSkill(inst, "crewmate") then
 		local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
 		amt = amt + (item and pirate_hats[item.prefab] or 0)
+	end
 	return amt
 end
 
