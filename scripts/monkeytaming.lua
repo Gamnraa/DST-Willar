@@ -95,7 +95,7 @@ local function BecomeFollower(inst, giver)
     elseif inst.prefab == "powder_monkey" then
         UpdateMaxHealth(inst, 100)
     elseif inst.prefab == "prime_mate" then
-        UpdateMaxHealth(inst, 50)
+        UpdateMaxHealth(inst, 150)
         if hasskill(giver, "subjects_2") then
             inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
            GLOBAL.MakePrimemateRun(inst)
@@ -111,7 +111,7 @@ local function BecomeFollower(inst, giver)
         elseif inst.prefab == "powder_monkey" then
             UpdateMaxHealth(inst, -100)
         elseif inst.prefab == "prime_mate" then
-            UpdateMaxHealth(inst, -50)
+            UpdateMaxHealth(inst, -150)
         end
         inst:RemoveTag("willarfollower")
     end)
