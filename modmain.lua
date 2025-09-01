@@ -481,6 +481,26 @@ function containers.params.farmerpod.itemtestfn(container, item, slot)
 	return (item:HasTag("deployedfarmplant") or item:HasTag("weighable_OVERSIZEDVEGGIES") or item:HasTag("edible_"..FOODTYPE.VEGGIE) or item:HasTag("cutgrass") or item:HasTag("twigs"))
 end
 
+
+--Swashbuckler dash
+AddComponentAction("POINT", "piratelunge", function(inst, doer, pos, actions, right, target)
+    if GLOBAL.GramHasSKill(doer, "swashbuck") then
+        table.insert(actions, GLOBAL.ACTIONS.CASTAOE)
+    end
+end)
+
+local function AddDashAttack(inst)
+    inst:AddComponent("piratelunge")
+    inst:AddTag("aoeweapon_lunge")
+end
+
+AddPrefabPostInit("cutless", AddDashAttack)
+AddPrefabPostInit("nightsword", AddDashAttack)
+AddPrefabPostInit("willarsword", AddDashAttack)
+AddPrefabPostInit("oar_monkey", AddDashAttack)
+AddPrefabPostInit("glasscutter", AddDashAttack)
+AddPrefabPostInit("sword_lunarplant", AddDashAttack)
+
 --Recipes
 AddCharacterRecipe("cutless",
 	{Ingredient("boards", 1),
