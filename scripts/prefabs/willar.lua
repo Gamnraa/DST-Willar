@@ -48,7 +48,7 @@ local pirate_weapons = {
 	["cutless"] = true,
 	["nightsword"] = true,
 	["willarsword"] = true,
-	["oar_money"] = true,
+	["oar_monkey"] = true,
 	["glasscutter"] = true,
 	["sword_lunarplant"] = true,
 }
