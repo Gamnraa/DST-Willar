@@ -222,8 +222,18 @@ local function BuildSkillsData(SkillTreeFns)
             group = "Pirate",
             tags = {"willarpirate"},
             onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+              inst:ListenForEvent("got_on_platform", function(player, platform)
+                print(platform)
+                if platform.components.health then
+                  platform.components.health.externalreductionmodifiers:SetModifier(platform, .5, "willarboatdamagereduction")
+                end
+              end)
+
+              inst:ListenForEvent("got_off_platform", function(player, platform)
+                if platform.components.health then
+                  platform.components.health.externalreductionmodifiers:RemoveModifier(platform, "willarboatdamagereduction")
+                end
+              end)
             end,
             root = true,
             connects = {
@@ -233,7 +243,7 @@ local function BuildSkillsData(SkillTreeFns)
 
         captain_2 = {
             title = "Captain II",
-            desc = "Primate follows gain increased attack speed when wearing pirate hats.",
+            desc = "Primate followers gain increased attack speed when wearing pirate hats.",
             icon = "wilson_alchemy_1",
             pos = {porx, 176-(vspace * 3)},
             group = "Pirate",
@@ -249,14 +259,28 @@ local function BuildSkillsData(SkillTreeFns)
 
         captain_3 = {
             title = "Captain III",
-            desc = "Boat crew members receive for being on the same boat as you.",
+            desc = "Boat crew members receive sanity for being on the same boat as you.",
             icon = "wilson_alchemy_1",
             pos = {porx, 176-(vspace * 4)},
             group = "Pirate",
             tags = {"willarpirate"},
             onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+              inst:ListenForEvent("got_on_platform", function(player, platform)
+                local item = player.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+                for _, v in pairs(platform.components.walkableplatform.players_on_platform) do
+                  if v ~= player then 
+                    v.components.sanity.externalmodifiers:SetModifier(v, (item and item.prefab == "monkey_mediumhat") and 0.09 or 0.055, "WillarCaptainBonus")
+                  end
+                end
+              end)
+
+              inst:ListenForEvent("got_off_platform", function(player, platform)
+                for _, v in pairs(platform.components.walkableplatform.players_on_platform) do
+                  if v ~= player then 
+                    v.components.sanity.externalmodifiers:RemoveModifier(v, "WillarCaptainBonus")
+                  end
+                end
+              end)
             end,
         },
 
