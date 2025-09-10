@@ -1,6 +1,7 @@
  local State = GLOBAL.State
  local FRAMES = GLOBAL.FRAMES
  local TimeEvent = GLOBAL.TimeEvent
+ local FrameEvent = GLOBAL.FrameEvent
  local EventHandler = GLOBAL.EventHandler
 require "stategraphs/commonstates"
 local CommonHandlers = GLOBAL.CommonHandlers
@@ -201,13 +202,30 @@ AddStategraphState("wilson_client", willar_sleep_client)
 AddStategraphState("wilson_client", willar_sleep_action_client)
 
 
-AddStategraphPostInit("wilson", function(sg)
+AddStategraphPostInit("wilson", function(sg) 
     local olddoshortaction = sg.states.doshortaction.onenter
     sg.states.doshortaction.onenter = function(inst, ...)
-        olddoshortaction(inst, ...)
-        if not inst:HasTag("willar") then return end
-        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 3) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
-        inst.AnimState:SetDeltaTimeMultiplier(speedmult)
+        if inst:HasTag("willar") then
+            local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 2) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1
+            inst.AnimState:SetDeltaTimeMultiplier(speedmult)
+            inst.AnimState:PlayAnimation("pickup")
+            inst.AnimState:PushAnimation("pickup_pst", false)
+            inst.sg.statemem.action = inst.bufferedaction
+            inst.sg.statemem.silent = silent
+            inst.sg:SetTimeout(10 * FRAMES / speedmult)
+        else
+            olddoshortaction(inst, ...)
+        end    
+    end
+    --See willar.lua for timeline impl
+    --local oldtimeline = sg.states.doshortaction.timeline
+
+    local oldonexit = sg.states.doshortaction.onexit
+    sg.states.doshortaction.onexit = function(inst, ...)
+        if inst:HasTag("willar")  then
+            inst.AnimState:SetDeltaTimeMultiplier(1)
+        end
+        oldonexit(inst, ...)
     end
 end)
 
@@ -216,7 +234,17 @@ AddStategraphPostInit("wilson_client", function(sg)
     sg.states.doshortaction.onenter = function(inst, ...)
         olddoshortaction(inst, ...)
         if not inst:HasTag("willar") then return end
-        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 3) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
+        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 2) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
         inst.AnimState:SetDeltaTimeMultiplier(speedmult)
+    end
+
+    local oldonexit = sg.states.doshortaction.onexit
+    sg.states.doshortaction.onexit = function(inst, ...)
+        if inst:HasTag("willar")  then
+            inst.AnimState:SetDeltaTimeMultiplier(1)
+        end
+        if oldonexit then
+            oldonexit(inst, ...)
+        end
     end
 end)

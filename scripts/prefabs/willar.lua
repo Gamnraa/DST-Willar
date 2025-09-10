@@ -643,6 +643,50 @@ local master_postinit = function(inst)
 
 			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 		end
+
+		local function OwnsPocketRummageContainer(inst, item)
+			local owner = item.components.inventoryitem and item.components.inventoryitem:GetGrandOwner() or nil
+			if owner == inst then
+				return true
+			end
+			local mount = inst.components.rider and inst.components.rider:GetMount() or nil
+			if owner == mount or item == mount then
+				return true
+			end
+		end
+
+
+		local function TryResumePocketRummage(inst)
+			local item = inst.sg.mem.pocket_rummage_item
+			if item then
+				if item.components.container and
+					item.components.container:IsOpenedBy(inst) and
+					OwnsPocketRummageContainer(inst, item)
+				then
+					inst.sg.statemem.keep_pocket_rummage_mem_onexit = true
+					inst.sg:GoToState("start_pocket_rummage", item)
+					return true
+				end
+				inst.sg.mem.pocket_rummage_item = nil
+			end
+			return false
+		end
+
+		local speedmult = (GramHasSkill(inst, "tail_tricks_3") and 2) or (GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
+		inst.sg.sg.states["doshortaction"].timeline = 
+		{
+            TimeEvent(6 * FRAMES / speedmult, function(inst)
+				inst.sg:RemoveStateTag("busy")
+                if inst.sg.statemem.silent then
+                    inst.components.talker:IgnoreAll("silentpickup")
+                    inst:PerformBufferedAction()
+                    inst.components.talker:StopIgnoringAll("silentpickup")
+                else
+                    inst:PerformBufferedAction()
+                end
+            end),
+			FrameEvent(8 / speedmult, TryResumePocketRummage),
+        }
 	end)
 end
 
