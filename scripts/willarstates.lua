@@ -199,3 +199,24 @@ local willar_sleep_action_client = State({
 
 AddStategraphState("wilson_client", willar_sleep_client)
 AddStategraphState("wilson_client", willar_sleep_action_client)
+
+
+AddStategraphPostInit("wilson", function(sg)
+    local olddoshortaction = sg.states.doshortaction.onenter
+    sg.states.doshortaction.onenter = function(inst, ...)
+        olddoshortaction(inst, ...)
+        if not inst:HasTag("willar") then return end
+        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 3) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
+        inst.AnimState:SetDeltaTimeMultiplier(speedmult)
+    end
+end)
+
+AddStategraphPostInit("wilson_client", function(sg)
+    local olddoshortaction = sg.states.doshortaction.onenter
+    sg.states.doshortaction.onenter = function(inst, ...)
+        olddoshortaction(inst, ...)
+        if not inst:HasTag("willar") then return end
+        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 3) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
+        inst.AnimState:SetDeltaTimeMultiplier(speedmult)
+    end
+end)
