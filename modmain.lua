@@ -8,7 +8,6 @@ PrefabFiles = {
     "farmermonkey",
     "farmermonkeypod",
     "willartapestry",
-    --"skilltree_willar"
 }
 
 Assets = {
@@ -125,7 +124,7 @@ GLOBAL.GramHasSkill = function(inst, skill)
 end
 
 
---modimport("scripts/willarskilltree")
+modimport("scripts/willarskilltree")
 modimport("scripts/strings")
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
 AddModCharacter("willar", "MALE", skin_modes)
