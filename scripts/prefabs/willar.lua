@@ -96,7 +96,7 @@ local function OnEquip(inst, data)
 	if not (flint_tools[name] or regal_tools[name]) then return end
 
 	local tool_mod = (inst.components.skilltreeupdater:IsActivated("regal_work_1") and .33) or (inst.components.skilltreeupdater:IsActivated("regal_work_2") and .50) or 0
-	tool_mod = tool_mod * (flint_tools[name] and -1 or 1)
+	tool_mod =  1 + (flint_tools[name] and -tool_mod or tool_mod)
 
 	inst.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, tool_mod, "willarskill")
 	inst.components.workmultiplier:AddMultiplier(ACTIONS.MINE, tool_mod, "willarskill")
