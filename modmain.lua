@@ -232,15 +232,18 @@ local function onspawnloot(inst, data)
     local t = GLOBAL.LootTables[lootdropper.chanceloottable]
 	if t then
 		for k, v in pairs(GLOBAL.LootTables[lootdropper.chanceloottable]) do
-			if v[2] < 1.00 then chanceloot[v[1]] = v[2] end
-            print(v[1])
+			if v[2] < 1.00 then 
+                chanceloot[v[1]] = v[2]
+            else
+                table.insert(GLOBAL.Gram_LootDropped[inst.GUID], v[1]) 
+            end
 		end
 	end
     
     if data.loot and chanceloot[data.loot.prefab] then
         GLOBAL.Gram_DroppedChanceLoot[inst.GUID] = true
     else
-        table.insert(GLOBAL.Gram_LootDropped[inst.GUID], data.loot.prefab)
+        table.insert(GLOBAL.Gram_LootDropped[inst.GUID], data.loot.prefab) 
     end
 end
 
@@ -329,6 +332,19 @@ local function AddDashAttack(inst)
         doer:PushEvent("combat_lunge", { targetpos = pos, weapon = inst })
     end
 
+    local function Lightning_OnLungedHit(inst, doer, target)
+        inst._lunge_hit_count = inst._lunge_hit_count or 0
+
+        if inst._lunge_hit_count < TUNING.SPEAR_WATHGRITHR_LIGHTNING_CHARGED_MAX_REPAIRS_PER_LUNGE and
+            inst.components.upgradeable == nil and
+            doer.IsValidVictim ~= nil and
+            doer.IsValidVictim(target)
+        then
+            inst.components.finiteuses:Repair(TUNING.SPEAR_WATHGRITHR_LIGHTNING_CHARGED_LUNGE_REPAIR_AMOUNT)
+            inst._lunge_hit_count = inst._lunge_hit_count + 1
+        end
+    end
+
     inst:AddComponent("aoetargeting")
     inst.components.aoetargeting:SetAllowRiding(false)
     inst.components.aoetargeting.reticule.reticuleprefab = "reticuleline"
@@ -362,7 +378,7 @@ local function AddDashAttack(inst)
     inst.components.aoeweapon_lunge:SetSound("meta3/wigfrid/spear_lighting_lunge")
     inst.components.aoeweapon_lunge:SetSideRange(1)
     --inst.components.aoeweapon_lunge:SetOnLungedFn(Lightning_OnLunged)
-    --inst.components.aoeweapon_lunge:SetOnHitFn(Lightning_OnLungedHit)
+    inst.components.aoeweapon_lunge:SetOnHitFn(Lightning_OnLungedHit)
     --inst.components.aoeweapon_lunge:SetStimuli("electric")
     inst.components.aoeweapon_lunge:SetWorkActions()
     inst.components.aoeweapon_lunge:SetTags("_combat")
