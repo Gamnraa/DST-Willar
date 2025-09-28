@@ -209,9 +209,6 @@ local function BuildSkillsData(SkillTreeFns)
               --  inst:AddTag("willar_regalwork3")
             end,
             root = true,
-            connects = {
-                "regal_work_2"
-            },
         },
 
         captain_1 = {
@@ -329,7 +326,7 @@ local function BuildSkillsData(SkillTreeFns)
             end,
         },
         tail_tricks_1 = {
-            title = "Trail Tricks I",
+            title = "Tail Tricks I",
             desc = "Pick up items slightly faster.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176},
@@ -345,7 +342,7 @@ local function BuildSkillsData(SkillTreeFns)
             },
         },
         tail_tricks_2 = {
-            title = "Trail Tricks II",
+            title = "Tail Tricks II",
             desc = "Pick up items faster.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176-(vspace)},
@@ -360,7 +357,7 @@ local function BuildSkillsData(SkillTreeFns)
             },
         },
         tail_tricks_3 = {
-            title = "Trail Tricks III",
+            title = "Tail Tricks III",
             desc = "Pick up items near instantly.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176-(vspace*2)},
