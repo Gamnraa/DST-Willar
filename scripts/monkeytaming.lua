@@ -246,10 +246,14 @@ local function MakeMonkeysTamable(inst, duration)
     end
 
     local oldretargetfn = inst.components.combat.targetfn
-    inst.components.combat.targetfn = function()
-        if IsWillarLeader(inst) then
+    inst.components.combat.targetfn = function(cm)
+        if IsWillarLeader(cm) then
             return nil --Don't attack anything if our leader doesn't
-        else return oldretargetfn(inst) end
+        else 
+            local target = oldretargetfn(cm)
+            if target and target.prefab == "willar" then return nil end
+            return target 
+        end
     end
 
     inst:DoTaskInTime(1, function() if IsWillarLeader(inst) then print("ChangeBrain") inst:SetBrain(willarmonkeybrain) end end)
