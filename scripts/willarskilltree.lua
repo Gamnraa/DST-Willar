@@ -11,7 +11,7 @@ local CreateSkillTree = function()
             SkillTreeDefs.SKILLTREE_ORDERS["willar"] = data.ORDERS
         end
 
-        RegisterSkilltreeBGForCharacter(GLOBAL.resolvefilepath("images/willar_skilltree.xml"), "willar") -- add bg
+        --RegisterSkilltreeBGForCharacter(GLOBAL.resolvefilepath("images/willar_skilltree.xml"), "willar") -- add bg
         for k, v in pairs(data.SKILLS) do
             --if v.icon then
             --    RegisterSkilltreeIconsAtlas("images/willar_skilltree.xml", v.icon .. ".tex")
@@ -20,14 +20,3 @@ local CreateSkillTree = function()
     end
 end
 CreateSkillTree()
-
-print("NESSNESS")
-local OldGetSkilltreeBG = GLOBAL.GetSkilltreeBG
-function GLOBAL.GetSkilltreeBG(imagename, ...)
-    print("NESS",imagename)
-    if imagename == "willar_background.tex" then
-        return "images/willar_skilltree.xml"
-    else
-        return OldGetSkilltreeBG(imagename, ...)
-    end
-end
