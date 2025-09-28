@@ -159,7 +159,7 @@ local function BuildSkillsData(SkillTreeFns)
                 inst:AddComponent("expertsailor")
               end
               inst.components.expertsailor:SetRowForceMultiplier(1.5)
-              inst.components.expersailor:SetAnchorRaisingSpeed(1.5)
+              inst.components.expertsailor:SetAnchorRaisingSpeed(1.5)
             end,
             root = true,
             connects = {
@@ -179,7 +179,7 @@ local function BuildSkillsData(SkillTreeFns)
                 inst:AddComponent("expertsailor")
               end
               inst.components.expertsailor:SetRowForceMultiplier(2)
-              inst.components.expersailor:SetAnchorRaisingSpeed(2)
+              inst.components.expertsailor:SetAnchorRaisingSpeed(2)
             end,
         },
 
@@ -199,7 +199,7 @@ local function BuildSkillsData(SkillTreeFns)
 
         swashbuck = {
             title = "Swashbuckler",
-            desc = "Boating related tasks are 50% faster.",
+            desc = "Peform lunge attacks with pirate weapons",
             icon = "wilson_alchemy_1",
             pos = {porx + 72, 176},
             group = "Pirate",
@@ -223,7 +223,6 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"willarpirate"},
             onactivate = function(inst, fromload)
               inst:ListenForEvent("got_on_platform", function(player, platform)
-                print(platform)
                 if platform.components.health then
                   platform.components.health.externalreductionmodifiers:SetModifier(platform, .5, "willarboatdamagereduction")
                 end
@@ -331,7 +330,7 @@ local function BuildSkillsData(SkillTreeFns)
         },
         tail_tricks_1 = {
             title = "Trail Tricks I",
-            desc = "Picking up items slightly faster.",
+            desc = "Pick up items slightly faster.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176},
             group = "Instinct",
@@ -347,7 +346,7 @@ local function BuildSkillsData(SkillTreeFns)
         },
         tail_tricks_2 = {
             title = "Trail Tricks II",
-            desc = "Picking up items faster.",
+            desc = "Pick up items faster.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176-(vspace)},
             group = "Instinct",
@@ -362,7 +361,7 @@ local function BuildSkillsData(SkillTreeFns)
         },
         tail_tricks_3 = {
             title = "Trail Tricks III",
-            desc = "Picking up items near instantly.",
+            desc = "Pick up items near instantly.",
             icon = "wilson_alchemy_1",
             pos = {iorx+36, 176-(vspace*2)},
             group = "Instinct",
@@ -392,8 +391,8 @@ local function BuildSkillsData(SkillTreeFns)
             }
         },
         shadowstride = {
-            title = "Allow others to follow your teleport.",
-            desc = "Increase loyalty time of acquired primate followers.",
+            title = "Shadowstride",
+            desc = "Others may follow your teleport.",
             icon = "wilson_alchemy_1",
             pos = {iorx, 176-(vspace*4)},
             group = "Instinct",
