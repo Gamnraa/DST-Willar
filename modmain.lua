@@ -281,15 +281,95 @@ end
 
 
 --Swashbuckler dash
-AddComponentAction("POINT", "piratelunge", function(inst, doer, pos, actions, right, target)
-    if GLOBAL.GramHasSKill(doer, "swashbuck") then
-        table.insert(actions, GLOBAL.ACTIONS.CASTAOE)
-    end
-end)
-
 local function AddDashAttack(inst)
-    inst:AddComponent("piratelunge")
     inst:AddTag("aoeweapon_lunge")
+
+    local function Lightning_ReticuleTargetFn()
+        --Cast range is 8, leave room for error (6.5 lunge)
+        return GLOBAL.Vector3(ThePlayer.entity:LocalToWorldSpace(6.5, 0, 0))
+    end
+
+    local function Lightning_ReticuleMouseTargetFn(inst, mousepos)
+        if mousepos ~= nil then
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local dx = mousepos.x - x
+            local dz = mousepos.z - z
+            local l = dx * dx + dz * dz
+            if l <= 0 then
+                return inst.components.reticule.targetpos
+            end
+            l = 6.5 / math.sqrt(l)
+            return GLOBAL.Vector3(x + dx * l, 0, z + dz * l)
+        end
+    end
+
+    local function Lightning_ReticuleUpdatePositionFn(inst, pos, reticule, ease, smoothing, dt)
+        local x, y, z = inst.Transform:GetWorldPosition()
+        reticule.Transform:SetPosition(x, 0, z)
+        local rot = -math.atan2(pos.z - z, pos.x - x) / GLOBAL.DEGREES
+        if ease and dt ~= nil then
+            local rot0 = reticule.Transform:GetRotation()
+            local drot = rot - rot0
+            rot = GLOBAL.Lerp((drot > 180 and rot0 + 360) or (drot < -180 and rot0 - 360) or rot0, rot, dt * smoothing)
+        end
+        reticule.Transform:SetRotation(rot)
+    end
+
+    local function Lightning_OnLunged(inst, doer, startingpos, targetpos)
+        local fx = SpawnPrefab("spear_wathgrithr_lightning_lunge_fx")
+        fx.Transform:SetPosition(targetpos:Get())
+        fx.Transform:SetRotation(doer:GetRotation())
+
+        inst.components.rechargeable:Discharge(inst._cooldown)
+
+        inst._lunge_hit_count = nil
+    end
+
+    local function Lightning_SpellFn(inst, doer, pos)
+        doer:PushEvent("combat_lunge", { targetpos = pos, weapon = inst })
+    end
+
+    inst:AddComponent("aoetargeting")
+    inst.components.aoetargeting:SetAllowRiding(false)
+    inst.components.aoetargeting.reticule.reticuleprefab = "reticuleline"
+    inst.components.aoetargeting.reticule.pingprefab = "reticulelineping"
+    inst.components.aoetargeting.reticule.targetfn = Lightning_ReticuleTargetFn
+    inst.components.aoetargeting.reticule.mousetargetfn = Lightning_ReticuleMouseTargetFn
+    inst.components.aoetargeting.reticule.updatepositionfn = Lightning_ReticuleUpdatePositionFn
+    inst.components.aoetargeting.reticule.validcolour = { 1, .75, 0, 1 }
+    inst.components.aoetargeting.reticule.invalidcolour = { .5, 0, 0, 1 }
+    inst.components.aoetargeting.reticule.ease = true
+    inst.components.aoetargeting.reticule.mouseenabled = true
+
+    if not GLOBAL.TheWorld.ismastersim then return end
+
+    local oldequip = inst.components.equippable.onequipfn
+    inst.components.equippable:SetOnEquip(function(inst, owner)
+        oldequip(inst, owner)
+        inst.components.aoetargeting:SetEnabled(GLOBAL.GramHasSkill(owner, "swashbuck"))
+    end)
+
+    local oldunequip = inst.components.equippable.onunequipfn
+    inst.components.equippable:SetOnUnequip(function(inst, owner)
+        oldunequip(inst, owner)
+        inst.components.aoetargeting:SetEnabled(GLOBAL.GramHasSkill(owner, "swashbuck"))
+    end)
+
+    inst.components.aoetargeting:SetEnabled(false)
+
+    inst:AddComponent("aoeweapon_lunge")
+    inst.components.aoeweapon_lunge:SetDamage(TUNING.SPEAR_WATHGRITHR_LIGHTNING_LUNGE_DAMAGE)
+    inst.components.aoeweapon_lunge:SetSound("meta3/wigfrid/spear_lighting_lunge")
+    inst.components.aoeweapon_lunge:SetSideRange(1)
+    --inst.components.aoeweapon_lunge:SetOnLungedFn(Lightning_OnLunged)
+    --inst.components.aoeweapon_lunge:SetOnHitFn(Lightning_OnLungedHit)
+    --inst.components.aoeweapon_lunge:SetStimuli("electric")
+    inst.components.aoeweapon_lunge:SetWorkActions()
+    inst.components.aoeweapon_lunge:SetTags("_combat")
+
+
+    inst:AddComponent("aoespell")
+    inst.components.aoespell:SetSpellFn(Lightning_SpellFn)
 end
 
 AddPrefabPostInit("cutless", AddDashAttack)
