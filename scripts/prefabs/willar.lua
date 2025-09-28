@@ -103,7 +103,7 @@ local function OnEquip(inst, data)
 	inst.components.workmultiplier:AddMultiplier(ACTIONS.HAMMER, tool_mod, "willarskill")
 
 	if inst.components.skilltreeupdater:IsActivated("regal_work_3") then
-		tool_mod = flint_tools[name] and -.25 or .25
+		tool_mod = flint_tools[name] and 1.25 or .75
 		inst.components.efficientuser:AddMultiplier(ACTIONS.CHOP, tool_mod, inst)
 		inst.components.efficientuser:AddMultiplier(ACTIONS.MINE, tool_mod, inst)
 		inst.components.efficientuser:AddMultiplier(ACTIONS.HAMMER, tool_mod, inst)
@@ -123,17 +123,16 @@ local function OnUnequip(inst, data)
 	end
 
 	if data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
-		inst.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, 1.0, "willarskill")
-		inst.components.workmultiplier:AddMultiplier(ACTIONS.MINE, 1.0, "willarskill")
-		inst.components.workmultiplier:AddMultiplier(ACTIONS.HAMMER, 1.0, "willarskill")
+		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.CHOP, "willarskill")
+		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.MINE, "willarskill")
+		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.HAMMER, 1.0, "willarskill")
 	end
 
 	if inst.components.skilltreeupdater:IsActivated("regal_work_3") and (flint_tools[data.item.prefab] or regal_tools[data.item.prefab]) then
-		local tool_mod = flint_tools[name] and -.25 or .25
-		inst.components.efficientuser:AddMultiplier(ACTIONS.CHOP, -tool_mod, inst)
-		inst.components.efficientuser:AddMultiplier(ACTIONS.MINE, -tool_mod, inst)
-		inst.components.efficientuser:AddMultiplier(ACTIONS.HAMMER, -tool_mod, inst)
-		inst.components.efficientuser:AddMultiplier(ACTIONS.ATTACK, -tool_mod, inst)
+		inst.components.efficientuser:RemoveMultiplier(ACTIONS.CHOP, "willarskill")
+		inst.components.efficientuser:RemoveMultiplier(ACTIONS.MINE, "willarskill")
+		inst.components.efficientuser:RemoveMultiplier(ACTIONS.HAMMER, "willarskill")
+		inst.components.efficientuser:RemoveMultiplier(ACTIONS.ATTACK, "willarskill")
 	end
 end
 
