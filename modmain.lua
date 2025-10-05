@@ -289,7 +289,7 @@ local function AddDashAttack(inst)
 
     local function Lightning_ReticuleTargetFn()
         --Cast range is 8, leave room for error (6.5 lunge)
-        return GLOBAL.Vector3(ThePlayer.entity:LocalToWorldSpace(6.5, 0, 0))
+        return GLOBAL.Vector3(GLOBAL.ThePlayer.entity:LocalToWorldSpace(6.5, 0, 0))
     end
 
     local function Lightning_ReticuleMouseTargetFn(inst, mousepos)
