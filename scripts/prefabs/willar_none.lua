@@ -8,7 +8,7 @@ table.insert(prefabs, CreatePrefabSkin("willar_none", {
 	
 	skins = {
 		normal_skin = "willar",
-		ghost_skin = "ghost_willar",
+		ghost_skin = "ghost_willar_build",
 	},
 	
 	base_prefab = "willar",
