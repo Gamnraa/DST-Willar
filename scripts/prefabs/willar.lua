@@ -487,10 +487,10 @@ local function onmovementpredictionenabled(inst, enable)
 			if inst.sg then
 				inst.willarsgfix = true
 				local oldrunstart = inst.sg.sg.states["run_start"].onenter
-				inst.sg.sg.states["run_start"].onenter = function() sgpost(inst, oldrunstart) end
+				inst.sg.sg.states["run_start"].onenter = function(inst) sgpost(inst, oldrunstart) end
 
 				local oldrun = inst.sg.sg.states["run"].onenter
-				inst.sg.sg.states["run"].onenter = function() sgpost(inst, oldrun) end
+				inst.sg.sg.states["run"].onenter = function(inst) sgpost(inst, oldrun) end
 
 				inst.sg.sg.states["run_monkey_start"].onenter = function(inst)
 					ConfigureRunState_client(inst)
@@ -527,12 +527,9 @@ local common_postinit = function(inst)
 	--inst.nightmaremode = net_bool(inst.GUID, "willarnightmaremode", "willarnightmaremodedirty")
 
 	inst:ListenForEvent("enablemovementprediction", onmovementpredictionenabled)
-
-	inst:DoTaskInTime(.5, function() 
-		if inst.sg then
-			onmovementpredictionenabled(inst, true)
-		end
-	end)
+	if inst.sg then
+		onmovementpredictionenabled(inst, true)
+	end
 end
 
 
