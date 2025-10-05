@@ -361,12 +361,14 @@ local function AddDashAttack(inst)
 
     local oldequip = inst.components.equippable.onequipfn
     inst.components.equippable:SetOnEquip(function(inst, owner)
+        if not owner:HasTag("player") then return end
         oldequip(inst, owner)
         inst.components.aoetargeting:SetEnabled(GLOBAL.GramHasSkill(owner, "swashbuck"))
     end)
 
     local oldunequip = inst.components.equippable.onunequipfn
     inst.components.equippable:SetOnUnequip(function(inst, owner)
+        if not owner:HasTag("player") then return end
         oldunequip(inst, owner)
         inst.components.aoetargeting:SetEnabled(GLOBAL.GramHasSkill(owner, "swashbuck"))
     end)
@@ -394,6 +396,8 @@ AddPrefabPostInit("willarsword", AddDashAttack)
 AddPrefabPostInit("oar_monkey", AddDashAttack)
 AddPrefabPostInit("glasscutter", AddDashAttack)
 AddPrefabPostInit("sword_lunarplant", AddDashAttack)
+
+modimport("scripts/diplorelations")
 
 --Recipes
 modimport("scripts/willarrecipes")

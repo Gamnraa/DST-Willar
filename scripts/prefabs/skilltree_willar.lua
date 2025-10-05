@@ -128,8 +128,7 @@ local function BuildSkillsData(SkillTreeFns)
             end,
         },
 
-        diplo = {
-            title = "Diplomacy",
+        diplo_lock = {
             desc = "Improve trade rewards with Pig King and Monkey Queen.",
             icon = "wilson_alchemy_1",
             pos = {korx, 176-(vspace*3)},
@@ -143,7 +142,19 @@ local function BuildSkillsData(SkillTreeFns)
                 return SkillTreeFns.CountTags(instname, "willarking", activatedskills) > 4
             end,
             root = true,
+            connects = {
+              "diplo"
+            }
         },
+
+        diplo = {
+          title = "Diplomatic Relations",
+          desc = "Improve trade rewards with Pig King and Monkey Queen",
+          icon = "wilson_alchemy_1",
+          pos = {korx + 36, 176-(vspace*3)},
+          group = "King",
+          tags = {"willarking"},
+         },
 
 
 
