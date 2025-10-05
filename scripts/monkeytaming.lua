@@ -131,9 +131,11 @@ local function OnMonkeyGetItem(inst, giver, item)
                 local monkeys = TheSim:FindEntities(x,y,z, 10, nil, {"FX", "NOCLICK", "DECOR", "INLIMBO", "willarfollower"}, {"monkey"})
                 local maxm = 2
                 for _, v in pairs(monkeys) do
-                    if maxm <= 0 then break end
-                    BecomeFollower(v, giver)
-                    maxm = maxm - 1
+                    if giver ~= v then
+                        if maxm <= 0 then break end
+                        BecomeFollower(v, giver)
+                        maxm = maxm - 1
+                    end
                 end
             end
         end
