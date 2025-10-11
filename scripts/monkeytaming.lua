@@ -8,7 +8,8 @@ local function ShouldMonkeyAccept(inst, item, giver)
 
     return 
         (giver:HasTag("willar") and inst.components.eater:CanEat(item)) or
-        (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD)
+        (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD) or
+        (GLOBAL.GramHasSkill(giver, "diplo") and item.prefab == "pigskin")
 end
 
 local function UpdateMaxHealth(inst, newmax)
@@ -148,13 +149,12 @@ local function OnMonkeyGetItem(inst, giver, item)
         inst.AnimState:Show("hat")
     elseif hasskill(giver, "subjects_2") and inst.prefab == "powder_monkey" and item.prefab == "idk" then
         --turn into prime_mate
-        primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
-        local fx = SpawnPrefab("statue_transition_2")
+        local fx = GLOBAL.SpawnPrefab("statue_transition_2")
         if fx ~= nil then
             fx.Transform:SetPosition(x, y, z)
             fx.Transform:SetScale(.8, .8, .8)
         end
-        fx = SpawnPrefab("statue_transition")
+        fx = GLOBAL.SpawnPrefab("statue_transition")
         if fx ~= nil then
             fx.Transform:SetPosition(x, y, z)
             fx.Transform:SetScale(.8, .8, .8)
@@ -163,9 +163,31 @@ local function OnMonkeyGetItem(inst, giver, item)
         inst:DoTaskInTime(.25, function()
             local primemate = GLOBAL.SpawnPrefab("prime_mate")
             if primemate then
+                primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
                 primemate.Transform:SetPosition(x,y,z)
                 if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
                 if inst.components.combat:HasTarget() then primemate.components.combat:SetTarget(inst.components.combat.target) end
+                inst:Remove()
+            end
+        end)
+    elseif hasskill(giver, "diplo") and inst.prefab == "monkey" and item.prefab == "pigskin" then
+        local fx = GLOBAL.SpawnPrefab("statue_transition_2")
+        if fx ~= nil then
+            fx.Transform:SetPosition(x, y, z)
+            fx.Transform:SetScale(.8, .8, .8)
+        end
+        fx = GLOBAL.SpawnPrefab("statue_transition")
+        if fx ~= nil then
+            fx.Transform:SetPosition(x, y, z)
+            fx.Transform:SetScale(.8, .8, .8)
+        end
+
+        inst:DoTaskInTime(.25, function()
+            local primemate = GLOBAL.SpawnPrefab("willarsquire")
+            if primemate then
+                primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
+                primemate.Transform:SetPosition(x,y,z)
+                if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
                 inst:Remove()
             end
         end)
