@@ -58,3 +58,27 @@ AddPrefabPostInit("monkeyqueen", function(inst)
         end
     end)
 end)
+
+AddPrefabPostInit("mermking", function(inst)
+    if not mastersim() then return end
+
+    local oldtrade = inst.components.trader.abletoaccepttest
+    inst.components.trader.abletoaccepttest = function(inst, item, giver)
+        if GLOBAL.GramHasSkill(giver, "diplo") then
+            local can_eat = (item.components.edible and inst.components.eater:CanEat(item))
+                and (inst.components.hunger and inst.components.hunger:GetPercent() < 1)
+            if can_eat or item:HasTag("fish") then
+                return true
+            end
+        end
+        return oldtrade(inst, item, giver)
+    end
+end)
+
+AddComponentPostInit("rabbitkingmanager", function(self)
+    local oldaddcarrot = self.AddCarrotFromPlayer
+    self.AddCarrotFromPlayer = function(self, player, receiver)
+        if GLOBAL.GramHasSkill(player, "diplo") then oldaddcarrot(self, player, receiver) end
+        oldaddcarrot(self, player, receiver)
+    end
+end)
