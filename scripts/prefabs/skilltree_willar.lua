@@ -129,7 +129,7 @@ local function BuildSkillsData(SkillTreeFns)
         },
 
         diplo_lock = {
-            desc = "Improve trade rewards with Pig King and Monkey Queen.",
+            desc = "Learn 5 King skills to unlock.",
             icon = "wilson_alchemy_1",
             pos = {korx, 176-(vspace*3)},
             group = "King",
@@ -149,7 +149,7 @@ local function BuildSkillsData(SkillTreeFns)
 
         diplo = {
           title = "Diplomatic Relations",
-          desc = "Improve trade rewards with Pig King and Monkey Queen",
+          desc = "Improve trade rewards with Pig King and Monkey Queen.",
           icon = "wilson_alchemy_1",
           pos = {korx + 36, 176-(vspace*3)},
           group = "King",
