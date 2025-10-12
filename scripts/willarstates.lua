@@ -227,6 +227,40 @@ AddStategraphPostInit("wilson", function(sg)
         end
         oldonexit(inst, ...)
     end
+
+    --Taken form Skylarr and Monti18
+    local _attack = sg.states["attack"]
+	local _onenter = _attack.onenter
+	_attack.onenter = function(inst,...)
+        _onenter(inst,...)
+        if GLOBAL.GramHasSkill(inst, "swashbuck") then
+            local speed = 1.2 
+            local weapon = inst.components.inventory and inst.components.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
+            if weapon and GLOBAL.PIRATE_WEAPONS[weapon.prefab] then
+                inst.sg:SetTimeout(inst.sg.timeout/speed) --override timeout
+                inst.components.combat:SetAttackPeriod(TUNING.WILSON_ATTACK_PERIOD / speed) --attack cooldown
+                inst.AnimState:SetDeltaTimeMultiplier(speed) -- time multiplier
+                for k, v in pairs(_attack.timeline) do --override timeline
+                    v.time = v.time/speed
+                end
+            end
+        end
+    end
+    local _onexit = _attack.onexit
+	_attack.onexit = function(inst,...)
+		if GLOBAL.GramHasSkill(inst, "swashbuck") then
+			local speed = 1.2
+			local weapon = inst.components.inventory and inst.components.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
+
+			if weapon and GLOBAL.PIRATE_WEAPONS[weapon.prefab] then
+				inst.AnimState:SetDeltaTimeMultiplier(1)			
+				for k, v in pairs(_attack.timeline) do
+					v.time = v.time*speed
+				end
+			end
+		end
+		return _onexit(inst,...)
+	end
 end)
 
 AddStategraphPostInit("wilson_client", function(sg)
@@ -247,4 +281,38 @@ AddStategraphPostInit("wilson_client", function(sg)
             oldonexit(inst, ...)
         end
     end
+
+    local _attack = sg.states["attack"]
+	local _onenter = _attack.onenter
+	_attack.onenter = function(inst,...)
+		_onenter(inst,...)
+		if GLOBAL.GramHasSkill(inst, "swashbuck") then
+			local speed = 1.2
+			local weapon = inst.components.inventory and inst.components.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
+			
+			if weapon and GLOBAL.PIRATE_WEAPONS[weapon.prefab] then			
+				inst.sg:SetTimeout(inst.sg.timeout/speed)
+				inst.AnimState:SetDeltaTimeMultiplier(speed)				
+				for k, v in pairs(_attack.timeline) do
+					v.time = v.time/speed
+				end
+			end
+		end
+		return
+	end
+	local _onexit = _attack.onexit
+	_attack.onexit = function(inst,...)
+		if GLOBAL.GramHasSkill(inst, "swashbuck") then
+			local weapon = inst.components.inventory and inst.components.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
+
+			if weapon and GLOBAL.PIRATE_WEAPONS[weapon.prefab] then
+				local speed = 1.2
+				inst.AnimState:SetDeltaTimeMultiplier(1)			
+				for k, v in pairs(_attack.timeline) do
+					v.time = v.time*speed
+				end		
+			end
+		end
+		return _onexit(inst,...)
+	end
 end)

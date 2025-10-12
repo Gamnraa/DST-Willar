@@ -44,14 +44,7 @@ local function DoFx(inst)
     end
 end
 
-local pirate_weapons = {
-	["cutless"] = true,
-	["nightsword"] = true,
-	["willarsword"] = true,
-	["oar_monkey"] = true,
-	["glasscutter"] = true,
-	["sword_lunarplant"] = true,
-}
+local pirate_weapons = PIRATE_WEAPONS
 
 local pirate_hats = {
 	["monkey_smallhat"] = 0.055,

@@ -78,6 +78,15 @@ AddMinimapAtlas("images/map_icons/willar.xml")
 
 
 GLOBAL.IsWillarLeader = function(inst) return inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:HasTag("willar") end
+GLOBAL.PIRATE_WEAPONS = {
+	["cutless"] = true,
+	--["nightsword"] = true,
+	["willarsword"] = true,
+	["oar_monkey"] = true,
+	["glasscutter"] = true,
+	["sword_lunarplant"] = true,
+}
+
 local IsWillarLeader = GLOBAL.IsWillarLeader
 
 local require = GLOBAL.require
@@ -392,7 +401,7 @@ local function AddDashAttack(inst)
 end
 
 AddPrefabPostInit("cutless", AddDashAttack)
-AddPrefabPostInit("nightsword", AddDashAttack)
+--AddPrefabPostInit("nightsword", AddDashAttack)
 AddPrefabPostInit("willarsword", AddDashAttack)
 AddPrefabPostInit("oar_monkey", AddDashAttack)
 AddPrefabPostInit("glasscutter", AddDashAttack)
