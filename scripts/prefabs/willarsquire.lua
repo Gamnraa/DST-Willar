@@ -15,14 +15,14 @@ local brain = require "brains/chesterbrain"
 
 local function OnOpen(inst)
     if not inst.components.health:IsDead() then
-        inst.sg:GoToState("open")
+    --    inst.sg:GoToState("open")
     end
 end
 
 local function OnClose(inst)
     if not inst.components.health:IsDead() and inst.sg.currentstate.name ~= "transition" then
-		inst.sg.statemem.closing = true
-        inst.sg:GoToState("close")
+		--inst.sg.statemem.closing = true
+       -- inst.sg:GoToState("close")
     end
 end
 
@@ -63,16 +63,16 @@ local function fn()
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
-        inst.OnEntityReplicated = function(inst) inst.replica.container:WidgetSetup("backpack") end
+        inst.OnEntityReplicated = function(inst) inst.replica.container:WidgetSetup("shadowchester") end
         return inst
     end
 
     inst:AddComponent("container")
-	inst.components.container:WidgetSetup("backpack")
+	inst.components.container:WidgetSetup("shadowchester")
 	inst.components.container.onopenfn = OnOpen
 	inst.components.container.onclosefn = OnClose
-	inst.components.container.skipclosesnd = true
-	inst.components.container.skipopensnd = true
+	--inst.components.container.skipclosesnd = true
+	--inst.components.container.skipopensnd = true
 
     local locomotor = inst:AddComponent("locomotor")
     locomotor:SetSlowMultiplier( 1 )

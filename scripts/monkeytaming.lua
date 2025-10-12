@@ -187,7 +187,7 @@ local function OnMonkeyGetItem(inst, giver, item)
             if primemate then
                 primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
                 primemate.Transform:SetPosition(x,y,z)
-                if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
+                giver.components.leader:AddFollower(primemate)
                 inst:Remove()
             end
         end)
