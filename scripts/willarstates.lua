@@ -201,12 +201,15 @@ local willar_sleep_action_client = State({
 AddStategraphState("wilson_client", willar_sleep_client)
 AddStategraphState("wilson_client", willar_sleep_action_client)
 
+local function GetTailTricksMod(inst)
+    return (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 2) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1
+end
 
 AddStategraphPostInit("wilson", function(sg) 
     local olddoshortaction = sg.states.doshortaction.onenter
     sg.states.doshortaction.onenter = function(inst, ...)
         if inst:HasTag("willar") then
-            local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 2) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1
+            local speedmult = GetTailTricksMod(inst)
             inst.AnimState:SetDeltaTimeMultiplier(speedmult)
             inst.AnimState:PlayAnimation("pickup")
             inst.AnimState:PushAnimation("pickup_pst", false)
@@ -261,6 +264,32 @@ AddStategraphPostInit("wilson", function(sg)
 		end
 		return _onexit(inst,...)
 	end
+
+    --Yeah I like this code more than my method
+    local _dolongaction = sg.states.dolongaction
+    _onenter = _dolongaction.onenter
+    _dolongaction.onenter = function(inst, ...)
+        _onenter(inst, ...)
+        if inst:HasTag("willar") then
+            local speed = GetTailTricksMod(inst)
+            inst.sg:SetTimeout(inst.sg.timeout / speed)
+            inst.AnimState:SetDeltaTimeMultiplier(speed)
+            for k, v in pairs(_attack.timeline) do
+				v.time = v.time/speed
+			end
+        end
+    end
+    _onexit = _dolongaction.onexit
+    _dolongaction.onexit = function(inst,...)
+        if inst:HasTag("willar") then
+            local speed = GetTailTricksMod(inst)
+            inst.AnimState:SetDeltaTimeMultiplier(1)			
+			for k, v in pairs(_attack.timeline) do
+				v.time = v.time*speed
+			end
+        end
+        return _onexit(inst, ...)
+    end
 end)
 
 AddStategraphPostInit("wilson_client", function(sg)
@@ -268,7 +297,7 @@ AddStategraphPostInit("wilson_client", function(sg)
     sg.states.doshortaction.onenter = function(inst, ...)
         olddoshortaction(inst, ...)
         if not inst:HasTag("willar") then return end
-        local speedmult = (GLOBAL.GramHasSkill(inst, "tail_tricks_3") and 2) or (GLOBAL.GramHasSkill(inst, "tail_tricks_2") and 1.5) or (GLOBAL.GramHasSkill(inst, "tail_tricks_1") and 1.2) or 1 
+        local speedmult = GetTailTricksMod(inst)
         inst.AnimState:SetDeltaTimeMultiplier(speedmult)
     end
 
@@ -315,4 +344,30 @@ AddStategraphPostInit("wilson_client", function(sg)
 		end
 		return _onexit(inst,...)
 	end
+
+    --Yeah I like this code more than my method
+    local _dolongaction = sg.states.dolongaction
+    _onenter = _dolongaction.onenter
+    _dolongaction.onenter = function(inst, ...)
+        _onenter(inst, ...)
+        if inst:HasTag("willar") then
+            local speed = GetTailTricksMod(inst)
+            inst.sg:SetTimeout(inst.sg.timeout / speed)
+            inst.AnimState:SetDeltaTimeMultiplier(speed)
+            for k, v in pairs(_attack.timeline) do
+				v.time = v.time/speed
+			end
+        end
+    end
+    _onexit = _dolongaction.onexit
+    _dolongaction.onexit = function(inst,...)
+        if inst:HasTag("willar") then
+            local speed = GetTailTricksMod(inst)
+            inst.AnimState:SetDeltaTimeMultiplier(1)			
+			for k, v in pairs(_attack.timeline) do
+				v.time = v.time*speed
+			end
+        end
+        return _onexit(inst, ...)
+    end
 end)
