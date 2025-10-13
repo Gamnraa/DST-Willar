@@ -269,7 +269,6 @@ local function customsanityfn(inst)
 end
 
 local function onprekill(inst, data)
-	print(data.val)
 	if inst.components.health.currenthealth <= 0 or (data and data.val == 0) then
 		inst:RemoveTag("wonkey")
 	end
@@ -382,7 +381,7 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("equip", OnEquip)
 	inst:ListenForEvent("unequip", OnUnequip)
 	inst:ListenForEvent("healthdelta", onprekill)
-	inst:ListenForEvent("pre_health_setval")
+	inst:ListenForEvent("pre_health_setval", onprekill)
 
 	--inst:AddComponent("disasterpredictor")
 	--inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)
