@@ -118,7 +118,7 @@ local function OnUnequip(inst, data)
 	if data.item.components.equippable.equipslot == EQUIPSLOTS.HANDS then
 		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.CHOP, "willarskill")
 		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.MINE, "willarskill")
-		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.HAMMER, 1.0, "willarskill")
+		inst.components.workmultiplier:RemoveMultiplier(ACTIONS.HAMMER, "willarskill")
 	end
 
 	if inst.components.skilltreeupdater:IsActivated("regal_work_3") and (flint_tools[data.item.prefab] or regal_tools[data.item.prefab]) then
@@ -293,12 +293,13 @@ end
 local function onsave(inst, data)
 	data.willar_nightmaremode = inst.willar_nightmaremode
 	data.willar_nightmaremeter = inst.willar_nightmaremeter
-	--data.willar_tapestrybuff = inst.willar_tapestrybuff
+	data.hassquire = inst.hassquire
 end
 
 local function onpreload(inst, data)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
+	inst.hassquire = data and data.hassquire
 	--inst.tapestrybuff = data and data.willar_tapestrybuff
 end
 
@@ -382,6 +383,7 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("unequip", OnUnequip)
 	inst:ListenForEvent("healthdelta", onprekill)
 	inst:ListenForEvent("pre_health_setval", onprekill)
+	inst:ListenForEvent("squiredied", function(inst) inst.hassquire  = false end)
 
 	--inst:AddComponent("disasterpredictor")
 	--inst:DoTaskInTime(0, function() inst.components.disasterpredictor:Start() end)

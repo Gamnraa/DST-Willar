@@ -9,7 +9,7 @@ local function ShouldMonkeyAccept(inst, item, giver)
     return 
         (giver:HasTag("willar") and inst.components.eater:CanEat(item)) or
         (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD) or
-        (GLOBAL.GramHasSkill(giver, "diplo") and item.prefab == "pigskin")
+        (GLOBAL.GramHasSkill(giver, "diplo") and item.prefab == "pigskin" and not giver.hassquire) 
 end
 
 local function UpdateMaxHealth(inst, newmax)
@@ -189,6 +189,8 @@ local function OnMonkeyGetItem(inst, giver, item)
                 primemate.Transform:SetPosition(x,y,z)
                 giver.components.leader:AddFollower(primemate)
                 inst:Remove()
+                primemate:ListenForEvent("death", function() giver:PushEvent("squiredied") end)
+                giver.hassquire = true
             end
         end)
     end
