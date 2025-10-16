@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
+    <folder id="0" name="bananahouse">
+        <file id="0" name="bananahouse/bananahouse01-0.png" width="700" height="832" pivot_x="0.495677" pivot_y="0.0772127"/>
+        <file id="1" name="bananahouse/bananahouse01-4.png" width="700" height="832" pivot_x="0" pivot_y="1"/>
+        <file id="2" name="bananahouse/bananahouse01-3.png" width="700" height="832" pivot_x="0" pivot_y="1"/>
+        <file id="3" name="bananahouse/bananahouse01-2.png" width="700" height="832" pivot_x="0" pivot_y="1"/>
+        <file id="4" name="bananahouse/bananahouse01-1.png" width="700" height="832" pivot_x="0" pivot_y="1"/>
+    </folder>
+    <folder id="1">
+        <file id="0" name="monkey_tower.png" width="561" height="972" pivot_x="0.501711" pivot_y="0.00965919"/>
+    </folder>
+    <entity id="0" name="monkeytower">
+        <animation id="0" name="idle" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="monkey_tower" folder="1" file="0" abs_x="3.028592" abs_y="21.702462" abs_pivot_x="0.501711" abs_pivot_y="0.009659" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="monkey_tower">
+                <key id="0" spin="0">
+                    <object folder="1" file="0" x="3.028592" y="21.702462"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+</spriter_data>
