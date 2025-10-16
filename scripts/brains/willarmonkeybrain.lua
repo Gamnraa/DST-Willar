@@ -126,11 +126,11 @@ function WillarMonkeyBrain:OnStart()
   
         Follow(self.inst, function() return self.inst.components.follower.leader end, 2, 2, 4),
         IfNode(function() return self.inst.components.follower.leader ~= nil end, "HasLeader",
-            FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn))
+            FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn)),
 
 
         --Doing nothing
-        --Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST)
+        Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST)
     }, .25)
     self.bt = BT(self.inst, root)
 end

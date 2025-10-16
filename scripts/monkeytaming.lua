@@ -304,3 +304,5 @@ end
 AddPrefabPostInit("monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("powder_monkey", function(inst) MakeMonkeysTamable(inst, 2400) end)
 AddPrefabPostInit("prime_mate", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("monkeyguard", function(inst) MakeMonkeysTamable(inst, 2400) end)
+AddPrefabPostInit("powdermonkeyguard", function(inst) MakeMonkeysTamable(inst, 2400) end)
