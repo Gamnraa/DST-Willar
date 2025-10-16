@@ -153,3 +153,21 @@ AddCharacterRecipe("willartapestry",
         "STRUCTURES",
     })
 STRINGS.RECIPE_DESC.WILLARTAPESTRY = "Looks comfy, and magical."
+
+AddCharacterRecipe("guardmonkeytower",
+	{Ingredient("marble", 4),
+	 Ingredient("cutstone", 4),
+     Ingredient("cave_banana", 4)
+    },
+	 GLOBAL.TECH.SCIENCE_TWO,
+	 {
+		placer = "guardmonkeytower_placer",
+		builder_tag = "willar",
+		numtogive = 1,
+        atlas = "images/inventoryimages/farmermonkeypod.xml",
+        image = "farmermonkeypod.tex"
+	},
+	{
+		"STRUCTURES",
+	})
+STRINGS.RECIPE_DESC.FARMERMONKEYPOD = "More tower than pod."
