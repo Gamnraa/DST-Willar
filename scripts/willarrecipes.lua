@@ -170,4 +170,4 @@ AddCharacterRecipe("guardmonkeytower",
 	{
 		"STRUCTURES",
 	})
-STRINGS.RECIPE_DESC.FARMERMONKEYPOD = "More tower than pod."
+STRINGS.RECIPE_DESC.GUARDMONKEYTOWER = "More tower than pod."
