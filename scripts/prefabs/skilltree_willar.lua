@@ -432,14 +432,14 @@ local function BuildSkillsData(SkillTreeFns)
 
          upsurp_shadow = {
             title = "Upsurp the Shadows",
-            desc = "Infuse your crown with pure horror",
+            desc = "Learn Their secrets.",
             icon = "wilson_alchemy_1",
             pos = {aorx, 176-vspace},
             group = "Affinity",
             tags = {"willaraffinity"},
             onactivate = function(inst, fromload)
               --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
+                inst:AddTag("willar_regalwork3")
             end,
         },
 

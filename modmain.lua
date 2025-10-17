@@ -154,6 +154,7 @@ local function SetNightmareFuelEdible(inst)
     if not GLOBAL.TheWorld.ismastersim then return end
 
     inst:AddComponent("edible")
+    inst:AddComponent("tradable")
     inst.components.edible.foodtype = "NIGHTMAREFUEL"
     inst.components.edible.healthvalue = 0
     inst.components.edible.hungervalue = 0
@@ -411,6 +412,7 @@ AddPrefabPostInit("glasscutter", AddDashAttack)
 AddPrefabPostInit("sword_lunarplant", AddDashAttack)
 
 modimport("scripts/diplorelations")
+modimport("scripts/upsurper")
 
 --Recipes
 modimport("scripts/willarrecipes")
