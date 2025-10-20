@@ -171,3 +171,9 @@ AddCharacterRecipe("guardmonkeytower",
 		"STRUCTURES",
 	})
 STRINGS.RECIPE_DESC.GUARDMONKEYTOWER = "More tower than pod."
+
+AddSimPostInit(function()
+	local r = GLOBAL.AllRecipes
+	r.tophat_magician.no_builder_tag = "willar"
+	r.magician_chest.no_builder_tag = "willar"
+end)
