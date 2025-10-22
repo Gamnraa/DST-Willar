@@ -294,13 +294,26 @@ local function onsave(inst, data)
 	data.willar_nightmaremode = inst.willar_nightmaremode
 	data.willar_nightmaremeter = inst.willar_nightmaremeter
 	data.hassquire = inst.hassquire
+	data.initiate = inst:HasTag("upsurperstart")
+	data.proven = inst:HasTag("upsurperend")
+	data.upsurper = inst:HasTag("shadowmagic")
 end
 
 local function onpreload(inst, data)
 	inst.willar_nightmaremode = data and data.willar_nightmaremode
 	inst.willar_nightmaremeter = data and data.willar_nightmaremeter
 	inst.hassquire = data and data.hassquire
-	--inst.tapestrybuff = data and data.willar_tapestrybuff
+	if data and data.initiate then
+		inst:AddTag("upsurperstart")
+	end
+
+	if data and data.proven then
+		inst:AddTag("upsurperend")
+	end
+
+	if data and data.upsurper then
+		inst:AddTag("shadowmagic")
+	end
 end
 
 -- When loading or spawning the character

@@ -19,16 +19,15 @@ local function OnAccept(inst, giver, item)
         giver:AddTag("shadowmagic")
         giver:RemoveTag("upsurperend")
         inst.components.trader:Disable()
-        inst:AddTag("waitupsurper")
-        --umbrarecipe
+        --inst:AddTag("waitupsurper")
     end
 end
 
 local function OnStartQuest(inst, initiate)
     initiate:AddTag("upsurperstart")
     inst.components.talker:Say("QUEST START")
-    inst.components.trader:Enable()
-    inst:RemoveTag("waitupsurper")
+    --inst.components.trader:Enable()
+    --inst:RemoveTag("waitupsurper")
 end
 
 local function MakeQuestGiver(inst)
@@ -45,7 +44,7 @@ local function MakeQuestGiver(inst)
     inst:AddComponent("trader")
     inst.components.trader:SetAcceptTest(ShouldAcceptTest)
     inst.components.trader.onaccept = OnAccept
-    inst.components.trader:Disable()
+    --inst.components.trader:Disable()
 end
 
 local function SpellCost(pct)
@@ -267,7 +266,6 @@ end
 
 AddClientModRPCHandler("willarumbra", "onpickupumbra", function(inst, remove)
     local temp = GLOBAL.SpawnPrefab("waxwelljournal")
-    print(inst, temp.components.spellbook.items)
     inst.components.spellbook:SetItems(remove and temp.components.spellbook.items or SPELLS)
     temp:Remove()
 end)
