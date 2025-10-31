@@ -4,6 +4,7 @@ local TWOPI = GLOBAL.TWOPI
 local DEGREES = GLOBAL.DEGREES
 local PI = GLOBAL.PI
 local STRINGS = GLOBAL.STRINGS
+local Vector3 = GLOBAL.Vector3
 
 local function ShouldAcceptTest(inst, item, giver)
     return (giver:HasTag("upsurperstart") and item.prefab == "nightmarefuel") or (giver:HasTag("upsurperend") and item.prefab == "shadowheart")
@@ -147,7 +148,7 @@ local function ProtectorSpellFn(inst, doer, pos)
 		return false, "NO_FUEL"
 	elseif not CheckMaxSanity(doer, "shadowprotector") then
 		return false, "NO_MAX_SANITY"
-	elseif TrySpawnMinions("willarshadowprotector", doer, pos) then
+	elseif TrySpawnMinions("umbramonkeywarrior", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_PROTECTOR), doer)
 		return true
 	end
@@ -155,8 +156,8 @@ local function ProtectorSpellFn(inst, doer, pos)
 end
 
 local function ReticuleTargetAllowWaterFn()
-	local player = ThePlayer
-	local ground = TheWorld.Map
+	local player = GLOBAL.ThePlayer
+	local ground = GLOBAL.TheWorld.Map
 	local pos = Vector3()
 	--Cast range is 8, leave room for error
 	--4 is the aoe range
