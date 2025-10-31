@@ -34,7 +34,6 @@ end
 local MONKEY_TAGS = { "monkey" }
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
-    SetHarassPlayer(inst, nil)
     if inst.task ~= nil then
         inst.task:Cancel()
     end
@@ -45,7 +44,6 @@ local function OnAttacked(inst, data)
     for _, monkey in ipairs(monkeys) do
         if monkey ~= inst and monkey.components.combat then
             monkey.components.combat:SuggestTarget(data.attacker)
-            SetHarassPlayer(monkey, nil)
             if monkey.task ~= nil then
                 monkey.task:Cancel()
             end
