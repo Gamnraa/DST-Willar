@@ -136,7 +136,7 @@ local function WorkerSpellFn(inst, doer, pos)
 		return false, "NO_FUEL"
 	elseif not CheckMaxSanity(doer, "shadowworker") then
 		return false, "NO_MAX_SANITY"
-	elseif TrySpawnMinions("willarshadowworker", doer, pos) then
+	elseif TrySpawnMinions("umbramonkeyservant", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_WORKER), doer)
 		return true
 	end

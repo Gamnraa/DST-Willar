@@ -357,7 +357,7 @@ function ShadowWaxwellBrain:OnStart()
 
     -- Select which shadow Waxwell brain to focus on based off of prefab.
     local root = nil
-    if self.inst.prefab == "shadowworker" then
+    if self.inst.prefab == "umbramonkeyservant" then
         local leader = GetLeader(self.inst)
         local ignorethese = nil
         if leader ~= nil then

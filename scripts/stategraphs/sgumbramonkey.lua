@@ -1,5 +1,29 @@
 require("stategraphs/commonstates")
 
+local function FixupWorkerCarry(inst, swap)
+    if inst.prefab == "shadowworker" then
+		if inst.sg.mem.swaptool == swap then
+			return false
+		end
+		inst.sg.mem.swaptool = swap
+		if swap == nil then
+            inst.AnimState:ClearOverrideSymbol("swap_object")
+            inst.AnimState:Hide("ARM_carry")
+            inst.AnimState:Show("ARM_normal")
+        else
+            inst.AnimState:Show("ARM_carry")
+            inst.AnimState:Hide("ARM_normal")
+            inst.AnimState:OverrideSymbol("swap_object", swap, swap)
+        end
+		return true
+    else
+        if swap == nil then -- DEPRECATED workers.
+            inst.AnimState:Hide("swap_arm_carry")
+        --'else' case cannot exist old workers had one item only assumed.
+        end
+    end
+end
+
 local function DetachFX(fx)
 	fx.Transform:SetPosition(fx.Transform:GetWorldPosition())
 	fx.entity:SetParent(nil)
@@ -451,7 +475,7 @@ local states =
 
         onenter = function(inst)
             inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("run_pst")
+            inst.AnimState:PlayAnimation("walk_pst")
         end,
 
         events =
@@ -1105,7 +1129,7 @@ local states =
 			inst.components.locomotor:Stop()
 			inst:ClearBufferedAction()
 			ToggleOffCharacterCollisions(inst)
-			inst.AnimState:PlayAnimation("taunt")
+			inst.AnimState:PlayAnimation("idle_loop")
 			if attacker ~= nil and attacker:IsValid() then
 				inst.sg.statemem.attackerpos = attacker:GetPosition()
 			end
@@ -1199,7 +1223,7 @@ local states =
 		onenter = function(inst, target)
 			inst:StopBrain("SGshadowwaxwell_lunge")
 			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("throw")
+			inst.AnimState:PlayAnimation("taunt")
 
 			inst.components.combat:StartAttack()
 			if target == nil then
@@ -1249,7 +1273,7 @@ local states =
 		tags = { "attack", "busy", "noattack", "temp_invincible" },
 
 		onenter = function(inst, data)
-			inst.AnimState:PlayAnimation("atk") --NOTE: this anim NOT a loop yo
+			inst.AnimState:PlayAnimation("throw") --NOTE: this anim NOT a loop yo
 			inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
 			inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
 			inst.Physics:ClearCollidesWith(COLLISION.GIANTS)

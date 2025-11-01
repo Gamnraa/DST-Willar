@@ -396,97 +396,111 @@ local function nodebrisdmg(inst, amount, overtime, cause, ignore_invincible, aff
     return afflicter ~= nil and afflicter:HasTag("quakedebris")
 end
 
-local function fn()
-    local inst = CreateEntity()
+local function MakeUmbra(name, fighter)
+    local function fn()
+        local inst = CreateEntity()
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-    inst.entity:AddDynamicShadow()
-    inst.entity:AddNetwork()
+        inst.entity:AddTransform()
+        inst.entity:AddAnimState()
+        inst.entity:AddSoundEmitter()
+        inst.entity:AddDynamicShadow()
+        inst.entity:AddNetwork()
 
-    inst.DynamicShadow:SetSize(2, 1.25)
+        inst.DynamicShadow:SetSize(2, 1.25)
 
-    inst.Transform:SetSixFaced()
+        inst.Transform:SetSixFaced()
 
-    inst:SetPhysicsRadiusOverride(.5)
-	MakeGhostPhysics(inst, 1, inst.physicsradiusoverride)
+        inst:SetPhysicsRadiusOverride(.5)
+        MakeGhostPhysics(inst, 1, inst.physicsradiusoverride)
 
-    inst.AnimState:SetBank("kiki")
-    inst.AnimState:SetBuild("splumonkey_armoured")
-    inst.AnimState:PlayAnimation("idle_loop", true)
+        inst.AnimState:SetBank("kiki")
+        inst.AnimState:SetBuild("splumonkey_armoured")
+        inst.AnimState:PlayAnimation("idle_loop", true)
 
-    inst:AddTag("cavedweller")
-    inst:AddTag("monkey")
-    inst:AddTag("animal")
+        inst:AddTag("cavedweller")
+        inst:AddTag("monkey")
+        inst:AddTag("animal")
 
-    inst.entity:SetPristine()
-    if not TheWorld.ismastersim then
+        inst.entity:SetPristine()
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst.soundtype = ""
+
+        MakeMediumBurnableCharacter(inst)
+        MakeMediumFreezableCharacter(inst)
+
+        inst:AddComponent("bloomer")
+
+        inst:AddComponent("inventory")
+
+        inst:AddComponent("inspectable")
+
+        local locomotor = inst:AddComponent("locomotor")
+        locomotor:SetSlowMultiplier( 1 )
+        locomotor:SetTriggersCreep(false)
+        locomotor.pathcaps = { ignorecreep = false }
+        locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
+        local combat = inst:AddComponent("combat")
+        inst.components.combat.hiteffectsymbol = "torso"
+        inst.components.combat:SetRange(2)
+
+        inst:AddComponent("follower")
+        inst.components.follower:KeepLeaderOnAttacked()
+        inst.components.follower.keepdeadleader = true
+        inst.components.follower.keepleaderduringminigame = true
+
+        if fighter then
+            
+            inst.components.combat:SetDefaultDamage(TUNING.SHADOWWAXWELL_PROTECTOR_DAMAGE)
+            inst.components.combat:SetAttackPeriod(TUNING.SHADOWWAXWELL_PROTECTOR_ATTACK_PERIOD)
+            inst.components.combat:SetRetargetFunction(1, protectorretargetfn)
+            inst.components.combat:SetKeepTargetFunction(protectorkeeptargetfn)
+        else
+            inst:AddComponent("inventory")
+            inst.components.inventory.maxslots = 1
+            inst.components.combat:SetKeepTargetFunction(function(inst) return false end)
+	        inst.components.follower.noleashing = true
+        end
+
+        inst:AddComponent("health")
+        inst.components.health:SetMaxHealth(25)
+        inst.components.health:SetMaxDamageTakenPerHit(TUNING.SHADOWWAXWELL_PROTECTOR_HEALTH_CLAMP_TAKEN)
+        inst.components.health.nofadeout = true
+        inst.components.health.redirect = nodebrisdmg
+
+        inst:AddComponent("lootdropper")
+        --inst.components.lootdropper:SetLoot(LOOT)
+
+        inst:AddComponent("eater")
+        inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
+        --inst.components.eater:SetOnEatFn(oneat)
+
+        inst:SetBrain(brain)
+        inst:SetStateGraph("SGumbramonkey")
+
+        inst:AddComponent("timer")
+    
+        --inst.listenfn = function(listento, data) OnMonkeyDeath(inst, data) end
+
+        inst:ListenForEvent("newcombattarget", protector_onengaged)
+        inst:ListenForEvent("droppedtarget", protector_ondisengaged)
+        inst:ListenForEvent("attacked", protector_attacked)
+        inst:ListenForEvent("seekoblivion", OnSeekOblivion)
+        inst:ListenForEvent("death", DropAggro)
+        inst:ListenForEvent("dancingplayerdata", function(world, data) OnDancingPlayerData(inst, data) end, TheWorld)
+
+        MakeSpawnPointTracker(inst)
+        MakeOblivionSeeker(inst, TUNING.SHADOWWAXWELL_PROTECTOR_DURATION + math.random())
+
+        --inst.weaponitems = {}
+        --EquipWeapons(inst)
+
         return inst
     end
-
-    inst.soundtype = ""
-
-    MakeMediumBurnableCharacter(inst)
-    MakeMediumFreezableCharacter(inst)
-
-    inst:AddComponent("bloomer")
-
-    inst:AddComponent("inventory")
-
-    inst:AddComponent("inspectable")
-
-    local locomotor = inst:AddComponent("locomotor")
-    locomotor:SetSlowMultiplier( 1 )
-    locomotor:SetTriggersCreep(false)
-    locomotor.pathcaps = { ignorecreep = false }
-    locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
-
-    local combat = inst:AddComponent("combat")
-    inst.components.combat:SetDefaultDamage(TUNING.SHADOWWAXWELL_PROTECTOR_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.SHADOWWAXWELL_PROTECTOR_ATTACK_PERIOD)
-    inst.components.combat:SetRetargetFunction(1, protectorretargetfn)
-    inst.components.combat:SetKeepTargetFunction(protectorkeeptargetfn)
-    inst.components.combat.hiteffectsymbol = "torso"
-    inst.components.combat:SetRange(2)
-
-    inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(25)
-    inst.components.health:SetMaxDamageTakenPerHit(TUNING.SHADOWWAXWELL_PROTECTOR_HEALTH_CLAMP_TAKEN)
-    inst.components.health.nofadeout = true
-    inst.components.health.redirect = nodebrisdmg
-
-    inst:AddComponent("lootdropper")
-    --inst.components.lootdropper:SetLoot(LOOT)
-
-    inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODTYPE.VEGGIE }, { FOODTYPE.VEGGIE })
-    --inst.components.eater:SetOnEatFn(oneat)
-
-    inst:SetBrain(brain)
-    inst:SetStateGraph("SGumbramonkey")
-
-	inst:AddComponent("timer")
-    inst:AddComponent("follower")
-    inst:AddComponent("combat")
-    
-
-    --inst.listenfn = function(listento, data) OnMonkeyDeath(inst, data) end
-
-    inst:ListenForEvent("newcombattarget", protector_onengaged)
-	inst:ListenForEvent("droppedtarget", protector_ondisengaged)
-	inst:ListenForEvent("attacked", protector_attacked)
-    inst:ListenForEvent("seekoblivion", OnSeekOblivion)
-	inst:ListenForEvent("death", DropAggro)
-    inst:ListenForEvent("dancingplayerdata", function(world, data) OnDancingPlayerData(inst, data) end, TheWorld)
-
-    MakeSpawnPointTracker(inst)
-    MakeOblivionSeeker(inst, TUNING.SHADOWWAXWELL_PROTECTOR_DURATION + math.random())
-
-    --inst.weaponitems = {}
-    --EquipWeapons(inst)
-
-    return inst
+    return Prefab(name, fn, assets, prefabs)
 end
 
-return Prefab("umbramonkeywarrior", fn, assets, prefabs)
+return MakeUmbra("umbramonkeywarrior", true),
+    MakeUmbra("umbramonkeyservant", false)
