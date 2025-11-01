@@ -1135,13 +1135,13 @@ local states =
 						pos.x = pos.x + offs.x
 						pos.z = pos.z + offs.z
 					end
+                    SpawnPrefab("statue_transition_2").Transform:SetPosition(inst.Transform:GetWorldPosition())
 					inst.Physics:Teleport(pos:Get())
 					if inst.sg.statemem.attackerpos ~= nil then
 						inst:ForceFacePoint(inst.sg.statemem.attackerpos)
 					end
 
 					inst.sg.statemem.appearing = true
-                    SpawnPrefab("statue_transition_2").Transform:SetPosition(inst.Transform:GetWorldPosition())
 					inst.sg:GoToState("appear")
 				end
 			end),
@@ -1199,7 +1199,7 @@ local states =
 		onenter = function(inst, target)
 			inst:StopBrain("SGshadowwaxwell_lunge")
 			inst.components.locomotor:Stop()
-			inst.AnimState:SetBankAndPlayAnimation("lavaarena_shadow_lunge", "lunge_pre")
+			inst.AnimState:PlayAnimation("throw")
 
 			inst.components.combat:StartAttack()
 			if target == nil then
@@ -1239,7 +1239,7 @@ local states =
 			if not inst.sg.statemem.lunge then
 				inst.components.combat:CancelAttack()
 				inst:RestartBrain("SGshadowwaxwell_lunge")
-				inst.AnimState:SetBank("wilson")
+				--inst.AnimState:SetBank("wilson")
 			end
 		end,
 	},
@@ -1249,13 +1249,13 @@ local states =
 		tags = { "attack", "busy", "noattack", "temp_invincible" },
 
 		onenter = function(inst, data)
-			inst.AnimState:PlayAnimation("lunge_loop") --NOTE: this anim NOT a loop yo
+			inst.AnimState:PlayAnimation("atk") --NOTE: this anim NOT a loop yo
 			inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
 			inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
 			inst.Physics:ClearCollidesWith(COLLISION.GIANTS)
 			ToggleOffCharacterCollisions(inst)
 			TrySplashFX(inst)
-			inst:DropAggro()
+			--inst:DropAggro()
 
 			if inst.components.timer ~= nil then
 				inst.components.timer:StopTimer("shadowstrike_cd")
@@ -1298,7 +1298,7 @@ local states =
 				inst.components.combat:DoAttack(target)
 				--Drop aggro again here, since we're in i-frames, and we might've
 				--triggered spawners, and they will be initially targeted on me.
-				inst:DropAggro()
+				--inst:DropAggro()
 				if inst.sg.statemem.animdone then
 					inst.sg.statemem.lunge = true
 					inst.sg:GoToState("lunge_pst", target)
@@ -1332,7 +1332,7 @@ local states =
 			inst.components.combat:SetRange(2)
 			if not inst.sg.statemem.lunge then
 				inst:RestartBrain("SGshadowwaxwell_lunge")
-				inst.AnimState:SetBank("wilson")
+				--inst.AnimState:SetBank("wilson")
 				inst.Physics:CollidesWith(COLLISION.GIANTS)
 				ToggleOnCharacterCollisions(inst)
 			end
@@ -1344,7 +1344,7 @@ local states =
 		tags = { "busy", "noattack", "temp_invincible", "phasing" },
 
 		onenter = function(inst, target)
-			inst.AnimState:PlayAnimation("lunge_pst")
+			inst.AnimState:PlayAnimation("idle_loop")
 			inst.Physics:SetMotorVelOverride(12, 0, 0)
 			inst.sg.statemem.target = target
 		end,
@@ -1397,7 +1397,7 @@ local states =
 
 		onexit = function(inst)
 			inst:RestartBrain("SGshadowwaxwell_lunge")
-			inst.AnimState:SetBank("wilson")
+			--inst.AnimState:SetBank("wilson")
 			inst.Physics:CollidesWith(COLLISION.GIANTS)
 			if not inst.sg.statemem.appearing then
 				ToggleOnCharacterCollisions(inst)
