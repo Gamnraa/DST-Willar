@@ -12,6 +12,7 @@ PrefabFiles = {
     "guardmonkey",
     "guardpowdermonkey",
     "guardmonkeytower",
+    "umbramonkeywarrior",
 }
 
 Assets = {
@@ -225,6 +226,16 @@ AddComponentAction("SCENE", "doubleactionfix", function(inst, doer, actions, rig
     if doer.willartapestrykey == GLOBAL.KEY_ALT and (doer:HasTag("player") and not doer:HasTag("insomniac") and not inst:HasTag("hassleeper")) and
         (not inst:HasTag("spiderden") or doer:HasTag("spiderwhisperer")) then
             table.insert(actions, GLOBAL.ACTIONS.SLEEPBLANKET)
+    end
+end)
+
+AddComponentAction("SCENE", "constructionsite", function(inst, doer, actions, right)
+    if inst.prefab == "willartapestry" and doer.prefab == "wilson" then
+        print("true")
+        inst.replica.constructionsite:SetEnabled(true)
+    else
+        print("untrue")
+        inst.replica.constructionsite:SetEnabled(false)
     end
 end)
 
