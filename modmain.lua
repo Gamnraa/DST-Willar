@@ -13,6 +13,7 @@ PrefabFiles = {
     "guardpowdermonkey",
     "guardmonkeytower",
     "umbramonkeywarrior",
+    "willarportal"
 }
 
 Assets = {
