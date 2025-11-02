@@ -5,6 +5,7 @@ local DEGREES = GLOBAL.DEGREES
 local PI = GLOBAL.PI
 local STRINGS = GLOBAL.STRINGS
 local Vector3 = GLOBAL.Vector3
+local SpawnPrefab = GLOBAL.SpawnPrefab
 
 local function ShouldAcceptTest(inst, item, giver)
     return (giver:HasTag("upsurperstart") and item.prefab == "nightmarefuel") or (giver:HasTag("upsurperend") and item.prefab == "shadowheart")
@@ -106,6 +107,7 @@ local function TrySpawnMinions(prefab, doer, pos)
 							(i == 2 and .8) or
 							.87 + math.random() * .06
 						)
+                        doer.components.sanity:AddSanityPenalty(pet, 0.1)
 					end
 				end
 			end
@@ -134,7 +136,7 @@ end
 local function WorkerSpellFn(inst, doer, pos)
 	if inst.components.fueled:IsEmpty() then
 		return false, "NO_FUEL"
-	elseif not CheckMaxSanity(doer, "shadowworker") then
+	elseif not doer.components.sanity:GetPenaltyPercent() + .1 <= TUNING.MAXIMUM_SANITY_PENALTY then
 		return false, "NO_MAX_SANITY"
 	elseif TrySpawnMinions("umbramonkeyservant", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_WORKER), doer)
@@ -146,13 +148,29 @@ end
 local function ProtectorSpellFn(inst, doer, pos)
 	if inst.components.fueled:IsEmpty() then
 		return false, "NO_FUEL"
-	elseif not CheckMaxSanity(doer, "shadowprotector") then
+	elseif not (doer.components.sanity:GetPenaltyPercent() + .1 <= TUNING.MAXIMUM_SANITY_PENALTY) then
 		return false, "NO_MAX_SANITY"
 	elseif TrySpawnMinions("umbramonkeywarrior", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_PROTECTOR), doer)
+        
 		return true
 	end
 	return false
+end
+
+local function WeakPortalFn(inst, doer, pos) 
+    if inst.components.fueled:IsEmpty() then
+		return false, "NO_FUEL"
+    elseif doer.components.sanity.current < 10 then
+        return false, "NO_MAX_SANITY"
+    end
+
+    inst.components.fueled:DoDelta(-2)
+    inst.components.sanity:DoDelta(-10)
+
+    local portalent = SpawnPrefab()
+
+    return true
 end
 
 local function ReticuleTargetAllowWaterFn()
@@ -171,7 +189,7 @@ local function ReticuleTargetAllowWaterFn()
 end
 
 local function StartAOETargeting(inst)
-	local playercontroller = ThePlayer.components.playercontroller
+	local playercontroller = GLOBAL.ThePlayer.components.playercontroller
 	if playercontroller ~= nil then
 		playercontroller:StartAOETargetingUsing(inst)
 	end
@@ -226,27 +244,24 @@ local SPELLS =
 		widget_scale = ICON_SCALE,
 		hit_radius = ICON_RADIUS,
 	},
-	--[[{
-		label = STRINGS.SPELLS.SHADOW_TOPHAT,
+	{
+		label = STRINGS.SPELLS.WILLARWEAKPORTAL,
 		onselect = function(inst)
-			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_TOPHAT)
+			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.WILLARWEAKPORTAL)
 			inst.components.spellbook:SetSpellAction(nil)
+            inst.components.aoetargeting:SetDeployRadius(0)
 			if TheWorld.ismastersim then
-				inst.components.aoespell:SetSpellFn(nil)
-				inst.components.spellbook:SetSpellFn(TopHatSpellFn)
+				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
+				inst.components.aoespell:SetSpellFn(WeakPortalFn)
+				inst.components.spellbook:SetSpellFn(nil)
 			end
 		end,
-		execute = function(inst)
-			local inventory = ThePlayer.replica.inventory
-			if inventory ~= nil then
-				inventory:CastSpellBookFromInv(inst)
-			end
-		end,
+		execute = StartAOETargeting,
 		atlas = "images/spell_icons.xml",
 		normal = "shadow_tophat.tex",
 		widget_scale = ICON_SCALE,
 		hit_radius = ICON_RADIUS,
-	},]]
+	},
 }
 
 local function OverrideUmbra(inst)

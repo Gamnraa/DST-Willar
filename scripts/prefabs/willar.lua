@@ -433,6 +433,11 @@ local master_postinit = function(inst)
 		inst:AddComponent("efficientuser")
 	end
 
+	if not inst.components.petleash then
+		inst:AddComponent("petleash")
+	end
+	inst.components.petleash:SetMaxPets(7)
+
 	--inst.tapestrybuff = false
 	inst:DoTaskInTime(0, function()
 		if TheWorld.willartapestrypowered and not inst.tapestrybuff then 
