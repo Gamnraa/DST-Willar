@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/splumonkey_armoured.zip"),
+    Asset("ANIM", "anim/kiki_nightmare_skin.zip"),
     Asset("SOUND", "sound/monkey.fsb"),
 }
 
@@ -414,7 +414,7 @@ local function MakeUmbra(name, fighter)
         MakeGhostPhysics(inst, 1, inst.physicsradiusoverride)
 
         inst.AnimState:SetBank("kiki")
-        inst.AnimState:SetBuild("splumonkey_armoured")
+        inst.AnimState:SetBuild("kiki_nightmare_skin")
         inst.AnimState:PlayAnimation("idle_loop", true)
 
         inst:AddTag("cavedweller")
