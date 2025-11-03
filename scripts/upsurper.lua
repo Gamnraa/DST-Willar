@@ -96,6 +96,7 @@ local function TrySpawnMinions(prefab, doer, pos)
 			for i, v in ipairs(spawnpts) do
 				local pet = doer.components.petleash:SpawnPetAt(v.x, 0, v.z, prefab)
 				if pet ~= nil then
+                    doer.components.sanity:AddSanityPenalty(pet, 0.1)
 					if pet.SaveSpawnPoint ~= nil then
 						pet:SaveSpawnPoint()
 					end
@@ -107,7 +108,6 @@ local function TrySpawnMinions(prefab, doer, pos)
 							(i == 2 and .8) or
 							.87 + math.random() * .06
 						)
-                        doer.components.sanity:AddSanityPenalty(pet, 0.1)
 					end
 				end
 			end
@@ -166,9 +166,19 @@ local function WeakPortalFn(inst, doer, pos)
     end
 
     inst.components.fueled:DoDelta(-2)
-    inst.components.sanity:DoDelta(-10)
+    doer.components.sanity:DoDelta(-10)
 
-    local portalent = SpawnPrefab()
+    local portalent = SpawnPrefab("willarportal")
+    local portalexo = SpawnPrefab("willarportal")
+
+    portalent.Transform:SetPosition(doer.Transform:GetWorldPosition())
+    portalexo.Transform:SetPosition(pos.x, 0, pos.z)
+
+    portalent.components.teleporter:Target(portalexo)
+    portalent.components.timer:StartTimer("closedarkportal", 10)
+    portalexo.components.timer:StartTimer("closedarkportal", 10)
+
+    portalent.components.teleporter:Teleport(doer)
 
     return true
 end
@@ -249,11 +259,15 @@ local SPELLS =
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.WILLARWEAKPORTAL)
 			inst.components.spellbook:SetSpellAction(nil)
-            inst.components.aoetargeting:SetDeployRadius(0)
-			if TheWorld.ismastersim then
+            inst.components.aoetargeting:SetDeployRadius(2)
+            inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
+			inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+            inst.components.aoetargeting.range = 20
+			if GLOBAL.TheWorld.ismastersim then
 				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
 				inst.components.aoespell:SetSpellFn(WeakPortalFn)
 				inst.components.spellbook:SetSpellFn(nil)
+                
 			end
 		end,
 		execute = StartAOETargeting,
@@ -263,6 +277,7 @@ local SPELLS =
 		hit_radius = ICON_RADIUS,
 	},
 }
+STRINGS.SPELLS.WILLARWEAKPORTAL = "Shadow Step"
 
 local function OverrideUmbra(inst)
         inst:ListenForEvent("onputininventory", function(inst, owner)
