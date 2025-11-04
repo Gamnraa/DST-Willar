@@ -165,7 +165,7 @@ local function WeakPortalFn(inst, doer, pos)
         return false, "NO_MAX_SANITY"
     end
 
-    inst.components.fueled:DoDelta(-2)
+    inst.components.fueled:DoDelta(-72)
     doer.components.sanity:DoDelta(-10)
 
     local portalent = SpawnPrefab("willarportal")
@@ -175,10 +175,13 @@ local function WeakPortalFn(inst, doer, pos)
     portalexo.Transform:SetPosition(pos.x, 0, pos.z)
 
     portalent.components.teleporter:Target(portalexo)
+    portalexo.components.teleporter:Target(portalent)
     portalent.components.timer:StartTimer("closedarkportal", 10)
     portalexo.components.timer:StartTimer("closedarkportal", 10)
 
     portalent.components.teleporter:Teleport(doer)
+
+    doer:DoTaskInTime(0, function(inst) inst.sg:GoToState("jumpout") end)
 
     return true
 end
@@ -205,11 +208,46 @@ local function StartAOETargeting(inst)
 	end
 end
 
+local willarmap = AddAction("WILLAR_TELEPORT", "Shadow Stride", function(act)
+    for k, v in pairs(act) do print(k, v) end
+
+    local pos = act:GetActionPoint()
+    local x,y,z = act.doer.Transform:GetWorldPosition()
+    if GLOBAL.IsTeleportingPermittedFromPointToPoint(x,y,z, pos.x, pos.y, pos.z) and not GLOBAL.TheWorld.Map:IsOceanAtPoint(pos:Get()) and not GLOBAL.TheWorld.Map:IsGroundTargetBlocked(pos) then
+        --local inst = act.doer.replica.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
+        act.target.components.fueled:DoDelta(-720 / 2)
+        act.doer.components.sanity:DoDelta(-10)
+
+        local portalent = SpawnPrefab("willarportal")
+        local portalexo = SpawnPrefab("willarportal")
+
+        portalent.Transform:SetPosition(act.doer.Transform:GetWorldPosition())
+        portalexo.Transform:SetPosition(pos.x, 0, pos.z)
+
+        portalent.components.teleporter:Target(portalexo)
+        portalexo.components.teleporter:Target(portalent)
+        portalent.components.timer:StartTimer("closedarkportal", 3*60*8)
+        portalexo.components.timer:StartTimer("closedarkportal", 3*60*8)
+
+        portalent.components.teleporter:Teleport(act.doer)
+
+        act.doer:DoTaskInTime(0, function(inst) inst.sg:GoToState("jumpout") end)
+
+        return true
+    end
+end)
+willarmap.instant = true
+willarmap.rmb = true
+willarmap.map_action = true
+willarmap.map_only = true
+willarmap.closes_map = true
+
 local ICON_SCALE = .6
 local ICON_RADIUS = 50
 local SPELLBOOK_RADIUS = 100
 local SPELLBOOK_FOCUS_RADIUS = SPELLBOOK_RADIUS + 2
-
+STRINGS.SPELLS.WILLARWEAKPORTAL = "Shadow Step"
+STRINGS.SPELLS.WILLARPORTAL = "Shadow Stride"
 local SPELLS =
 {
 	{
@@ -221,6 +259,7 @@ local SPELLS =
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastWorker)
 			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
 			inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+            inst.components.aoetargeting.range = 8
 			if GLOBAL.TheWorld.ismastersim then
 				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
 				inst.components.aoespell:SetSpellFn(WorkerSpellFn)
@@ -238,13 +277,14 @@ local SPELLS =
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_PROTECTOR)
 			inst.components.spellbook:SetSpellAction(nil)
-			inst.components.aoetargeting:SetDeployRadius(0)
-			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
-			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
-			inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+			--inst.components.aoetargeting:SetDeployRadius(0)
+			--inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
+			--inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
+			--inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+            --inst.components.aoetargeting.range = 8
 			if GLOBAL.TheWorld.ismastersim then
-				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
-				inst.components.aoespell:SetSpellFn(ProtectorSpellFn)
+				--inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
+				inst.components.aoespell:SetSpellFn(nil)
 				inst.components.spellbook:SetSpellFn(nil)
 			end
 		end,
@@ -272,12 +312,39 @@ local SPELLS =
 		end,
 		execute = StartAOETargeting,
 		atlas = "images/spell_icons.xml",
-		normal = "shadow_tophat.tex",
+		normal = "shadow_pillars.tex",
+		widget_scale = ICON_SCALE,
+		hit_radius = ICON_RADIUS,
+	},
+    {
+		label = STRINGS.SPELLS.WILLARPORTAL,
+		onselect = function(inst)
+			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.WILLARWEAKPORTAL)
+			inst.components.spellbook:SetSpellAction(nil)
+            inst.components.aoetargeting:SetDeployRadius(2)
+            inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
+			inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+            inst.components.aoetargeting.range = 20
+			if GLOBAL.TheWorld.ismastersim then
+				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
+				inst.components.aoespell:SetSpellFn(nil)
+				inst.components.spellbook:SetSpellFn(nil)
+                
+			end
+		end,
+		execute = function(inst)
+            --We're local so ThePlayer should be okay???
+            GLOBAL.ThePlayer.components.playercontroller:PullUpMap(inst, GLOBAL.ACTIONS.WILLAR_TELEPORT)
+        end,
+		atlas = "images/spell_icons.xml",
+		normal = "shadow_pillars.tex",
 		widget_scale = ICON_SCALE,
 		hit_radius = ICON_RADIUS,
 	},
 }
-STRINGS.SPELLS.WILLARWEAKPORTAL = "Shadow Step"
+
+--IsTeleportingPermittedFromPointToPoint
+
 
 local function OverrideUmbra(inst)
         inst:ListenForEvent("onputininventory", function(inst, owner)
