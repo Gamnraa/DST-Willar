@@ -229,17 +229,6 @@ AddComponentAction("SCENE", "doubleactionfix", function(inst, doer, actions, rig
             table.insert(actions, GLOBAL.ACTIONS.SLEEPBLANKET)
     end
 end)
-
-AddComponentAction("SCENE", "constructionsite", function(inst, doer, actions, right)
-    if inst.prefab == "willartapestry" and doer.prefab == "wilson" then
-        print("true")
-        inst.replica.constructionsite:SetEnabled(true)
-    else
-        print("untrue")
-        inst.replica.constructionsite:SetEnabled(false)
-    end
-end)
-
 AddStategraphActionHandler("wilson", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, function(inst, action) return "willar_blanket" end))
 AddStategraphActionHandler("wilson_client", GLOBAL.ActionHandler(GLOBAL.ACTIONS.SLEEPBLANKET, "willar_blanket"))
 
@@ -425,6 +414,17 @@ AddPrefabPostInit("sword_lunarplant", AddDashAttack)
 
 modimport("scripts/diplorelations")
 modimport("scripts/upsurper")
+
+AddPrefabPostInit("pigman", function(inst)
+    if not GLOBAL.TheWorld.ismastersim then return end
+
+    local oldretargetfn = inst.components.combat.targetfn
+    inst.components.combat.targetfn = function(cm)
+        local target = oldretargetfn(cm)
+        if target and target.prefab == "willar" and not target:HasTag("monster") then return nil end
+        return target 
+    end
+end)
 
 --Recipes
 modimport("scripts/willarrecipes")
