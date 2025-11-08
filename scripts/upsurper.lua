@@ -136,7 +136,7 @@ end
 local function WorkerSpellFn(inst, doer, pos)
 	if inst.components.fueled:IsEmpty() then
 		return false, "NO_FUEL"
-	elseif not doer.components.sanity:GetPenaltyPercent() + .1 <= TUNING.MAXIMUM_SANITY_PENALTY then
+	elseif (doer.components.sanity:GetPenaltyPercent() + .1 >= TUNING.MAXIMUM_SANITY_PENALTY) then
 		return false, "NO_MAX_SANITY"
 	elseif TrySpawnMinions("umbramonkeyservant", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_WORKER), doer)
@@ -148,11 +148,10 @@ end
 local function ProtectorSpellFn(inst, doer, pos)
 	if inst.components.fueled:IsEmpty() then
 		return false, "NO_FUEL"
-	elseif not (doer.components.sanity:GetPenaltyPercent() + .1 <= TUNING.MAXIMUM_SANITY_PENALTY) then
+	elseif (doer.components.sanity:GetPenaltyPercent() + .1 >= TUNING.MAXIMUM_SANITY_PENALTY) then
 		return false, "NO_MAX_SANITY"
 	elseif TrySpawnMinions("umbramonkeywarrior", doer, pos) then
 		inst.components.fueled:DoDelta(SpellCost(TUNING.WAXWELLJOURNAL_SPELL_COST.SHADOW_PROTECTOR), doer)
-        
 		return true
 	end
 	return false
@@ -277,14 +276,14 @@ local SPELLS =
 		onselect = function(inst)
 			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_PROTECTOR)
 			inst.components.spellbook:SetSpellAction(nil)
-			--inst.components.aoetargeting:SetDeployRadius(0)
-			--inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
-			--inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
-			--inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
-            --inst.components.aoetargeting.range = 8
+			inst.components.aoetargeting:SetDeployRadius(0)
+			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
+			inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1d2_12"
+			inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1d2_12"
+            inst.components.aoetargeting.range = 8
 			if GLOBAL.TheWorld.ismastersim then
-				--inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
-				inst.components.aoespell:SetSpellFn(nil)
+				inst.components.aoetargeting:SetTargetFX("reticuleaoesummontarget_1d2")
+				inst.components.aoespell:SetSpellFn(ProtectorSpellFn)
 				inst.components.spellbook:SetSpellFn(nil)
 			end
 		end,
@@ -360,6 +359,10 @@ local function OverrideUmbra(inst)
             inst.components.spellbook:SetItems(temp.components.spellbook.items)
             temp:Remove()
         end)
+
+		inst:DoTaskInTime(0, function(e)
+			e:PushEvent("onputininventory", e.components.inventoryitem and e.components.inventoryitem.owner or e)
+		end)
 end
 
 AddClientModRPCHandler("willarumbra", "onpickupumbra", function(inst, remove)
