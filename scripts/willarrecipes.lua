@@ -172,7 +172,7 @@ AddCharacterRecipe("guardmonkeytower",
 	})
 STRINGS.RECIPE_DESC.GUARDMONKEYTOWER = "More tower than pod."
 
-AddCharacterRecipe("allogrooming",
+local allo = AddCharacterRecipe("allogrooming",
 	{
 		Ingredient(GLOBAL.CHARACTER_INGREDIENT.HEALTH, 5),
 		Ingredient(GLOBAL.CHARACTER_INGREDIENT.SANITY, 5)
@@ -183,11 +183,14 @@ AddCharacterRecipe("allogrooming",
 		builder_tag = "willar",
 		numtogive = 1,
 	}
+
 )
+allo.nameoverride = "allo"
+allo.description = "allo"
 
 AddSimPostInit(function()
 	local r = GLOBAL.AllRecipes
 	r.tophat_magician.no_builder_tag = "willar"
 	r.magician_chest.no_builder_tag = "willar"
 end)
-STRINGS.RECIPE_DESC.ALLOGROOMING = "The king wishes his subjects did this."
+STRINGS.RECIPE_DESC.ALLO = "The king wishes his subjects did this."
