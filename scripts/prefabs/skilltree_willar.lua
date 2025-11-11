@@ -119,7 +119,7 @@ local function BuildSkillsData(SkillTreeFns)
             title = "Loyal Squire",
             desc = "Convert a splumonkey into a Squire.",
             icon = "wilson_alchemy_1",
-            pos = {korx + 36, 176-(vspace*3)},
+            pos = {korx, 176-(vspace*3)},
             group = "King",
             tags = {"willarking"},
             onactivate = function(inst, fromload)
@@ -131,7 +131,7 @@ local function BuildSkillsData(SkillTreeFns)
         diplo_lock = {
             desc = "Learn 5 King skills to unlock.",
             icon = "wilson_alchemy_1",
-            pos = {korx, 176-(vspace*3)},
+            pos = {korx, 176-(vspace*4)},
             group = "King",
             tags = {"willarking"},
             onactivate = function(inst, fromload)
