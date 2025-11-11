@@ -1,5 +1,8 @@
 TUNING.WILLAR_RECRUIT_TIME = 360
 
+local State = GLOBAL.State
+local EventHandler = GLOBAL.EventHandler
+
 local IsWillarLeader = GLOBAL.IsWillarLeader
 local function ShouldMonkeyAccept(inst, item, giver)
     if inst.components.health and inst.components.health:IsDead() then
@@ -37,12 +40,6 @@ GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
 
 AddStategraphPostInit("primemate", function(sg)
-    
-
-end)
-
-GLOBAL.MakePrimemateRun = function(inst)
-    local cs = require("stategraphs/commonstates")
     local function idleonanimover(inst)
         if inst.AnimState:AnimDone() then
             inst.sg:GoToState("idle")
@@ -59,8 +56,6 @@ GLOBAL.MakePrimemateRun = function(inst)
     end
 
     local cs = require("stategraphs/commonstates")
-
-    local sg = inst.sg.sg
     GLOBAL.CommonStates.AddRunStates(sg.states, 
     {
         runtimeline =
@@ -69,8 +64,6 @@ GLOBAL.MakePrimemateRun = function(inst)
             GLOBAL.TimeEvent(10 * GLOBAL.FRAMES, GLOBAL.PlayFootstep),
         },
     })
-    local State = GLOBAL.State
-    local EventHandler = GLOBAL.EventHandler
     sg.states["run_start"] = State{
         name = "run_start",
         tags = { "moving", "running", "canrotate" },
@@ -139,8 +132,29 @@ GLOBAL.MakePrimemateRun = function(inst)
             EventHandler("animqueueover", idleonanimover),
         },
     }
-    inst.sg.sg.events.locomote = GLOBAL.CommonHandlers.OnLocomote(true, true)
-end
+
+    sg.events["locomote"] = EventHandler("locomote", function(inst)
+         local is_moving = inst.sg:HasStateTag("moving")
+        local is_running = inst.sg:HasStateTag("running")
+        local is_idling = inst.sg:HasStateTag("idle")
+
+        local should_move = inst.components.locomotor:WantsToMoveForward()
+        local should_run = inst.components.locomotor:WantsToRun()
+
+        local can_run = inst.components.follower.leader and GLOBAL.GramHasSkill(inst.components.follower.leader, "subjects_2")
+        local can_walk = true
+
+        if is_moving and not should_move then
+            inst.sg:GoToState(is_running and "run_stop" or "walk_stop")
+        elseif (is_idling and should_move) or (is_moving and should_move and is_running ~= should_run and can_run and can_walk) then
+            if  can_run and (should_run or not can_walk) then
+                inst.sg:GoToState("run_start")
+            elseif can_walk then
+                inst.sg:GoToState("walk_start")
+            end
+        end
+    end)
+end)
 
 local monkeybrain = require "brains/monkeybrain"
 local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
@@ -193,7 +207,7 @@ local function BecomeFollower(inst, giver, golden)
         UpdateMaxHealth(inst, 150)
         if hasskill(giver, "subjects_2") then
             inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
-            GLOBAL.MakePrimemateRun(inst)
+            ---GLOBAL.MakePrimemateRun(inst)
         end
     end
             
@@ -242,6 +256,7 @@ local function OnMonkeyGetItem(inst, giver, item)
         inst.components.inventory:Equip(item)
         inst.AnimState:Show("hat")
     elseif item.prefab == "willarbanana" then
+        item:DoTaskInTime(0, item.Remove)
         if inst.prefab == "monkey" then
             BecomeFollower(inst, giver, true)
         end
@@ -269,7 +284,7 @@ local function OnMonkeyGetItem(inst, giver, item)
                     inst:Remove()
                 end
             end)
-        elseif hasskill(giver, "diplo") and inst.prefab == "monkey" and not giver.hassquire then
+        elseif hasskill(giver, "squire") and inst.prefab == "monkey" and not giver.hassquire then
             local fx = GLOBAL.SpawnPrefab("statue_transition_2")
             if fx ~= nil then
                 fx.Transform:SetPosition(x, y, z)
