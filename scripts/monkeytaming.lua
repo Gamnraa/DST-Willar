@@ -9,7 +9,8 @@ local function ShouldMonkeyAccept(inst, item, giver)
     return 
         (giver:HasTag("willar") and inst.components.eater:CanEat(item)) or
         (item.components.equippable and item.components.equippable.equipslot == EQUIPSLOTS.HEAD) or
-        (GLOBAL.GramHasSkill(giver, "diplo") and item.prefab == "pigskin" and not giver.hassquire) 
+        (GLOBAL.GramHasSkill(giver, "diplo") and item.prefab == "willarbanana" and not giver.hassquire) or
+        (item.prefab == "willarbanana")
 end
 
 local function UpdateMaxHealth(inst, newmax)
@@ -35,17 +36,110 @@ GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
 
+AddStategraphPostInit("primemate", function(sg)
+    
+
+end)
+
 GLOBAL.MakePrimemateRun = function(inst)
     local cs = require("stategraphs/commonstates")
-    inst.sg.sg.events.locomote = GLOBAL.CommonHandlers.OnLocomote(true, true)
-    .AddRunStates(inst.sg, 
+    local function idleonanimover(inst)
+        if inst.AnimState:AnimDone() then
+            inst.sg:GoToState("idle")
+        end
+    end
+    local function runonanimover(inst)
+        if inst.AnimState:AnimDone() then
+            inst.sg:GoToState("run")
+        end
+    end
+
+    local function runontimeout(inst)
+        inst.sg:GoToState("run")
+    end
+
+    local cs = require("stategraphs/commonstates")
+
+    local sg = inst.sg.sg
+    GLOBAL.CommonStates.AddRunStates(sg.states, 
     {
         runtimeline =
         {
             GLOBAL.TimeEvent(0, GLOBAL.PlayFootstep),
-            GLOBAL.TimeEvent(10 * FRAMES, GLOBAL.PlayFootstep),
+            GLOBAL.TimeEvent(10 * GLOBAL.FRAMES, GLOBAL.PlayFootstep),
         },
     })
+    local State = GLOBAL.State
+    local EventHandler = GLOBAL.EventHandler
+    sg.states["run_start"] = State{
+        name = "run_start",
+        tags = { "moving", "running", "canrotate" },
+
+        onenter = function(inst)
+			if fns ~= nil and fns.startonenter ~= nil then -- this has to run before RunForward so that startonenter has a chance to update the run speed
+				fns.startonenter(inst)
+			end
+			if delaystart then
+				inst.components.locomotor:StopMoving()
+			else
+	            inst.components.locomotor:RunForward()
+			end
+            inst.AnimState:PlayAnimation("run_pre")
+        end,
+
+        timeline = {
+            GLOBAL.TimeEvent(0, GLOBAL.PlayFootstep),
+            GLOBAL.TimeEvent(10 * GLOBAL.FRAMES, GLOBAL.PlayFootstep),
+        },
+
+        events =
+        {
+            EventHandler("animover", runonanimover),
+        },
+    }
+    
+    sg.states["run"] = State{
+        name = "run",
+        tags = { "moving", "running", "canrotate" },
+
+        onenter = function(inst)
+            inst.components.locomotor:RunForward()
+			--V2C: -normally we wouldn't restart an already looping anim
+			--     -however, changing this might affect softstop behaviour
+			--     -i.e. PushAnimation over a looping anim (first play vs subsequent loops)
+			--     -why do we even tell it to loop here then?  for smoother playback on clients
+			inst.AnimState:PlayAnimation("run_loop", true)
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+        end,
+
+        timeline = {
+            GLOBAL.TimeEvent(0, GLOBAL.PlayFootstep),
+            GLOBAL.TimeEvent(10 * GLOBAL.FRAMES, GLOBAL.PlayFootstep),
+        },
+
+        ontimeout = runontimeout,
+    }
+
+    sg.states["run_stop"] = State{
+        name = "run_stop",
+        tags = { "idle" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("run_pst")
+        end,
+
+        timeline = {
+            GLOBAL.TimeEvent(0, GLOBAL.PlayFootstep),
+            GLOBAL.TimeEvent(10 * GLOBAL.FRAMES, GLOBAL.PlayFootstep),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", idleonanimover),
+        },
+    }
+    inst.sg.sg.events.locomote = GLOBAL.CommonHandlers.OnLocomote(true, true)
 end
 
 local monkeybrain = require "brains/monkeybrain"
@@ -53,13 +147,13 @@ local monkeynightmarebrain = require "brains/nightmaremonkeybrain"
 local willarmonkeybrain = require "brains/willarmonkeybrain"
 local hasskill = GLOBAL.GramHasSkill
 
-local function BecomeFollower(inst, giver)
+local function BecomeFollower(inst, giver, golden)
     if inst.components.combat.target == giver then
         inst.components.combat:SetTarget(nil)
     end
     giver:PushEvent("makefriend")
     giver.components.leader:AddFollower(inst)
-    inst.components.follower:AddLoyaltyTime(TUNING.WILLAR_RECRUIT_TIME * (hasskill(giver, "subjects_1") and 1.5 or 1))
+    inst.components.follower:AddLoyaltyTime(TUNING.WILLAR_RECRUIT_TIME * (hasskill(giver, "subjects_1") and 1.5 or 1) * (golden and 1.25 or 1))
 
     if inst.prefab == "monkey" and not inst:HasTag("willarfollower") then
         UpdateMaxHealth(inst, 75)
@@ -99,7 +193,7 @@ local function BecomeFollower(inst, giver)
         UpdateMaxHealth(inst, 150)
         if hasskill(giver, "subjects_2") then
             inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
-           GLOBAL.MakePrimemateRun(inst)
+            GLOBAL.MakePrimemateRun(inst)
         end
     end
             
@@ -125,7 +219,7 @@ local function OnMonkeyGetItem(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item)
 
-        if item.prefab == "cave_banana" then
+        if item.prefab == "cave_banana" or item.prefab == "willarbanana" then
             BecomeFollower(inst, giver)
             if hasskill(giver, "subjects_3") then
                 
@@ -147,52 +241,58 @@ local function OnMonkeyGetItem(inst, giver, item)
         end
         inst.components.inventory:Equip(item)
         inst.AnimState:Show("hat")
-    elseif hasskill(giver, "subjects_2") and inst.prefab == "powder_monkey" and item.prefab == "idk" then
-        --turn into prime_mate
-        local fx = GLOBAL.SpawnPrefab("statue_transition_2")
-        if fx ~= nil then
-            fx.Transform:SetPosition(x, y, z)
-            fx.Transform:SetScale(.8, .8, .8)
+    elseif item.prefab == "willarbanana" then
+        if inst.prefab == "monkey" then
+            BecomeFollower(inst, giver, true)
         end
-        fx = GLOBAL.SpawnPrefab("statue_transition")
-        if fx ~= nil then
-            fx.Transform:SetPosition(x, y, z)
-            fx.Transform:SetScale(.8, .8, .8)
-        end
-        
-        inst:DoTaskInTime(.25, function()
-            local primemate = GLOBAL.SpawnPrefab("prime_mate")
-            if primemate then
-                primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
-                primemate.Transform:SetPosition(x,y,z)
-                if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
-                if inst.components.combat:HasTarget() then primemate.components.combat:SetTarget(inst.components.combat.target) end
-                inst:Remove()
+        if inst.prefab == "powder_monkey" then
+            --turn into prime_mate
+            local fx = GLOBAL.SpawnPrefab("statue_transition_2")
+            if fx ~= nil then
+                fx.Transform:SetPosition(x, y, z)
+                fx.Transform:SetScale(.8, .8, .8)
             end
-        end)
-    elseif hasskill(giver, "diplo") and inst.prefab == "monkey" and item.prefab == "pigskin" then
-        local fx = GLOBAL.SpawnPrefab("statue_transition_2")
-        if fx ~= nil then
-            fx.Transform:SetPosition(x, y, z)
-            fx.Transform:SetScale(.8, .8, .8)
-        end
-        fx = GLOBAL.SpawnPrefab("statue_transition")
-        if fx ~= nil then
-            fx.Transform:SetPosition(x, y, z)
-            fx.Transform:SetScale(.8, .8, .8)
-        end
+            fx = GLOBAL.SpawnPrefab("statue_transition")
+            if fx ~= nil then
+                fx.Transform:SetPosition(x, y, z)
+                fx.Transform:SetScale(.8, .8, .8)
+            end
+            
+            inst:DoTaskInTime(.25, function()
+                local primemate = GLOBAL.SpawnPrefab("prime_mate")
+                if primemate then
+                    primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
+                    primemate.Transform:SetPosition(x,y,z)
+                    if inst.components.follower.leader then primemate.components.follower:SetLeader(giver) end
+                    if inst.components.combat:HasTarget() then primemate.components.combat:SetTarget(inst.components.combat.target) end
+                    BecomeFollower(primemate, giver)
+                    inst:Remove()
+                end
+            end)
+        elseif hasskill(giver, "diplo") and inst.prefab == "monkey" and not giver.hassquire then
+            local fx = GLOBAL.SpawnPrefab("statue_transition_2")
+            if fx ~= nil then
+                fx.Transform:SetPosition(x, y, z)
+                fx.Transform:SetScale(.8, .8, .8)
+            end
+            fx = GLOBAL.SpawnPrefab("statue_transition")
+            if fx ~= nil then
+                fx.Transform:SetPosition(x, y, z)
+                fx.Transform:SetScale(.8, .8, .8)
+            end
 
-        inst:DoTaskInTime(.25, function()
-            local primemate = GLOBAL.SpawnPrefab("willarsquire")
-            if primemate then
-                primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
-                primemate.Transform:SetPosition(x,y,z)
-                giver.components.leader:AddFollower(primemate)
-                inst:Remove()
-                primemate:ListenForEvent("death", function() giver:PushEvent("squiredied") end)
-                giver.hassquire = true
-            end
-        end)
+            inst:DoTaskInTime(.25, function()
+                local primemate = GLOBAL.SpawnPrefab("willarsquire")
+                if primemate then
+                    primemate.SoundEmitter:PlaySound("dontstarve/common/ghost_spawn")
+                    primemate.Transform:SetPosition(x,y,z)
+                    giver.components.leader:AddFollower(primemate)
+                    inst:Remove()
+                    primemate:ListenForEvent("death", function() giver:PushEvent("squiredied") end)
+                    giver.hassquire = true
+                end
+            end)
+        end
     end
 end
 
