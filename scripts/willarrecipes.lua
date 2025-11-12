@@ -188,6 +188,33 @@ local allo = AddCharacterRecipe("allogrooming",
 allo.nameoverride = "allo"
 allo.description = "allo"
 
+AddCharacterRecipe("willarbanana",{
+	Ingredient("cave_banana", 1),
+	Ingredient("goldnugget", 2),
+	Ingredient("nightmarefuel", 1),
+	},
+	GLOBAL.TECH.MAGIC_THREE,
+	{
+		product = "willarbanana",
+		builder_tag = "willar",
+		numtogive = 1,
+	}
+)
+STRINGS.RECIPE_DESC.WILLARBANANA = "For his majesty."
+
+AddCharacterRecipe("willarwhistle", {
+	Ingredient("cave_banana", 1),
+	Ingredient("twigs", 3)
+	},
+	GLOBAL.TECH.SCIENCE_ONE,
+	{
+		product = "willarwhistle",
+		builder_tag = "willar",
+		numtogive = 1,
+	}
+)
+STRINGS.RECIPE_DESC.WILLARWHISTLE = "No more monkey business!"
+
 AddSimPostInit(function()
 	local r = GLOBAL.AllRecipes
 	r.tophat_magician.no_builder_tag = "willar"
