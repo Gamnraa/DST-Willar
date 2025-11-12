@@ -33,7 +33,8 @@ local function onpoweredup(inst)
         for _, v in pairs(TheSim:FindEntities(x,y,z, 9009, nil, nil, {"monkey", "wonkey"})) do
             if v:HasTag("player") then
                 Gram_UpdateMaxHealth(v, 50)
-                Gram_UpdateMaxSanity(v, 100)
+                --Gram_UpdateMaxSanity(v, 100)
+                Gram_UpdateMaxHunger(v, 50)
             else
                 if v.components.health then Gram_UpdateMaxHealth(v, WILLAR_TAPESTRY_BUFF_HEALTH) end
                 if v.components.combat then v.components.combat.damagebonus = inst.prefab == "monkey" and WILLAR_TAPESTRY_BUFF_ATTACK or (WILLAR_TAPESTRY_BUFF_ATTACK + 8) end
