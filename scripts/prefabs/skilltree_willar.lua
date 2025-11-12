@@ -379,55 +379,43 @@ local function BuildSkillsData(SkillTreeFns)
               --  inst:AddTag("willar_regalwork3")
             end,
         },
-        shadowstep = {
-            title = "Shadowstep",
-            desc = "Spend 1 nightmare fuel to teleport.",
-            icon = "wilson_alchemy_1",
-            pos = {iorx, 176-(vspace*3)},
-            group = "Instinct",
-            tags = {"willarinstinct"},
-            onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
-            end,
-            lock_open = function(instname, activatedskills, readonly)
-                return SkillTreeFns.CountTags(instname, "willarinstinct", activatedskills) > 4
-            end,
-            root = true,
-            connects = {
-                "shadowstride"
-            }
-        },
-        shadowstride = {
-            title = "Shadowstride",
-            desc = "Others may follow your teleport.",
-            icon = "wilson_alchemy_1",
-            pos = {iorx, 176-(vspace*4)},
-            group = "Instinct",
-            tags = {"willarinstinct"},
-            onactivate = function(inst, fromload)
-              --  inst:RemoveTag("willar_regalwork2")
-              --  inst:AddTag("willar_regalwork3")
-            end,
-        },
 
 
-
-        weapon_horror = {
-            title = "Weaponised Horror",
-            desc = "Infuse weapons with Pure Horror.",
+        weapon_horror_lock = {
+            desc = "Kill the Ancient Fuelweaver to unlock.",
             icon = "wilson_alchemy_1",
-            pos = {aorx, 176},
+            pos = {aorx, 176+vspace},
             group = "Affinity",
             tags = {"willaraffinity"},
             onactivate = function(inst, fromload)
               --  inst:RemoveTag("willar_regalwork2")
               --  inst:AddTag("willar_regalwork3")
             end,
+            lock_open = function(instname, activatedskills, readonly)
+                if readonly then
+                    return "question"
+                end
+
+                return TheGenericKV:GetKV("fuelweaver_killed") == "1"
+            end,
             root = true,
             connects = {
-                "upsurp_shadow"
+              "weapon_horror"
             }
+        },
+
+        --Aff
+        weapon_horror = {
+            title = "A New Reign",
+            desc = "Infuse weapons with Pure Horror.",
+            icon = "wilson_alchemy_1",
+            pos = {aorx, 176},
+            group = "Affinity",
+            tags = {"willaraffinity"},
+            onactivate = function(inst, fromload)
+                  inst:AddTAG("player_shadow_aligned")
+              --  inst:AddTag("willar_regalwork3")
+            end,
         },
 
          upsurp_shadow = {
@@ -439,8 +427,9 @@ local function BuildSkillsData(SkillTreeFns)
             tags = {"willaraffinity"},
             onactivate = function(inst, fromload)
               --  inst:RemoveTag("willar_regalwork2")
-                inst:AddTag("willar_regalwork3")
+              --  inst:AddTag("willar_regalwork3")
             end,
+            root = true,
         },
 
         
