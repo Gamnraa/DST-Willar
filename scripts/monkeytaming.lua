@@ -34,6 +34,32 @@ local function UpdateMaxHunger(inst, newmax)
     inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
+local function DoTapestryBuff(inst)
+    if inst.prefab == "monkey" then
+        inst.components.combat.damagebonus = 10
+        UpdateMaxHealth(inst, 50)
+    elseif inst.prefab == "powder_monkey" then
+        inst.components.combat.damagebonus = 10
+        UpdateMaxHealth(inst, 100)
+    elseif inst.prefab == "prime_mate" then
+        UpdateMaxHealth(inst, 150)
+        inst.components.combat.externaldamagetakenmodifers:SetModifier(inst, .67, "willartapestry")
+    elseif inst.prefab == "farmer_monkey" then
+        UpdateMaxHealth(inst, 100)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
+    elseif inst.prefab == "willarsquire" then
+        UpdateMaxHealth(inst, 50)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
+    elseif inst.prefab == "monkeyguard" then
+        UpdateMaxHealth(inst, 50)
+        inst.components.combat.damagebonus = 10
+    elseif inst.prefab == "powdermonkeyguard" then
+        UpdateMaxHealth(inst, 50)
+        inst.components.combat.externaldamagetakenmodifers:SetModifier(inst, .75, "willartapestry")
+    end
+end
+
+
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
@@ -364,9 +390,6 @@ local function NewMonkeyRetarget(inst)
         {"willar"} --Cant tags
     )
 end
-
-GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH = 50
-GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK = 13
 
 local function MakeMonkeysTamable(inst, duration)
     if not GLOBAL.TheWorld.ismastersim then return end
