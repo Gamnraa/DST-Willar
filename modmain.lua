@@ -15,6 +15,7 @@ PrefabFiles = {
     "umbramonkeywarrior",
     "willarportal",
     "willarbanana",
+    "willarwhistle",
 }
 
 Assets = {
@@ -405,6 +406,13 @@ local function AddDashAttack(inst)
     inst:AddComponent("aoespell")
     inst.components.aoespell:SetSpellFn(Lightning_SpellFn)
 end
+
+--lol
+AddComponentAction("INVENTORY", "followerherder", function(inst, doer, actions)
+    if doer:HasTag("willar") then
+        table.insert(actions, GLOBAL.ACTIONS.HERD_FOLLOWERS)
+    end
+end)
 
 AddPrefabPostInit("cutless", AddDashAttack)
 --AddPrefabPostInit("nightsword", AddDashAttack)
