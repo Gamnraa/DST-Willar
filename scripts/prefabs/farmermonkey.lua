@@ -318,6 +318,12 @@ local function fn()
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
 
+    inst:DoTaskInTime(0, function() 
+        if TheWorld.willartapestrypowered then 
+            Gram_DoTapestryBuff(inst)
+        end
+    end)
+
     return inst
 end
 

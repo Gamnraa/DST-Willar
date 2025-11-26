@@ -100,6 +100,12 @@ local function fn()
     inst:SetStateGraph("SGmonkey")
     inst:SetBrain(brain)
 
+    inst:DoTaskInTime(0, function() 
+        if TheWorld.willartapestrypowered then 
+            Gram_DoTapestryBuff(inst)
+        end
+    end)
+
     return inst
 end
 

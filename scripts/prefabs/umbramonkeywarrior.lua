@@ -452,7 +452,6 @@ local function MakeUmbra(name, fighter)
         inst.components.follower.keepleaderduringminigame = true
 
         if fighter then
-            
             inst.components.combat:SetDefaultDamage(TUNING.SHADOWWAXWELL_PROTECTOR_DAMAGE)
             inst.components.combat:SetAttackPeriod(TUNING.SHADOWWAXWELL_PROTECTOR_ATTACK_PERIOD)
             inst.components.combat:SetRetargetFunction(1, protectorretargetfn)
@@ -462,6 +461,7 @@ local function MakeUmbra(name, fighter)
             inst.components.inventory.maxslots = 1
             inst.components.combat:SetKeepTargetFunction(function(inst) return false end)
 	        inst.components.follower.noleashing = true
+            inst:AddComponent("workmultiplier")
         end
 
         inst:AddComponent("health")
@@ -496,6 +496,11 @@ local function MakeUmbra(name, fighter)
 
         --inst.weaponitems = {}
         --EquipWeapons(inst)
+        inst:DoTaskInTime(0, function() 
+            if TheWorld.willartapestrypowered then 
+                Gram_DoTapestryBuff(inst)
+            end
+        end)
 
         return inst
     end

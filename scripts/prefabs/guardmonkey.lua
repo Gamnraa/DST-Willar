@@ -171,6 +171,12 @@ local function fn()
     --inst.weaponitems = {}
     --EquipWeapons(inst)
 
+    inst:DoTaskInTime(0, function() 
+        if TheWorld.willartapestrypowered then 
+            Gram_DoTapestryBuff(inst)
+        end
+    end)
+
     return inst
 end
 
