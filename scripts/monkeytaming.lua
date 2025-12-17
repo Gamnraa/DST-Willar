@@ -34,6 +34,7 @@ local function UpdateMaxHunger(inst, newmax)
     inst:DoTaskInTime(0, function() inst.components.hunger.current = inst.components.hunger.current * factor end)
 end
 
+local ACTIONS = GLOBAL.ACTIONS
 local function DoTapestryBuff(inst)
     if inst.prefab == "monkey" then
         inst.components.combat.damagebonus = 10
@@ -56,14 +57,64 @@ local function DoTapestryBuff(inst)
     elseif inst.prefab == "powdermonkeyguard" then
         UpdateMaxHealth(inst, 50)
         inst.components.combat.externaldamagetakenmodifers:SetModifier(inst, .75, "willartapestry")
+    elseif inst.prefab == "primeknight" then
+        UpdateMaxHealth(inst, 200)
+        inst.components.combat.externaldamagetakenmodifers:SetModifier(inst, .75, "willartapestry")
+    elseif inst.prefab == "umbramonkeywarrior" then
+        UpdateMaxHealth(inst, 50)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
+    elseif inst.prefab == "umbramonkeyservant" then
+        inst.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, 1.25, inst)
+        inst.components.workmultiplier:AddMultiplier(ACTIONS.MINE, 1.25, inst)
+        inst.components.workmultiplier:AddMultiplier(ACTIONS.DIG, 1.25, inst)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
     end
 end
+
+local function EndTapestryBuff(inst)
+    if inst.prefab == "monkey" then
+        inst.components.combat.damagebonus = 0
+        UpdateMaxHealth(inst, -50)
+    elseif inst.prefab == "powder_monkey" then
+        inst.components.combat.damagebonus = 0
+        UpdateMaxHealth(inst, -100)
+    elseif inst.prefab == "prime_mate" then
+        UpdateMaxHealth(inst, -150)
+        inst.components.combat.externaldamagetakenmodifers:RemoveModifier(inst, "willartapestry")
+    elseif inst.prefab == "farmer_monkey" then
+        UpdateMaxHealth(inst, -100)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    elseif inst.prefab == "willarsquire" then
+        UpdateMaxHealth(inst, -50)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    elseif inst.prefab == "monkeyguard" then
+        UpdateMaxHealth(inst, -50)
+        inst.components.combat.damagebonus = 10
+    elseif inst.prefab == "powdermonkeyguard" then
+        UpdateMaxHealth(inst, -50)
+        inst.components.combat.externaldamagetakenmodifers:RemoveModifier(inst, "willartapestry")
+    elseif inst.prefab == "primeknight" then
+        UpdateMaxHealth(inst, -200)
+        inst.components.combat.externaldamagetakenmodifers:RemoveModifier(inst, "willartapestry")
+    elseif inst.prefab == "umbramonkeywarrior" then
+        UpdateMaxHealth(inst, -50)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    elseif inst.prefab == "umbramonkeyservant" then
+        inst.components.workmultiplier:RemoveMultiplier(ACTIONS.CHOP, inst)
+        inst.components.workmultiplier:RemoveMultiplier(ACTIONS.MINE, inst)
+        inst.components.workmultiplier:RemoveMultiplier(ACTIONS.DIG, inst)
+        inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED
+    end
+end
+
 
 
 
 GLOBAL.Gram_UpdateMaxHealth = UpdateMaxHealth
 GLOBAL.Gram_UpdateMaxSanity = UpdateMaxSanity
 GLOBAL.Gram_UpdateMaxHunger = UpdateMaxHunger
+GLOBAL.Gram_DoTapestryBuff = DoTapestryBuff
+GLOBAL.Gram_EndTapestryBuff = EndTapestryBuff
 
 AddStategraphPostInit("primemate", function(sg)
     local function idleonanimover(inst)
@@ -433,8 +484,7 @@ local function MakeMonkeysTamable(inst, duration)
 
     inst:DoTaskInTime(0, function() 
          if GLOBAL.TheWorld.willartapestrypowered then 
-            UpdateMaxHealth(inst, GLOBAL.WILLAR_TAPESTRY_BUFF_HEALTH)
-            inst.components.combat.damagebonus = inst.prefab == "monkey" and GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK or (GLOBAL.WILLAR_TAPESTRY_BUFF_ATTACK + 8)
+            DoTapestryBuff(inst)
          end
 	end)
 end

@@ -175,7 +175,7 @@ local function DoTransform(inst)
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
 			for follower, _ in pairs(inst.components.leader.followers) do
 				--We're switching so we need to switch the logic
-				if follower.prefab == "monkey" and not inst.willar_nightmaremode and follower.keepnightmareform then 
+				if follower.prefab == "monkey"  or follower.prefab == "willarsquire" and not inst.willar_nightmaremode and follower.keepnightmareform then 
 					follower.components.timer:StopTimer("forcenightmare")
 					follower.keepnightmareform:Cancel()
 					follower:PushEvent("changearea", follower.components.areaaware.current_area_data)
@@ -199,7 +199,7 @@ local function DoTransform(inst)
 
 		if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD):HasTag("willarcrown") then
 			for follower, _ in pairs(inst.components.leader.followers) do
-				if follower.prefab == "monkey" and not inst.willar_nightmaremode then 
+				if follower.prefab == "monkey" or follower.prefab == "willarsquire" and not inst.willar_nightmaremode then 
 					follower.keepnightmareform = follower:DoPeriodicTask(55, function() nightmaremonkeyloop(follower) end)
 					follower:DoTaskInTime(.15, function() follower:PushEvent("ms_forcenightmarestate", {duration = 60}) end)
 				end
