@@ -413,7 +413,7 @@ local function BuildSkillsData(SkillTreeFns)
             group = "Affinity",
             tags = {"willaraffinity"},
             onactivate = function(inst, fromload)
-                  inst:AddTAG("player_shadow_aligned")
+                  inst:AddTag("player_shadow_aligned")
               --  inst:AddTag("willar_regalwork3")
             end,
         },
