@@ -393,7 +393,7 @@ local function AddDashAttack(inst)
     inst.components.aoetargeting:SetEnabled(false)
 
     inst:AddComponent("aoeweapon_lunge")
-    inst.components.aoeweapon_lunge:SetDamage(TUNING.SPEAR_WATHGRITHR_LIGHTNING_LUNGE_DAMAGE)
+    inst.components.aoeweapon_lunge:SetDamage(inst.components.weapon.damage * 2)
     inst.components.aoeweapon_lunge:SetSound("meta3/wigfrid/spear_lighting_lunge")
     inst.components.aoeweapon_lunge:SetSideRange(1)
     --inst.components.aoeweapon_lunge:SetOnLungedFn(Lightning_OnLunged)
