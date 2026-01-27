@@ -407,7 +407,7 @@ local function BuildSkillsData(SkillTreeFns)
         --Aff
         weapon_horror = {
             title = "A New Reign",
-            desc = "Infuse weapons with Pure Horror.",
+            desc = "Royally infuse Pure Horror.",
             icon = "wilson_alchemy_1",
             pos = {aorx, 176},
             group = "Affinity",
