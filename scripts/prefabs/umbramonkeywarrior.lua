@@ -420,6 +420,7 @@ local function MakeUmbra(name, fighter)
         inst:AddTag("cavedweller")
         inst:AddTag("monkey")
         inst:AddTag("animal")
+        inst:AddTag("shadowminion")
 
         inst.entity:SetPristine()
         if not TheWorld.ismastersim then

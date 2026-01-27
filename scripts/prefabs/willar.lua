@@ -287,6 +287,16 @@ local function onbecameghost(inst)
 	--inst.components.disasterpredictor:Stop()
 	inst:RemoveTag("nightmarewillar")
     inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "willar_speed_mod")
+
+	for k, v in pairs(inst.components.petleash:GetPets()) do
+		if v:HasTag("shadowminion") then
+			inst:RemoveEventCallback("onremove", inst._onpetlost, v)
+			inst.components.sanity:RemoveSanityPenalty(v)
+			if v._killtask == nil then
+				v._killtask = v:DoTaskInTime(math.random(), KillPet)
+			end
+		end
+	end
 end
 
 
@@ -436,6 +446,7 @@ local master_postinit = function(inst)
 	if not inst.components.petleash then
 		inst:AddComponent("petleash")
 	end
+	inst._onpetlost = function(pet) inst.components.sanity:RemoveSanityPenalty(pet) end
 	inst.components.petleash:SetMaxPets(7)
 
 	--inst.tapestrybuff = false

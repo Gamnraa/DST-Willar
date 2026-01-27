@@ -97,6 +97,7 @@ local function TrySpawnMinions(prefab, doer, pos)
 				local pet = doer.components.petleash:SpawnPetAt(v.x, 0, v.z, prefab)
 				if pet ~= nil then
                     doer.components.sanity:AddSanityPenalty(pet, 0.1)
+					doer:ListenForEvent("onremove", doer._onpetlost, pet)
 					if pet.SaveSpawnPoint ~= nil then
 						pet:SaveSpawnPoint()
 					end
@@ -250,9 +251,9 @@ STRINGS.SPELLS.WILLARPORTAL = "Shadow Stride"
 local SPELLS =
 {
 	{
-		label = STRINGS.SPELLS.SHADOW_WORKER,
+		label = "Umbra Servant",
 		onselect = function(inst)
-			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_WORKER)
+			inst.components.spellbook:SetSpellName("Umbra Servant")
 			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastWorker)
@@ -272,9 +273,9 @@ local SPELLS =
 		hit_radius = ICON_RADIUS,
 	},
 	{
-		label = STRINGS.SPELLS.SHADOW_PROTECTOR,
+		label = "Umbra Trooper",
 		onselect = function(inst)
-			inst.components.spellbook:SetSpellName(STRINGS.SPELLS.SHADOW_PROTECTOR)
+			inst.components.spellbook:SetSpellName("Umbra Trooper")
 			inst.components.spellbook:SetSpellAction(nil)
 			inst.components.aoetargeting:SetDeployRadius(0)
 			inst.components.aoetargeting:SetShouldRepeatCastFn(ShouldRepeatCastProtector)
