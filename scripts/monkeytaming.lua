@@ -44,7 +44,7 @@ local function DoTapestryBuff(inst)
         UpdateMaxHealth(inst, 100)
     elseif inst.prefab == "prime_mate" then
         UpdateMaxHealth(inst, 150)
-        inst.components.combat.externaldamagetakenmodifiers:SetModifier(inst, .67, "willartapestry")
+        inst.components.combat.externaldamagetakenmultipliers:SetModifier(inst, .67, "willartapestry")
     elseif inst.prefab == "farmer_monkey" then
         UpdateMaxHealth(inst, 100)
         inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
@@ -56,10 +56,10 @@ local function DoTapestryBuff(inst)
         inst.components.combat.damagebonus = 10
     elseif inst.prefab == "powdermonkeyguard" then
         UpdateMaxHealth(inst, 50)
-        inst.components.combat.externaldamagetakenmodifiers:SetModifier(inst, .75, "willartapestry")
+        inst.components.combat.externaldamagetakenmultipliers:SetModifier(inst, .75, "willartapestry")
     elseif inst.prefab == "primeknight" then
         UpdateMaxHealth(inst, 200)
-        inst.components.combat.externaldamagetakenmodifiers:SetModifier(inst, .75, "willartapestry")
+        inst.components.combat.externaldamagetakenmultipliers:SetModifier(inst, .75, "willartapestry")
     elseif inst.prefab == "umbramonkeywarrior" then
         UpdateMaxHealth(inst, 50)
         inst.components.locomotor.walkspeed = TUNING.MONKEY_MOVE_SPEED + 2
