@@ -164,8 +164,8 @@ AddCharacterRecipe("guardmonkeytower",
 		placer = "guardmonkeytower_placer",
 		builder_tag = "willar",
 		numtogive = 1,
-        atlas = "images/inventoryimages/farmermonkeypod.xml",
-        image = "farmermonkeypod.tex"
+		atlas = "images/inventoryimages/monkeyguardtower.xml",
+		image = "monkeyguardtower.tex"
 	},
 	{
 		"STRUCTURES",
