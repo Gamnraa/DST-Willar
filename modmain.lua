@@ -77,6 +77,9 @@ Assets = {
     Asset( "IMAGE", "images/inventoryimages/monkeyhutrecipe.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/monkeyhutrecipe.xml" ),
 
+    Asset( "IMAGE", "images/inventoryimages/monkeyguardtower.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/monkeyguardtower.xml" ),
+
     Asset( "IMAGE", "images/willar_skilltree.tex"),
     Asset( "ATLAS", "images/willar_skilltree.xml"),
 }
@@ -357,7 +360,8 @@ local function AddDashAttack(inst)
             doer.IsValidVictim ~= nil and
             doer.IsValidVictim(target)
         then
-            inst.components.finiteuses:Repair(TUNING.SPEAR_WATHGRITHR_LIGHTNING_CHARGED_LUNGE_REPAIR_AMOUNT)
+            --inst.components.finiteuses:Repair(TUNING.SPEAR_WATHGRITHR_LIGHTNING_CHARGED_LUNGE_REPAIR_AMOUNT)
+            inst.components.finiteuses:Use(inst.components.finiteuses.total *.03)
             inst._lunge_hit_count = inst._lunge_hit_count + 1
         end
     end
