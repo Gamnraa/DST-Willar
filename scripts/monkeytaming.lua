@@ -334,9 +334,7 @@ local function OnMonkeyGetItem(inst, giver, item)
         inst.AnimState:Show("hat")
     elseif item.prefab == "willarbanana" then
         item:DoTaskInTime(0, item.Remove)
-        if inst.prefab == "monkey" then
-            BecomeFollower(inst, giver, true)
-        end
+        BecomeFollower(inst, giver, true)
         if inst.prefab == "powder_monkey" then
             --turn into prime_mate
             local fx = GLOBAL.SpawnPrefab("statue_transition_2")
