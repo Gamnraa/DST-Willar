@@ -172,6 +172,10 @@ local function onhit(inst)
     inst:ClearBufferedAction()
 end
 
+local function hasammo(inst)
+    return inst.components.inventory ~= nil and inst.components.inventory:FindItem(IsPoop) ~= nil
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -254,7 +258,7 @@ local function fn()
     inst.components.combat:SetKeepTargetFunction(shouldKeepTarget)
 
     inst:AddComponent("health")
-    inst.components.health:SetMaxHealth(TUNING.POWDER_MONKEY_HEALTH)
+    inst.components.health:SetMaxHealth(500)
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('powdermonkey')
@@ -276,6 +280,7 @@ local function fn()
     inst:AddComponent("areaaware")
 
     inst:AddComponent("timer")
+    inst.HasAmmo = hasammo
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGpowdermonkey")
