@@ -172,9 +172,6 @@ local function onhit(inst)
     inst:ClearBufferedAction()
 end
 
-local function hasammo(inst)
-    return inst.components.inventory ~= nil and inst.components.inventory:FindItem(IsPoop) ~= nil
-end
 
 local function fn()
     local inst = CreateEntity()
@@ -280,7 +277,7 @@ local function fn()
     inst:AddComponent("areaaware")
 
     inst:AddComponent("timer")
-    inst.HasAmmo = hasammo
+    
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGpowdermonkey")
