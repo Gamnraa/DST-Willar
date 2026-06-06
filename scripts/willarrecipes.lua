@@ -211,6 +211,8 @@ AddCharacterRecipe("willarwhistle", {
 		product = "willarwhistle",
 		builder_tag = "willar",
 		numtogive = 1,
+		atlas = "images/inventoryimages/royalbanana.xml",
+		image = "royalbanana.tex"
 	}
 )
 STRINGS.RECIPE_DESC.WILLARWHISTLE = "No more monkey business!"
