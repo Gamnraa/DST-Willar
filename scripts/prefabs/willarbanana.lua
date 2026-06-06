@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/rocks.zip"),
+    Asset("ANIM", "anim/royalbanana.zip"),
 }
 
 local function fn()
@@ -13,16 +13,15 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("rocks")
-    inst.AnimState:SetBuild("rocks")
+    inst.AnimState:SetBank("royalbanana")
+    inst.AnimState:SetBuild("royalbanana")
+    inst.AnimState:PlayAnimation("anim")
 
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
     end
-
-    inst.AnimState:PlayAnimation("f1")
 
     inst:AddComponent("tradable")
 
@@ -31,6 +30,8 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst:AddComponent("inventoryitem")
+    inst.components.inventoryitem.imagename = "royalbanana"
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/royalbanana.xml"
 
     return inst
 end
