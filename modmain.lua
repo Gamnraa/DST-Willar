@@ -80,6 +80,9 @@ Assets = {
     Asset( "IMAGE", "images/inventoryimages/monkeyguardtower.tex" ),
 	Asset( "ATLAS", "images/inventoryimages/monkeyguardtower.xml" ),
 
+    Asset( "IMAGE", "images/inventoryimages/royalbanana.tex" ),
+	Asset( "ATLAS", "images/inventoryimages/royalbanana.xml" ),
+
     Asset( "IMAGE", "images/willar_skilltree.tex"),
     Asset( "ATLAS", "images/willar_skilltree.xml"),
 }
@@ -153,6 +156,7 @@ RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willar
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown.xml"), "willarcrown.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/willarcrown_ruins.xml"), "willarcrown_ruins.tex")
 RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/monkeydisguise.xml"), "monkeydisguise.tex")
+RegisterInventoryItemAtlas(GLOBAL.resolvefilepath("images/inventoryimages/royalbanana.xml"), "royalbanana.tex")
 
 local FOODTYPE = GLOBAL.FOODTYPE
 FOODTYPE.NIGHTMAREFUEL = "NIGHTMAREFUEL" --DST is EXTREMELY picky about how it handles new edibles...
