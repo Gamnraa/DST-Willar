@@ -188,8 +188,8 @@ local function DoTransform(inst)
 	else
 		--inst:PushEvent("nightvision", true)
 		inst:DoTaskInTime(.8, function() inst.components.playervision:ForceNightVision(true) end)
-		local skin = inst:GetSkinBuild()
-		if skin then inst.AnimState:SetBuild("shadow"..skin)
+		local skin = inst.components.skinner
+		if skin then inst.AnimState:SetBuild("shadow_"..string.gsub(string.gsub(skin.skin_name, "_ms", ""), "_none", ""))
 		else inst.AnimState:SetBuild("shadow_willar") end
 		inst:AddTag("nightmarewillar")
 		inst:AddTag("monster") --make pigs hostile to us
@@ -229,6 +229,14 @@ end
 local function OnTimerDone(inst, data)
 	if data and data.name == "forcenightmare" then
 		OnWorldStateChange(inst)
+	end
+end
+
+local function OnSkinsChanged(inst)
+	if inst.willar_nightmaremode then
+		local skin = inst.components.skinner
+		if skin then inst.AnimState:SetBuild("shadow"..string.gsub(string.gsub(skin.skin_name, "ms", ""), "_none", ""))
+		else inst.AnimState:SetBuild("shadow_willar") end
 	end
 end
 
@@ -451,6 +459,9 @@ local master_postinit = function(inst)
 	end
 	inst._onpetlost = function(pet) inst.components.sanity:RemoveSanityPenalty(pet) end
 	inst.components.petleash:SetMaxPets(7)
+
+
+	inst:ListenForEvent("onskinschanged", OnSkinsChanged)
 
 	--inst.tapestrybuff = false
 	inst:DoTaskInTime(0, function()
