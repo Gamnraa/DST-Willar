@@ -286,6 +286,10 @@ local function BecomeFollower(inst, giver, golden)
             inst.components.locomotor.runspeed = TUNING.MONKEY_MOVE_SPEED
             ---GLOBAL.MakePrimemateRun(inst)
         end
+    elseif inst.prefab == "monkeyguard" then
+        UpdateMaxHealth(50)
+    elseif inst.prefab == "powdermonkeyguard" then
+        UpdateMaxHealth(inst, 100)
     end
             
     inst:SetBrain(willarmonkeybrain)
@@ -298,6 +302,10 @@ local function BecomeFollower(inst, giver, golden)
             UpdateMaxHealth(inst, -100)
         elseif inst.prefab == "prime_mate" then
             UpdateMaxHealth(inst, -150)
+        elseif inst.prefab == "monkeyguard" then
+            UpdateMaxHealth(inst, -50)
+        elseif inst.prefab == "powdermonkeyguard" then
+            UpdateMaxHealth(inst, -100)
         end
         inst:RemoveTag("willarfollower")
     end)
