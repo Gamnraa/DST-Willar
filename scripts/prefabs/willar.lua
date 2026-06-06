@@ -3,6 +3,7 @@ local MakePlayerCharacter = require "prefabs/player_common"
 local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
 	Asset("ANIM", "anim/shadow_willar.zip"),
+	Asset("ANIM", "anim/shadow_willar_pirate.zip"),
 	Asset("SOUND", "sound/webber.fsb"),
 	Asset("SCRIPT", "scripts/prefabs/skilltree_willar.lua")
 }
@@ -187,7 +188,9 @@ local function DoTransform(inst)
 	else
 		--inst:PushEvent("nightvision", true)
 		inst:DoTaskInTime(.8, function() inst.components.playervision:ForceNightVision(true) end)
-		inst.AnimState:SetBuild("shadow_willar")
+		local skin = inst:GetSkinBuild()
+		if skin then inst.AnimState:SetBuild("shadow"..skin)
+		else inst.AnimState:SetBuild("shadow_willar") end
 		inst:AddTag("nightmarewillar")
 		inst:AddTag("monster") --make pigs hostile to us
 

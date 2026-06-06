@@ -33,6 +33,9 @@ Assets = {
 
     Asset( "IMAGE", "bigportraits/willar_none.tex" ),
     Asset( "ATLAS", "bigportraits/willar_none.xml" ),
+
+    Asset( "IMAGE", "bigportraits/willar_pirate.tex" ),
+    Asset( "ATLAS", "bigportraits/willar_pirate.xml" ),
 	
 	
 	Asset( "IMAGE", "images/map_icons/willar.tex" ),
@@ -117,6 +120,12 @@ STRINGS.CHARACTER_NAMES.willar = "Willar"
 STRINGS.CHARACTER_DESCRIPTIONS.willar = "*Easily misunderstood, has a dark side\n*Is a monkey, with BIG ideas\n*Is both a warrior and king (sorta)"
 STRINGS.CHARACTER_QUOTES.willar = "\"...\""
 STRINGS.CHARACTER_SURVIVABILITY.willar = "Slim"
+
+STRINGS.SKIN_DESCRIPTIONS.willar_none = "The default look."
+
+STRINGS.SKIN_NAMES.willar_pirate = "The Swashbuckler"
+STRINGS.SKIN_DESCRIPTIONS.willar_pillar = "tbd"
+STRINGS.SKIN_QUOTES.willar_pirate = "tbd"
 
 TUNING.WILLAR_HEALTH = 150
 TUNING.WILLAR_HUNGER = 150
